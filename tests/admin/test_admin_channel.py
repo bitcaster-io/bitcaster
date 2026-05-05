@@ -1,9 +1,12 @@
 # mypy: disable-error-code="union-attr"
 from typing import TYPE_CHECKING, Any, Generator
-from unittest.mock import Mock, patch
+
+from constance.test.unittest import override_config
 
 import pytest
-from constance.test.unittest import override_config
+from testutils.helpers import assert_form_error
+from unittest.mock import Mock, patch
+
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.test.client import RequestFactory
 from django.urls import reverse
@@ -11,15 +14,15 @@ from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from strategy_field.utils import fqn
-from testutils.helpers import assert_form_error
 
 from bitcaster.models import Channel, Project
 from bitcaster.state import state
 
 if TYPE_CHECKING:
+    from webtest.forms import Form as WebTestForm
+
     from django.db.models.options import Options
     from django.http import HttpRequest
-    from webtest.forms import Form as WebTestForm
 
     from bitcaster.models import UserRole
 

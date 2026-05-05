@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from testutils.helpers import assert_message
+
 from django.contrib import messages
 from django.urls import reverse
-from testutils.helpers import assert_message
 
 from bitcaster.models import User
 

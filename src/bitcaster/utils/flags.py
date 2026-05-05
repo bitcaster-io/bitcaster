@@ -1,9 +1,11 @@
-import os
-import re
 from typing import Any
 
-from django.conf import settings
+import os
+import re
+
 from flags import conditions
+
+from django.conf import settings
 
 from bitcaster.state import state
 from bitcaster.utils.http import get_server_host

@@ -1,9 +1,12 @@
-import logging
 from typing import TYPE_CHECKING, Any, Sequence
+
+import logging
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from unfold import widgets as uwidgets
+
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
@@ -11,13 +14,12 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from unfold import widgets as uwidgets
 
-from bitcaster.models import Assignment, Event
+from bitcaster.constants import bitcaster
+from bitcaster.forms.event import EventChangeForm
+from bitcaster.models import Assignment, Event, Occurrence
+from bitcaster.state import state
 
-from ..constants import bitcaster
-from ..forms.event import EventChangeForm
-from ..state import state
 from .base import BaseAdmin, ButtonColor
 from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
@@ -136,8 +138,6 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
     def trigger_event(self, request: HttpRequest, pk: str) -> HttpResponse:
-        from bitcaster.models import Occurrence
-
         def get_form(*args: Any, **kwargs: Any) -> EventTestForm:
             frm = EventTestForm(*args, **kwargs)
             frm.fields["assignment"].queryset = Assignment.objects.filter(

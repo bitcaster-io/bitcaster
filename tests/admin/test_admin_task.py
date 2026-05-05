@@ -1,10 +1,12 @@
-import json
 from typing import TYPE_CHECKING
 
+import json
+
 import pytest
+from testutils.helpers import assert_form_error
+
 from django.urls import reverse
 from strategy_field.utils import fqn
-from testutils.helpers import assert_form_error
 
 from bitcaster.runner.tasks import scan_occurrences
 

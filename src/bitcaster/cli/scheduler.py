@@ -1,16 +1,18 @@
+from typing import TYPE_CHECKING
+
 import datetime
 import logging
 import os
-from typing import TYPE_CHECKING
 
 import click
-import django
-from django.utils.module_loading import import_string
 from sentry_sdk.utils import epoch
 
-from bitcaster.cli.utils import configure_logging
-from bitcaster.models import Task
-from bitcaster.runner.manager import BackgroundManager, init_scheduler, scheduler
+import django
+from django.utils.module_loading import import_string
+
+from .utils import configure_logging
+from ..models import Task
+from ..runner.manager import BackgroundManager, init_scheduler, scheduler
 
 if TYPE_CHECKING:  # pragma: no cover
     from apscheduler.job import Job

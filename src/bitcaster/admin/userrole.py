@@ -1,9 +1,11 @@
-import logging
 from typing import TYPE_CHECKING
+
+import logging
 
 from adminfilters.autocomplete import AutoCompleteFilter
 
-from ..models import UserRole
+from bitcaster.models import UserRole
+
 from .base import BaseAdmin
 
 if TYPE_CHECKING:

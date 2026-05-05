@@ -1,18 +1,19 @@
 from typing import Any
 
-from django.db.models import QuerySet
-from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from bitcaster.api.base import SecurityMixin
-from bitcaster.api.serializers import ProjectSerializer
-from bitcaster.auth.constants import Grant
-from bitcaster.constants import bitcaster
-from bitcaster.models import Project
+from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
+
+from .base import SecurityMixin
+from .serializers import ProjectSerializer
+from ..auth.constants import Grant
+from ..constants import bitcaster
+from ..models import Project
 
 
 class ProjectView(SecurityMixin, ViewSet, ListAPIView[Project], RetrieveAPIView[Project]):

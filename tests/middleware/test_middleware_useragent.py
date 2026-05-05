@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+
 from django.http import HttpResponse
 from django.test.client import RequestFactory
 from django.utils import timezone

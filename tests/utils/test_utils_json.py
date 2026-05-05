@@ -1,4 +1,5 @@
 import pytest
+
 from django.utils import timezone
 
 from bitcaster.dispatchers.base import Payload

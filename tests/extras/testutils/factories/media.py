@@ -1,8 +1,9 @@
 from typing import Any, cast
 
 import factory
-from django.core.files.base import ContentFile
 from factory import Sequence
+
+from django.core.files.base import ContentFile
 
 from bitcaster.models import MediaFile
 

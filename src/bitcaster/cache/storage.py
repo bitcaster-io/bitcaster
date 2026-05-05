@@ -1,8 +1,9 @@
 from typing import Any
 
+from flags.state import flag_enabled
+
 from django.core.cache import cache
 from django.db.models import Model, QuerySet
-from flags.state import flag_enabled
 
 
 def qs_to_cache(qs: QuerySet[Model], key: str | None = None) -> list[Any]:

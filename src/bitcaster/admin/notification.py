@@ -1,24 +1,27 @@
-import logging
 from typing import TYPE_CHECKING, Any
+
+import logging
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from jsoneditor.forms import JSONEditor
+
 from django.db.models import Field, QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_ace import AceWidget
-from jsoneditor.forms import JSONEditor
 
-from ..forms.message import NotificationTemplateCreateForm
-from ..forms.notification import NotificationForm
-from ..utils.django import admin_toggle_bool_action
-from ..utils.filtering import schema
+from bitcaster.forms.message import NotificationTemplateCreateForm
+from bitcaster.forms.notification import NotificationForm
+from bitcaster.utils.django import admin_toggle_bool_action
+from bitcaster.utils.filtering import schema
+
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
-    from bitcaster.models import Notification
+    from ..models import Notification
 
 logger = logging.getLogger(__name__)
 

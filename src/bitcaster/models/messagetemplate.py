@@ -1,12 +1,14 @@
-import logging
 from typing import TYPE_CHECKING, Any
+
+import logging
 
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
-from ..dispatchers.base import Capability
-from ..utils.shortcuts import render_message
+from bitcaster.dispatchers.base import Capability
+from bitcaster.utils.shortcuts import render_message
+
 from .channel import Channel
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin

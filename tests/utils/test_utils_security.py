@@ -1,9 +1,12 @@
-from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
-from unittest.mock import Mock
+
+from datetime import datetime, timedelta
+
+from constance.test import override_config
 
 import pytest
-from constance.test import override_config
+from unittest.mock import Mock
+
 from django.test import override_settings
 
 from bitcaster.exceptions import DecryptionError, KeyExpiredError
@@ -11,8 +14,9 @@ from bitcaster.state import state
 from bitcaster.utils.security import KeyManager, is_root
 
 if TYPE_CHECKING:
-    from django.test.client import RequestFactory
     from pytest_django.fixtures import SettingsWrapper
+
+    from django.test.client import RequestFactory
 
 
 def test_is_root(rf: "RequestFactory", settings: "SettingsWrapper") -> None:

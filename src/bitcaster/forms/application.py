@@ -4,8 +4,9 @@ from django import forms
 from django.forms import Field
 
 from bitcaster.constants import bitcaster
-from bitcaster.forms import unfold
 from bitcaster.models import Application, Project
+
+from . import unfold
 
 
 class ApplicationBaseForm(forms.ModelForm["Application"]):

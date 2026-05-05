@@ -1,8 +1,8 @@
-from unittest.mock import Mock, patch
-
-import pytest
 import requests
 from requests import Response
+
+import pytest
+from unittest.mock import Mock, patch
 
 from bitcaster.dispatchers.teams import TeamsDispatcher
 from bitcaster.exceptions import DispatcherError

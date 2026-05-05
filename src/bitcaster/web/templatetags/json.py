@@ -1,11 +1,13 @@
-import json
 from typing import Any
 
-from django import template
-from django.utils.safestring import mark_safe
+import json
+
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import JsonLexer
+
+from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 

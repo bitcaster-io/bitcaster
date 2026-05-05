@@ -1,8 +1,10 @@
-import logging
 from typing import Any
 
-from django.forms import ChoiceField
+import logging
+
 from unfold import forms
+
+from django.forms import ChoiceField
 
 from bitcaster.dispatchers.base import MessageProtocol
 from bitcaster.models import Channel

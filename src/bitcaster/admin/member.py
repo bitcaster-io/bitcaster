@@ -1,8 +1,15 @@
-import json
 from typing import TYPE_CHECKING, Any, cast
+
+import json
 
 from admin_extra_buttons.decorators import button
 from adminfilters.json_filter import JsonFieldFilter
+from jsoneditor.forms import JSONEditor
+from unfold.admin import TabularInline
+from unfold.contrib.inlines.admin import NonrelatedTabularInline
+from unfold.contrib.inlines.forms import NonrelatedInlineModelFormSet
+from unfold.decorators import action
+
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
@@ -13,20 +20,15 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from jsoneditor.forms import JSONEditor
-from unfold.admin import TabularInline
-from unfold.contrib.inlines.admin import NonrelatedTabularInline
-from unfold.contrib.inlines.forms import NonrelatedInlineModelFormSet
-from unfold.decorators import action
 
 from bitcaster.constants import Bitcaster, bitcaster
 from bitcaster.forms import unfold as uwidgets
+from bitcaster.forms.assignment import AssignmentInlineForm
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
+from bitcaster.importing.members import import_members_csv
 from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
 
-from ..forms.assignment import AssignmentInlineForm
-from ..importing.members import import_members_csv
 from .base import BaseAdmin
 from .filters import UserDistributionListFilter
 

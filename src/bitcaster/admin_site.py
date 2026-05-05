@@ -1,9 +1,10 @@
 from typing import Any
 
+from unfold.sites import UnfoldAdminSite
+
 from django.contrib.admin.apps import AdminConfig
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy
-from unfold.sites import UnfoldAdminSite
 
 
 class BitcasterAdminConfig(AdminConfig):

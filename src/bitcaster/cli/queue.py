@@ -10,7 +10,7 @@ def queue(loglevel: str, scheduler_name: str | None = None) -> None:
 @queue.command(name="list", help="List all queues content")
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 def list_(loglevel: str, scheduler_name: str | None = None) -> None:
-    from bitcaster.runner.manager import BackgroundManager
+    from ..runner.manager import BackgroundManager
 
     manager = BackgroundManager()
     click.secho("Runners", fg="green")
@@ -27,7 +27,7 @@ def list_(loglevel: str, scheduler_name: str | None = None) -> None:
 @queue.command(name="reset", help="Reset all queues")
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 def reset(loglevel: str, scheduler_name: str | None = None) -> None:
-    from bitcaster.runner.manager import BackgroundManager
+    from ..runner.manager import BackgroundManager
 
     manager = BackgroundManager()
 

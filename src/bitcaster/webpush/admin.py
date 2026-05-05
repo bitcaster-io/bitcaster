@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
+
 from django.contrib.admin import register
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse

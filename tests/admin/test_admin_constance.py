@@ -1,8 +1,9 @@
 # mypy: disable-error-code="union-attr"
 from typing import TYPE_CHECKING
-from unittest.mock import patch
 
 import pytest
+from unittest.mock import patch
+
 from django.core.exceptions import ValidationError
 from django.test.client import RequestFactory
 from django.urls import reverse

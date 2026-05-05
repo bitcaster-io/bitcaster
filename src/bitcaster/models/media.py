@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 import magic
+
 from django.core.files.storage import storages
 from django.db import models
 from django.db.models.fields.files import ImageFieldFile

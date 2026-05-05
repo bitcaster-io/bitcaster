@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+
 from django.contrib.auth.models import Group
 
 from bitcaster.utils.constance import EmailChannel, GroupSelect

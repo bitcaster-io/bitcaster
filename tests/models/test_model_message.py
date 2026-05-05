@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 import pytest
+
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import EmailDispatcher

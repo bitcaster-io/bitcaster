@@ -1,8 +1,9 @@
-from unittest.mock import MagicMock, patch
-
-import pytest
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.models import SocialAccount, SocialLogin
+
+import pytest
+from unittest.mock import MagicMock, patch
+
 from django.contrib.auth.models import Group
 
 from bitcaster.constants import AddressType

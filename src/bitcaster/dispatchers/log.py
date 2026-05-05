@@ -1,5 +1,6 @@
-import logging
 from typing import TYPE_CHECKING, Any
+
+import logging
 
 from .base import Dispatcher, MessageProtocol, Payload
 

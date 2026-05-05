@@ -2,6 +2,7 @@
 from typing import TYPE_CHECKING, Any
 
 import pytest
+
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import (  # type: ignore[attr-defined]
     SUCCESS,

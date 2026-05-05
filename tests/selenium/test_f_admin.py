@@ -1,11 +1,14 @@
-from time import sleep
 from typing import TYPE_CHECKING
 
-import pytest
-from django.urls import reverse
+from time import sleep
+
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
+
+import pytest
 from testutils.selenium import TestBrowser
+
+from django.urls import reverse
 
 if TYPE_CHECKING:
     from bitcaster.models import Event, MessageTemplate

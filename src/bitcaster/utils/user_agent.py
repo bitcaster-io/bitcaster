@@ -1,9 +1,11 @@
-import hashlib
 from typing import TYPE_CHECKING
+
+import hashlib
+
+from user_agents.parsers import UserAgent
 
 from django.conf import settings
 from django.core.cache import BaseCache, caches
-from user_agents.parsers import UserAgent
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest_co

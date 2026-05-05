@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Any
-from unittest import mock
 
 import factory
+
 import pytest
+from unittest import mock
+
 from django.core.files.base import ContentFile
 from django.db.models.fields.files import ImageFieldFile
 

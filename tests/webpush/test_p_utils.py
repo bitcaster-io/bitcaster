@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-import pytest
 from responses import RequestsMock
+
+import pytest
 
 from bitcaster.exceptions import DispatcherError
 from bitcaster.webpush.utils import sign, unsign, webpush_send_message

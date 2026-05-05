@@ -1,4 +1,5 @@
 import uuid
+
 from unittest.mock import Mock, patch
 
 from bitcaster.cache.manager import CacheManager

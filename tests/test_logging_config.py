@@ -1,4 +1,5 @@
 import os
+
 from unittest import mock
 
 from bitcaster.config.fragments.logging import _apply_dynamic_logging_levels

@@ -1,15 +1,16 @@
+from typing import TYPE_CHECKING, Any, Iterable
+
 import codecs
 import csv
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Iterable
 
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import transaction
 
+from .utils import get_column_mapping, parse_kv
 from ..constants import bitcaster
 from ..models import Group, Member
-from .utils import get_column_mapping, parse_kv
 
 if TYPE_CHECKING:
     from ..models import Organization

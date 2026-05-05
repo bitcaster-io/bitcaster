@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
+
+from strategy_field.utils import fqn
 
 if TYPE_CHECKING:
     from pytest_django import DjangoAssertNumQueries

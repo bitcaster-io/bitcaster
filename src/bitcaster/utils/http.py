@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING, Any, Sequence
+
 from urllib.parse import urljoin
 
 import constance
+
 from django.conf import settings
 from django.http.request import split_domain_port
 from django.urls import reverse

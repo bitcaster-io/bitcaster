@@ -1,13 +1,15 @@
+from typing import TYPE_CHECKING, Any, Iterable
+
 import json
 import logging
 import os
 from _socket import gethostname
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Iterable
 
 import dramatiq
 import msgpack
 from apscheduler.schedulers.blocking import BlockingScheduler
+
 from django_redis import get_redis_connection
 from strategy_field.utils import fqn
 

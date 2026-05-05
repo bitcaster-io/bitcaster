@@ -1,6 +1,7 @@
 import pytest
-from django.http import HttpResponse
 from freezegun import freeze_time
+
+from django.http import HttpResponse
 
 from bitcaster.state import State
 

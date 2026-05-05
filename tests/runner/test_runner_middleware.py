@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, Any
-from unittest.mock import Mock
 
-import pytest
 from dramatiq import Actor, Message, MessageProxy
 from jinja2.utils import import_string
+
+import pytest
+from unittest.mock import Mock
 
 if TYPE_CHECKING:
     from bitcaster.runner.middlewares import ClickMiddleware, DbConnectionsMiddleware, WorkerHeartbeatMiddleware

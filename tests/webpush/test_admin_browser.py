@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 

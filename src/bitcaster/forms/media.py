@@ -1,5 +1,6 @@
-from os.path import splitext
 from typing import Any
+
+from os.path import splitext
 
 from django import forms
 

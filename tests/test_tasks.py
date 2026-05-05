@@ -1,13 +1,15 @@
-import uuid
-from datetime import timedelta
 from typing import TYPE_CHECKING, Any, TypedDict
+
+import uuid
+
+import freezegun
+import pytest
+from testutils.dispatcher import XDispatcher
+from testutils.factories import ChannelFactory, MonitorFactory
+from testutils.perms import configure_model
 from unittest.mock import Mock, patch
 
-import pytest
 from strategy_field.utils import fqn
-from testutils.dispatcher import XDispatcher
-from testutils.factories import MonitorFactory
-from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
 from bitcaster.dispatchers import UserMessageDispatcher
@@ -84,6 +86,18 @@ def setup(admin_user: "User") -> "Context":
 @pytest.fixture
 def monitor() -> "Monitor":
     return MonitorFactory.create()
+
+
+@pytest.fixture
+def user_messages(user: "User") -> "list[UserMessage]":
+    """User messages fixture for filtering tests."""
+    from testutils.factories import UserMessageFactory
+
+    ChannelFactory.create(dispatcher=fqn(UserMessageDispatcher))
+    m1 = UserMessageFactory.create(user=user, displayed=None, read=None)
+    with freezegun.freeze_time("2000-01-01"):
+        m2 = UserMessageFactory.create(user=user, displayed=True, read=None)
+    return [m1, m2]
 
 
 @pytest.mark.django_db(transaction=True)
@@ -417,9 +431,11 @@ def test_check_for_new_user_messages_empty(monkeypatch):
 def test_delete_expired_user_messages(user_messages, system_user: "User") -> None:
     m1, m2 = user_messages
     assert UserMessage.objects.count() == 2
+    assert UserMessage.objects.expired().count() == 1
     delete_expired_user_messages()
     assert UserMessage.objects.count() == 1
-    assert UserMessage.objects.filter(pk=m2.pk).exists()
+    assert UserMessage.objects.filter(pk=m1.pk).exists()
+    assert not UserMessage.objects.filter(pk=m2.pk).exists()
 
 
 def test_monitor_run(system_user: "User", monitor) -> None:

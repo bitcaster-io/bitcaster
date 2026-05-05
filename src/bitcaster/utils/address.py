@@ -1,6 +1,7 @@
+from phonenumbers import NumberParseException, parse
+
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
-from phonenumbers import NumberParseException, parse
 
 
 def is_phonenumber(value: str) -> bool:

@@ -1,10 +1,12 @@
 # mypy: disable-error-code="union-attr"
-import json
 from typing import TYPE_CHECKING, Any
 
+import json
+
 import pytest
-from django.urls import reverse
 from testutils.helpers import assert_form_error
+
+from django.urls import reverse
 
 from bitcaster.models import Notification
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE

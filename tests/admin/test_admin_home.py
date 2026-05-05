@@ -1,11 +1,14 @@
-import uuid
 from typing import TYPE_CHECKING
-from unittest.mock import patch
+
+import uuid
+
+from flags.state import disable_flag
 
 import pytest
+from unittest.mock import patch
+
 from django.db.models import Count
 from django.urls import reverse
-from flags.state import disable_flag
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp

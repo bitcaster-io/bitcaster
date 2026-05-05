@@ -1,21 +1,20 @@
 from typing import TYPE_CHECKING, Any
 
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db.models import QuerySet
-from django.utils.translation import gettext as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from bitcaster.models import Application, LogEntry
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db.models import QuerySet
+from django.utils.translation import gettext as _
 
+from .base import SecurityMixin
 from ..auth.constants import Grant
 from ..exceptions import InactiveError, LockError
-from ..models import Event, Occurrence, User
+from ..models import Application, Event, LogEntry, Occurrence, User
 from ..utils.filtering import validate_filters, validate_lookups, validate_schema
-from .base import SecurityMixin
 
 if TYPE_CHECKING:
     from rest_framework.request import Request

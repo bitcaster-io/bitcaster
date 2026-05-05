@@ -1,5 +1,6 @@
-import logging
 from typing import Any
+
+import logging
 from urllib.parse import urlsplit, urlunsplit
 
 from django import forms
@@ -10,8 +11,8 @@ from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
+from bitcaster.utils.http import absolute_reverse
 
-from ..utils.http import absolute_reverse
 from .mixins import BitcasterBaseModel, Scoped3Mixin, ScopedManager
 from .user import User
 

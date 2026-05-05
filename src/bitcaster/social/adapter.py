@@ -1,11 +1,13 @@
-import logging
 from typing import Any, cast
+
+import logging
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialApp, SocialLogin
 from constance import config
+
 from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.http import HttpRequest

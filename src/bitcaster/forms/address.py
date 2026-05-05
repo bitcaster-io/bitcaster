@@ -1,5 +1,6 @@
-from django import forms
 from unfold.widgets import UnfoldAdminSelectWidget
+
+from django import forms
 
 from bitcaster.models import Address, Channel
 

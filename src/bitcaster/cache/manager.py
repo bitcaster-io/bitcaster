@@ -1,11 +1,13 @@
+from typing import TYPE_CHECKING, Any
+
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+
+from flags.state import flag_enabled
 
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
-from flags.state import flag_enabled
 
 from ..utils.django import get_cache_prefix
 

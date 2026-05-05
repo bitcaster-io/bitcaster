@@ -1,8 +1,11 @@
 from typing import TYPE_CHECKING, Any, Mapping, Type
+
 from uuid import UUID
 
 import factory
+
 import pytest
+
 from django.core.files.base import ContentFile
 from django.db.models import Model
 

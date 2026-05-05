@@ -1,8 +1,8 @@
+import pytest
+from testutils.factories import AddressFactory, DistributionListFactory
 from unittest.mock import patch
 
-import pytest
 from django.urls import reverse
-from testutils.factories import AddressFactory, DistributionListFactory
 
 from bitcaster.models import Event
 

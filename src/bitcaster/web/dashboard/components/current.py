@@ -1,9 +1,11 @@
-import json
 from typing import Any
+
+import json
+
+from unfold.components import BaseComponent, register_component
 
 from django.db import models
 from django.db.models.functions import TruncHour
-from unfold.components import BaseComponent, register_component
 
 from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Occurrence

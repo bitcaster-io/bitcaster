@@ -1,18 +1,20 @@
+from typing import TYPE_CHECKING, Any
+
 import enum
 import logging
-from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
+from smart_selects.db_fields import ChainedForeignKey
+from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
+from unfold.contrib.forms import widgets as uwidgets
+
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import ForeignKey, TextField
 from django.forms import ModelChoiceField
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
-from smart_selects.db_fields import ChainedForeignKey
-from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
-from unfold.contrib.forms import widgets as uwidgets
 
 from bitcaster.forms.unfold import UnfoldChainedSelect
 from bitcaster.state import state

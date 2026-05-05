@@ -1,6 +1,7 @@
 import logging
 
 import factory
+
 from django.utils import timezone
 
 from bitcaster.models import UserMessage

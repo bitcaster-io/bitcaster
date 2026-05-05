@@ -1,4 +1,5 @@
 import io
+
 from unittest.mock import patch
 
 from bitcaster.cli.__main__ import cli

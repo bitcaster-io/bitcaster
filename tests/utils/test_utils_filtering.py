@@ -1,6 +1,6 @@
+import pytest
 from unittest.mock import patch
 
-import pytest
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 

@@ -1,17 +1,19 @@
-import uuid
 from typing import TYPE_CHECKING, TypedDict
+
+import uuid
+
+import pytest
+from testutils.helpers import assert_message
+from testutils.perms import user_grant_permissions
 from unittest import mock
 from unittest.mock import Mock
 
-import pytest
 from django.contrib import messages
 from django.db import connection
 from django.test.utils import CaptureQueriesContext, override_settings
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
-from testutils.helpers import assert_message
-from testutils.perms import user_grant_permissions
 
 if TYPE_CHECKING:
     from webtest.response import TestResponse

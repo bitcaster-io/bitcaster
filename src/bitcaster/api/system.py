@@ -1,12 +1,14 @@
 from typing import TYPE_CHECKING, Any, cast
 
-from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from ..auth.constants import Grant
+from django.utils.translation import gettext_lazy as _
+
+from bitcaster.auth.constants import Grant
+
 from .base import BaseView
 from .permissions import ApiKeyAuthentication
 

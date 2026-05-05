@@ -1,13 +1,14 @@
 from typing import Any
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
+from jsoneditor.forms import JSONEditor
+
 from django.contrib import admin
 from django.db import models
 from django.db.models.fields import Field
 from django.forms.fields import Field as FormField
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
-from jsoneditor.forms import JSONEditor
 
 from bitcaster.admin.base import BitcasterModelAdmin
 from bitcaster.models import SocialProvider

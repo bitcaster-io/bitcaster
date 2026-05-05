@@ -1,16 +1,19 @@
-import logging
 from typing import TYPE_CHECKING, Any, Generator
+
+import logging
 
 import jmespath
 import yaml
+
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from ..dispatchers.base import Payload
-from ..utils.filtering import FilterManager
+from bitcaster.dispatchers.base import Payload
+from bitcaster.utils.filtering import FilterManager
+
 from .assignment import Assignment
 from .choices import FILTERING, FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 from .distribution import DistributionList

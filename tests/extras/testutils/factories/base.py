@@ -1,8 +1,9 @@
 import typing
 
 import factory
-from django.db.models import Model
 from factory.base import FactoryMetaClass
+
+from django.db.models import Model
 
 TAutoRegisterModelFactory = typing.TypeVar("TAutoRegisterModelFactory")
 

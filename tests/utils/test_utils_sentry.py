@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-import pytest
 from exceptiongroup import suppress
+
+import pytest
 
 from bitcaster.utils.sentry import init_sentry
 

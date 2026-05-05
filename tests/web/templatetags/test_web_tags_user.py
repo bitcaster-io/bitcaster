@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from testutils.factories import UserFactory
+
 from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
-from testutils.factories import UserFactory
 
 from bitcaster.web.templatetags.user import user_date, user_datetime
 

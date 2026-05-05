@@ -1,7 +1,5 @@
 from typing import Any, cast
 
-from django.db.models import QuerySet
-from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import RetrieveAPIView
@@ -9,11 +7,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from bitcaster.api.base import SecurityMixin
-from bitcaster.api.serializers import AddressSerializer, UserMessageSerializer
-from bitcaster.auth.constants import Grant
-from bitcaster.console.utils import get_unseen_message_for_user
-from bitcaster.models import User
+from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
+
+from .base import SecurityMixin
+from .serializers import AddressSerializer, UserMessageSerializer
+from ..auth.constants import Grant
+from ..console.utils import get_unseen_message_for_user
+from ..models import User
 
 
 class UserProfileSerializer(serializers.ModelSerializer[User]):

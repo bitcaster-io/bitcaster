@@ -1,6 +1,7 @@
 import pytest
-from django.urls import reverse
 from testutils.perms import user_grant_permissions
+
+from django.urls import reverse
 
 pytestmark = pytest.mark.django_db
 

@@ -1,10 +1,13 @@
-import os
 from typing import Any, Optional
 
-import pytest
-from django.core.cache import cache
+import os
+
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.fixtures import SettingsWrapper
+
+import pytest
+
+from django.core.cache import cache
 
 from bitcaster.cache.storage import (
     qs_del_cache,

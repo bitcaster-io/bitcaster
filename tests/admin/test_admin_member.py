@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING, TypedDict
 
+from webtest import Upload
+
 import pytest
-from django.urls import reverse
 from testutils.factories import DistributionListFactory
 from testutils.helpers import assert_form_error, assert_message, get_resource
-from webtest import Upload
+
+from django.urls import reverse
 
 from bitcaster.admin.member import JsonUpdateMode2
 from bitcaster.models import Assignment, Channel, DistributionList, Member, Organization, User

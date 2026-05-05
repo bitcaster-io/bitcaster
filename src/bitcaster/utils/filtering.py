@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from jsonschema import ValidationError as SchemaValidationError, validate
+
 from django.core.exceptions import FieldError, ValidationError
 from django.db import models
 from django.db.models import Q
 from django_regex.utils import RegexList
-from jsonschema import ValidationError as SchemaValidationError
-from jsonschema import validate
 
 if TYPE_CHECKING:
     from bitcaster.types.django import QuerySetOrManager

@@ -1,4 +1,5 @@
 from constance.admin import Config
+
 from django.contrib import admin
 
 from bitcaster import models

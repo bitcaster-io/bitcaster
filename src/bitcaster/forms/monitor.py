@@ -1,7 +1,8 @@
 from django import forms
 
-from bitcaster.forms.unfold import UnfoldForm
 from bitcaster.models import Monitor
+
+from .unfold import UnfoldForm
 
 
 class MonitorForm(UnfoldForm, forms.ModelForm["Monitor"]):

@@ -1,12 +1,13 @@
-import logging
 from typing import TYPE_CHECKING
+
+import logging
 
 from django.contrib.admin import SimpleListFilter
 from strategy_field.utils import fqn
 
-from bitcaster.admin.base import BaseAdmin
+from bitcaster.runner.manager import BackgroundManager
 
-from ..runner.manager import BackgroundManager
+from .base import BaseAdmin
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin import ModelAdmin

@@ -1,24 +1,28 @@
 from typing import TYPE_CHECKING, Any, Mapping, Optional
-from unittest.mock import Mock
+
+from admin_extra_buttons.handlers import ButtonHandler, ChoiceHandler
+from pytest_django.fixtures import SettingsWrapper
 
 import pytest
-from admin_extra_buttons.handlers import ButtonHandler, ChoiceHandler
+from testutils.matchers import RegexList
+from unittest.mock import Mock
+
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from pytest_django.fixtures import SettingsWrapper
-from testutils.matchers import RegexList
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
+    from responses import RequestsMock
+
+    from testutils.factories.base import AutoRegisterModelFactory
+
     from django.contrib.admin import ModelAdmin
     from django.db.models.options import Options
     from django_webtest import DjangoTestApp, DjangoWebtestResponse
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from responses import RequestsMock
-    from testutils.factories.base import AutoRegisterModelFactory
 
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]

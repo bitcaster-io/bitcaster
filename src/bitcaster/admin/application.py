@@ -1,22 +1,24 @@
-import logging
 from typing import TYPE_CHECKING, Any, cast
+
+import logging
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.constants import bitcaster
 from bitcaster.forms.application import ApplicationAdvancedConfigForm, ApplicationChangeForm
 from bitcaster.forms.unfold import UnfoldAdminForm
 from bitcaster.models import Application
+from bitcaster.state import state
+from bitcaster.utils.django import url_related
 
-from ..constants import bitcaster
-from ..state import state
-from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
@@ -58,7 +60,7 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
     )
 
     def has_add_permission(self, request: HttpRequest) -> bool:
-        from bitcaster.models import Project
+        from ..models import Project
 
         return cast("bool", super().has_add_permission(request) and Project.objects.local().count() > 0)
 
@@ -79,7 +81,7 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
         return base
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        from bitcaster.models import Project
+        from ..models import Project
 
         initial = super().get_changeform_initial_data(request)
         initial.setdefault("owner", str(request.user.id))

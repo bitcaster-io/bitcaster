@@ -1,5 +1,6 @@
-import abc
 from typing import TYPE_CHECKING, Any, cast
+
+import abc
 
 from django.core.exceptions import ValidationError
 from strategy_field.registry import Registry

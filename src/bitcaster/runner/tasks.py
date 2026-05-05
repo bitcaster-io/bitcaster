@@ -1,17 +1,19 @@
-import logging
 from typing import TYPE_CHECKING, Any, cast
 
+import logging
+
 import dramatiq
-from django.db.models import Q
 from dramatiq.actor import Actor, P, R
+
+from django.db.models import Q
 from strategy_field.utils import fqn
 
 from bitcaster.constants import bitcaster
 
+from .broker import broker
 from ..console.utils import get_users_to_notify, set_user_latest_notify_time
 from ..dispatchers import UserMessageDispatcher
 from ..models import Monitor
-from .broker import broker
 
 if TYPE_CHECKING:
     from ..models.occurrence import OccurrenceOptions

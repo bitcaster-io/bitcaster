@@ -1,15 +1,17 @@
 from constance.admin import Config
-from django import forms
-from django.http import HttpRequest
 from flags.admin import FlagStateAdmin as _FlagStateAdmin
 from flags.forms import FlagStateForm as BaseFlagStateForm
 from flags.models import FlagState
 from flags.state import flag_enabled
 from unfold.contrib.filters.admin import RelatedDropdownFilter
 
-from bitcaster.admin.base import BaseAdmin
+from django import forms
+from django.http import HttpRequest
+
 from bitcaster.forms import unfold as uwidgets
 from bitcaster.models import LogEntry
+
+from .base import BaseAdmin
 
 __all__ = ["Config", "FlagStateAdmin", "FlagState"]
 

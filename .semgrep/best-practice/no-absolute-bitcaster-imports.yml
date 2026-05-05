@@ -1,0 +1,15 @@
+rules:
+  # Forbid relative imports going up more than 2 levels (... or higher = 3+ dots)
+  - id: no-relative-imports-above-2-levels
+    patterns:
+      - pattern-regex: ^from\.{3,}\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*\s+import\s+.+$
+    message: |
+      Avoid relative imports that go up more than 2 levels (... or higher).
+      Use absolute imports for imports exceeding 2 levels up: 'from bitcaster.$MODULE import X'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/setup.py"
+        - "**/migrations/*.py"

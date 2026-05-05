@@ -1,11 +1,13 @@
-from pathlib import Path
 from typing import TYPE_CHECKING
+
+from pathlib import Path
+
+import pytest
+from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
 from unittest import mock
 from unittest.mock import Mock
 
-import pytest
 from django.core.exceptions import ValidationError
-from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
 
 from bitcaster.agents.fs import AgentFileSystem, resolve_path, validate_path
 from bitcaster.models import Event, Monitor

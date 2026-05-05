@@ -1,15 +1,18 @@
+from typing import TYPE_CHECKING, List
+
 import contextlib
 import os
 import sys
 import tempfile
+from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, List
 from uuid import uuid4
 
 import psycopg2
-import pytest
 import responses
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+import pytest
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -191,7 +194,7 @@ def bitcaster(os4d) -> "Application":
 
     from bitcaster.constants import bitcaster
 
-    return ApplicationFactory(
+    return ApplicationFactory.create(
         name=bitcaster.APPLICATION, project__organization=os4d, project__name=bitcaster.PROJECT, slug="bitcaster"
     )
 
@@ -271,8 +274,9 @@ def org_channel(organization):
 
 @pytest.fixture
 def email_channel(db):
-    from strategy_field.utils import fqn
     from testutils.factories.channel import ChannelFactory
+
+    from strategy_field.utils import fqn
 
     from bitcaster.dispatchers import GMailDispatcher
 
@@ -281,8 +285,9 @@ def email_channel(db):
 
 @pytest.fixture
 def sms_channel(db):
-    from strategy_field.utils import fqn
     from testutils.factories.channel import ChannelFactory
+
+    from strategy_field.utils import fqn
 
     from bitcaster.dispatchers import TwilioSMS
 
@@ -305,32 +310,33 @@ def occurrence(db):
 
 @pytest.fixture
 def purgeable_occurrences(db) -> List["Occurrence"]:
-    from datetime import timedelta
-
     from constance import config
-    from django.utils import timezone
+
     from freezegun import freeze_time
     from testutils.factories import OccurrenceFactory
 
+    from django.utils import timezone
+
     with freeze_time(timezone.now() - timedelta(days=config.OCCURRENCE_DEFAULT_RETENTION + 1)):
-        occurrence_default_retention = OccurrenceFactory()
+        occurrence_default_retention = OccurrenceFactory.create()
 
     with freeze_time(timezone.now() - timedelta(days=6)):
-        occurrence_custom_retention = OccurrenceFactory(event__occurrence_retention=5)
+        occurrence_custom_retention = OccurrenceFactory.create(event__occurrence_retention=5)
 
     return [occurrence_default_retention, occurrence_custom_retention]
 
 
 @pytest.fixture
-def non_purgeable_occurrences(db) -> List["Occurrence"]:
+def non_purgeable_occurrences(db) -> list["Occurrence"]:
     from datetime import timedelta
 
-    from django.utils import timezone
     from freezegun import freeze_time
     from testutils.factories import OccurrenceFactory
 
+    from django.utils import timezone
+
     with freeze_time(timezone.now() - timedelta(days=1)):
-        non_purgeable_occurrence = OccurrenceFactory(event__occurrence_retention=5)
+        non_purgeable_occurrence = OccurrenceFactory.create(event__occurrence_retention=5)
 
     return [non_purgeable_occurrence]
 
@@ -358,8 +364,9 @@ def monitor() -> "Monitor":
 
 @pytest.fixture
 def message_template() -> "MessageTemplate":
-    from strategy_field.utils import fqn
     from testutils.factories import ChannelFactory, EventFactory, MessageTemplateFactory
+
+    from strategy_field.utils import fqn
 
     from bitcaster.dispatchers import GMailDispatcher
 

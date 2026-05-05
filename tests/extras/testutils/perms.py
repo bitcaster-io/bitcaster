@@ -1,17 +1,20 @@
+from typing import TYPE_CHECKING, Any, Generator, Iterable, Optional, Union
+
 import contextlib
 from contextlib import ContextDecorator
 from random import choice
-from typing import TYPE_CHECKING, Any, Generator, Iterable, Optional, Union
-from unittest.mock import Mock
 
 from concurrency.api import disable_concurrency
-from django.contrib.auth.models import Permission
 from faker import Faker
+
+from testutils.helpers import set_attr
+from unittest.mock import Mock
+
+from django.contrib.auth.models import Permission
 from strategy_field.utils import get_attr
 
 from bitcaster.auth.constants import Grant
 from bitcaster.state import state
-from testutils.helpers import set_attr
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"

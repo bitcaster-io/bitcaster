@@ -1,15 +1,17 @@
+from typing import TYPE_CHECKING, Any
+
 import logging
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
 
 from concurrency.api import disable_concurrency
+from flags.state import enable_flag
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
-from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.auth.constants import Grant

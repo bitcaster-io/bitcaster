@@ -1,6 +1,5 @@
-from unittest.mock import MagicMock, patch
-
 import pytest
+from unittest.mock import MagicMock, patch
 
 from bitcaster.cli.__main__ import cli
 from bitcaster.runner.broker import ClickMiddleware

@@ -1,7 +1,8 @@
 # Code copied from https://github.com/saxix/django-adminactions - tests/demo/storage.py
 # type: ignore
-import json
 from typing import Any, Optional
+
+import json
 
 from django.conf import settings
 from django.contrib.messages.storage.base import BaseStorage, Message

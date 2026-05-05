@@ -1,5 +1,6 @@
-import json
 from typing import TYPE_CHECKING, Any
+
+import json
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, TextChoices

@@ -1,10 +1,11 @@
+from typing import Any
+
 import imaplib
 import logging
 import re
 from email import policy
 from email.message import EmailMessage, Message
 from email.parser import BytesParser
-from typing import Any
 
 from django import forms
 from django.utils.translation import gettext_lazy as _

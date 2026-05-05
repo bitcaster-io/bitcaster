@@ -1,17 +1,20 @@
 from typing import TYPE_CHECKING
 
-import pytest
-from django.contrib.admin.sites import site
-from django.db.models import Model
-from django.urls import reverse
 from pytest_django.fixtures import SettingsWrapper
+
+import pytest
 from testutils.factories.user import UserFactory
 from testutils.perms import user_grant_permissions
 
+from django.contrib.admin.sites import site
+from django.db.models import Model
+from django.urls import reverse
+
 if TYPE_CHECKING:
+    from responses import RequestsMock
+
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from responses import RequestsMock
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 

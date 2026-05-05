@@ -1,9 +1,11 @@
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
+
 import logging
 from collections.abc import Generator
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 from constance import config
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models.expressions import F
@@ -11,7 +13,8 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from ..constants import SystemEvent, bitcaster
+from bitcaster.constants import SystemEvent, bitcaster
+
 from . import LogEntry
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
@@ -19,12 +22,12 @@ from .mixins import BitcasterBaseModel, BitcasterBaselManager
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from ..types.filtering import QuerysetFilter
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
     from .messagetemplate import MessageTemplate
     from .notification import Notification
+    from ..types.filtering import QuerysetFilter
 
     class OccurrenceData(TypedDict):
         delivered: list[str | int]

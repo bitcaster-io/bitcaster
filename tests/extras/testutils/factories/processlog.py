@@ -1,7 +1,9 @@
-import random
 from typing import Any
 
+import random
+
 import factory
+
 from django.utils import timezone
 
 from bitcaster.models import ProcessLogEntry

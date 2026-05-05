@@ -1,9 +1,11 @@
-import json
 from typing import TYPE_CHECKING, Any, NamedTuple
 
+import json
+
 import factory
-import pytest
 from rest_framework.test import APIClient
+
+import pytest
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant

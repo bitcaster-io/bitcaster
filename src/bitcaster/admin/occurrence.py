@@ -1,11 +1,14 @@
-import logging
 from typing import TYPE_CHECKING, Any, cast
+
+import logging
 
 from admin_extra_buttons.api import confirm_action
 from admin_extra_buttons.buttons import ChoiceButton
 from admin_extra_buttons.decorators import button, choice, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
+from unfold.decorators import display
+
 from django.contrib import messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -13,13 +16,12 @@ from django.template import Context
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from unfold.decorators import display
 
+from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Assignment, Channel, MessageTemplate, Notification, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
+from bitcaster.web.templatetags.bitcaster import recipients
 
-from ..cache.manager import CacheManager
-from ..web.templatetags.bitcaster import recipients
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover

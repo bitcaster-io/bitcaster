@@ -1,9 +1,9 @@
-from unittest.mock import MagicMock, patch
-
 import pytest
-from strategy_field.utils import fqn
 from testutils.agent import XAgent
 from testutils.factories import ChannelFactory, EventFactory, MonitorFactory, OccurrenceFactory
+from unittest.mock import MagicMock, patch
+
+from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import UserMessageDispatcher
 from bitcaster.models import Event, Occurrence, UserMessage

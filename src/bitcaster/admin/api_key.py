@@ -1,9 +1,12 @@
+from typing import TYPE_CHECKING, Any, cast
+
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, cast
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from flags.state import flag_enabled
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import Media
@@ -12,15 +15,15 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from flags.state import flag_enabled
 
-from bitcaster.admin.base import BaseAdmin
-from bitcaster.admin.filters import EnvironmentFilter
 from bitcaster.auth.constants import Grant
 from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
+
+from .base import BaseAdmin
+from .filters import EnvironmentFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _ListOrTuple

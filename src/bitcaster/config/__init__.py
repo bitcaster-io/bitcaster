@@ -1,5 +1,6 @@
-from enum import Enum
 from typing import TYPE_CHECKING, Any, Mapping
+
+from enum import Enum
 from urllib import parse
 
 from environ import Env

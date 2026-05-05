@@ -1,6 +1,5 @@
 from typing import Any
 
-from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import parsers, serializers
 from rest_framework.generics import GenericAPIView, get_object_or_404
@@ -13,9 +12,12 @@ from rest_framework.status import (
     HTTP_409_CONFLICT,
 )
 
-from bitcaster.api.base import SecurityMixin
+from django.utils.translation import gettext_lazy as _
+
 from bitcaster.exceptions import AttachmentsNotSupportedError
 from bitcaster.models import Application, Attachment
+
+from .base import SecurityMixin
 
 
 class AttachmentUploadSerializer(serializers.ModelSerializer[Attachment]):

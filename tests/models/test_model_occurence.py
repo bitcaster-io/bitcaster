@@ -1,11 +1,12 @@
 # mypy: disable-error-code="attr-defined"
-import datetime
 from typing import TYPE_CHECKING, Any, List, TypedDict
-from unittest.mock import Mock
+
+import datetime
 
 import pytest
 from freezegun import freeze_time
 from freezegun.api import FakeDatetime
+from unittest.mock import Mock
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Notification, Occurrence, User

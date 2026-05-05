@@ -1,9 +1,12 @@
-import contextlib
-import logging
 from typing import TYPE_CHECKING
 
-import pytest
+import contextlib
+import logging
+
 from dramatiq import Worker
+
+import pytest
+
 from strategy_field.utils import fqn
 
 from bitcaster.console.utils import get_user_latest_notify_time

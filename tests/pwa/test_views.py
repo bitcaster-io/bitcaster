@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-from django.urls import reverse
-from django.utils import timezone
 from flags.state import enable_flag
+
+import pytest
 from testutils.factories.usermessage import UserMessageFactory
 from testutils.perms import configure_model
+
+from django.urls import reverse
+from django.utils import timezone
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp

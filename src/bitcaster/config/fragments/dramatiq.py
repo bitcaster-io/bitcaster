@@ -1,4 +1,4 @@
-from ..settings import env
+from bitcaster.config.settings import env
 
 DRAMATIQ_BROKER = env("DRAMATIQ_BROKER")
 

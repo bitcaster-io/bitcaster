@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING, TypedDict
+
+from rest_framework.test import APIClient
+
+import pytest
+from testutils.perms import key_grants
 from unittest import mock
 from unittest.mock import MagicMock
 
-import pytest
 from django.test.client import RequestFactory
-from rest_framework.test import APIClient
-from testutils.perms import key_grants
 
 from bitcaster.api.event import EventTrigger
 from bitcaster.api.permissions import ApiApplicationPermission, ApiBasePermission

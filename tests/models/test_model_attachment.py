@@ -1,6 +1,7 @@
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
 from testutils.factories import AttachmentFactory
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 @pytest.fixture

@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING, Any, TypedDict
 
-import pytest
-from django.urls import ResolverMatch, resolve
 from rest_framework import status
 from rest_framework.test import APIClient
+
+import pytest
 from testutils.perms import key_grants
+
+from django.urls import ResolverMatch, resolve
 
 from bitcaster.auth.constants import Grant
 

@@ -1,6 +1,7 @@
 from typing import Any
 
 import freezegun
+
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import UserMessageDispatcher

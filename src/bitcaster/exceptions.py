@@ -1,5 +1,6 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
+
+from datetime import datetime
 
 if TYPE_CHECKING:
     from bitcaster.models.mixins import LockMixin

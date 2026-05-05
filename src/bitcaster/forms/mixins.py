@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-from django import forms
 from unfold import widgets as uwidgets
+
+from django import forms
 
 from bitcaster.constants import bitcaster
 from bitcaster.models import Application, Organization

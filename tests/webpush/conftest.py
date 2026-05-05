@@ -17,8 +17,9 @@ def fcm_url() -> str:
 
 @pytest.fixture
 def push_assignment(fcm_url: str) -> "Assignment":
-    from strategy_field.utils import fqn
     from testutils.factories import AssignmentFactory
+
+    from strategy_field.utils import fqn
 
     from bitcaster.webpush.dispatcher import WebPushDispatcher
 

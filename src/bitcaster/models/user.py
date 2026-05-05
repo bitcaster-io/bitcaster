@@ -1,15 +1,17 @@
-import datetime
-import logging
 from typing import TYPE_CHECKING
 
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import UserManager as BaseUserManager
+import datetime
+import logging
+
+from timezone_field import TimeZoneField
+
+from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.db import models
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
-from timezone_field import TimeZoneField
 
-from ..config import settings
+from bitcaster.config import settings
+
 from .mixins import BitcasterBaseModel, LockMixin
 
 if TYPE_CHECKING:

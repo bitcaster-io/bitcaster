@@ -1,8 +1,9 @@
 from rest_framework import serializers
+
 from strategy_field.utils import fqn
 
-from bitcaster.models import Address, Application, Channel, Event, Project, UserMessage
-from bitcaster.utils.http import absolute_reverse
+from ..models import Address, Application, Channel, Event, Project, UserMessage
+from ..utils.http import absolute_reverse
 
 
 class ChannelSerializer(serializers.ModelSerializer[Channel]):

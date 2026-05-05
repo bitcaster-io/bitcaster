@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
+from testutils.helpers import assert_message
+
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
-from testutils.helpers import assert_message
 
 from bitcaster.constants import AddressType
 

@@ -1,14 +1,16 @@
+from typing import Any
+
 import logging
 from datetime import datetime, timedelta
-from typing import Any
 
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
-from ..config import settings
-from ..dispatchers import UserMessageDispatcher
+from bitcaster.config import settings
+from bitcaster.dispatchers import UserMessageDispatcher
+
 from .choices import get_logging_levels
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager

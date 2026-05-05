@@ -1,6 +1,7 @@
 from typing import Any
 
 import pytest
+
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables

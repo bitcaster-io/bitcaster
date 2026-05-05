@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING, Any, Iterable, Mapping
 
 from concurrency.fields import IntegerVersionField
+from smart_selects.db_fields import ChainedForeignKey
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from smart_selects.db_fields import ChainedForeignKey
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel_co

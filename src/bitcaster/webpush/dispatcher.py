@@ -1,11 +1,13 @@
-import json
-import logging
 from typing import TYPE_CHECKING, Any
 
+import json
+import logging
+
 from cryptography.hazmat.primitives import serialization
+from py_vapid import Vapid02, b64urlencode
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from py_vapid import Vapid02, b64urlencode
 
 from bitcaster.dispatchers.base import (
     Dispatcher,

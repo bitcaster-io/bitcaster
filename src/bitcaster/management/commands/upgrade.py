@@ -1,14 +1,16 @@
+from typing import TYPE_CHECKING, Any
+
 import logging
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+
+from flags.state import enable_flag
 
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
-from flags.state import enable_flag
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster, bitcaster

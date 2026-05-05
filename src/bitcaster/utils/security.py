@@ -1,11 +1,13 @@
-import base64
-from datetime import datetime, timedelta
 from typing import Any
 
+import base64
+from datetime import datetime, timedelta
+
 import constance
+from flags.state import flag_enabled
+
 from django.conf import settings
 from django.core.signing import Signer
-from flags.state import flag_enabled
 
 from bitcaster.exceptions import DecryptionError, KeyExpiredError
 

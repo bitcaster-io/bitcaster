@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+
 from django.urls import reverse
 
 from bitcaster.constants import bitcaster

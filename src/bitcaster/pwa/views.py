@@ -1,6 +1,9 @@
+from typing import Any, cast
+
 import json
 import logging
-from typing import Any, cast
+
+from timezone_field import TimeZoneFormField
 
 from django import forms
 from django.conf import settings
@@ -18,7 +21,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView, TemplateView, UpdateView
-from timezone_field import TimeZoneFormField
 
 from bitcaster.console.views import UserConsoleIndexView
 from bitcaster.models import User, UserMessage

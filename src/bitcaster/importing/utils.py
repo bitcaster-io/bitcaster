@@ -1,6 +1,7 @@
+from typing import Sequence
+
 import shlex
 from ast import literal_eval
-from typing import Sequence
 
 from django.utils.text import slugify
 

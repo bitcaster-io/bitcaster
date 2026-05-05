@@ -1,5 +1,6 @@
-import logging
 from typing import TYPE_CHECKING, Any
+
+import logging
 
 from django import forms
 from django.core.mail import EmailMultiAlternatives
@@ -7,8 +8,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
-from ..exceptions import DispatcherError
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
+from ..exceptions import DispatcherError
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment
