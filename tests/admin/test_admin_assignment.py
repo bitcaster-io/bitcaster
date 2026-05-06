@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Any, TypedDict
+
+import pytest
 from unittest import mock
 from unittest.mock import Mock
 
-import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables

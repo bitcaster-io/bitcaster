@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from django.contrib.admin.models import ADDITION, CHANGE, DELETION
-from django.contrib.admin.models import LogEntry as _LogEntry
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry as _LogEntry
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.constants import bitcaster

@@ -1,9 +1,10 @@
 from typing import Any
 
+from unfold.widgets import UnfoldAdminTextInputWidget
+
 from django import forms
 from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
-from unfold.widgets import UnfoldAdminTextInputWidget
 
 from .models import SocialProvider
 

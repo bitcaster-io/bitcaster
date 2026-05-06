@@ -5,9 +5,10 @@ from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from ..constants import AddressType
-from ..dispatchers.base import MessageProtocol
-from ..utils.address import is_email, is_phonenumber
+from bitcaster.constants import AddressType
+from bitcaster.dispatchers.base import MessageProtocol
+from bitcaster.utils.address import is_email, is_phonenumber
+
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 from .user import User
 

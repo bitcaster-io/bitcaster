@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Generator
 
-import pytest
 from flags.state import disable_flag, enable_flag
 from seleniumbase import config as sb_config
+
+import pytest
 from testutils.selenium import TestBrowser
 
 if TYPE_CHECKING:

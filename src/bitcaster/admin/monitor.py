@@ -1,9 +1,12 @@
-import logging
 from typing import TYPE_CHECKING
+
+import logging
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from reversion.admin import VersionAdmin
+
 from django import forms
 from django.contrib import messages
 from django.contrib.admin.helpers import AdminForm
@@ -12,11 +15,10 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from reversion.admin import VersionAdmin
 
+from bitcaster.forms.monitor import MonitorForm
 from bitcaster.models import Channel, Monitor
 
-from ..forms.monitor import MonitorForm
 from .base import BaseAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 

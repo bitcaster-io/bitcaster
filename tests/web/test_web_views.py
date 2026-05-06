@@ -1,21 +1,22 @@
-from __future__ import annotations
+from typing import TYPE_CHECKING, Any
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
-from unittest import mock
 
 import freezegun
 import pytest
-from django.urls import reverse
 from testutils.factories.attachment import AttachmentFactory
+from unittest import mock
+
+from django.urls import reverse
 
 from bitcaster.utils.security import KeyManager
 from bitcaster.web.templatetags.attachments import attachment as attachment_tag
 
 if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
+
     from django.test import Client
     from django_webtest import DjangoTestApp
-    from pytest_django.fixtures import SettingsWrapper
 
     from bitcaster.models import Occurrence, User
 
@@ -41,7 +42,7 @@ def test_home_mobile(client: "Client") -> None:
     assert response.url == reverse("pwa:index")
 
 
-def test_index_user_no_redirect(django_app: DjangoTestApp, user: "User") -> None:
+def test_index_user_no_redirect(django_app: "DjangoTestApp", user: "User") -> None:
     django_app.set_user(user)
     response = django_app.get(reverse("home"))
     assert response.status_code == 200
@@ -52,7 +53,7 @@ def test_healthcheck(client: "Client") -> None:
     assert client.get("/healthcheck/").status_code == 200
 
 
-def test_login(django_app: DjangoTestApp, user: "User", settings: SettingsWrapper) -> None:
+def test_login(django_app: "DjangoTestApp", user: "User", settings: "SettingsWrapper") -> None:
     settings.FLAGS = {"LOCAL_LOGIN": [("boolean", True)]}
 
     url = reverse("admin:login")
@@ -70,7 +71,7 @@ def test_login(django_app: DjangoTestApp, user: "User", settings: SettingsWrappe
     assert res.status_code == 302
 
 
-def test_logout(django_app: DjangoTestApp, user: "User") -> None:
+def test_logout(django_app: "DjangoTestApp", user: "User") -> None:
     django_app.set_user(user)
     res = django_app.get("/")
     res = res.forms["logout-form"].submit()
@@ -79,7 +80,7 @@ def test_logout(django_app: DjangoTestApp, user: "User") -> None:
 
 @pytest.mark.parametrize("resource,expected", [("/", 404), ("logo.png", 200), ("invalid.txt", 404)])
 def test_media(
-    django_app: DjangoTestApp, user: "User", settings: SettingsWrapper, tmpdir: Any, resource: str, expected: int
+    django_app: "DjangoTestApp", user: "User", settings: "SettingsWrapper", tmpdir: Any, resource: str, expected: int
 ) -> None:
     tmpdir.join("logo.png").write("content")
     settings.MEDIA_ROOT = tmpdir
@@ -91,18 +92,18 @@ def test_media(
 
 
 @pytest.mark.parametrize("expires_at", [pytest.param(None, id="perpetual"), pytest.param(1, id="fixed-time")])
-def test_successful_download(django_app: DjangoTestApp, attachment, expires_at: datetime | None) -> None:
+def test_successful_download(django_app: "DjangoTestApp", attachment, expires_at: datetime | None) -> None:
     url = attachment_tag({"address": "", "event": None}, attachment.correlation_id, 1)
     response = django_app.get(url)
     assert response.status_code == 200
 
 
-def test_bad_response_with_bogus_key(django_app: DjangoTestApp) -> None:
+def test_bad_response_with_bogus_key(django_app: "DjangoTestApp") -> None:
     response = django_app.get(reverse("safe_download", kwargs={"key": "THIS FAILS"}), expect_errors=True)
     assert response.status_code == 400
 
 
-def test_bad_response_with_expired_key(django_app: DjangoTestApp, attachment) -> None:
+def test_bad_response_with_expired_key(django_app: "DjangoTestApp", attachment) -> None:
     with freezegun.freeze_time(datetime(2025, 1, 1)):
         url = attachment_tag({"address": "", "event": None}, attachment.correlation_id, 1)
 
@@ -110,7 +111,7 @@ def test_bad_response_with_expired_key(django_app: DjangoTestApp, attachment) ->
     assert response.status_code == 400
 
 
-def test_attachment_not_found(django_app: DjangoTestApp, attachment_data) -> None:
+def test_attachment_not_found(django_app: "DjangoTestApp", attachment_data) -> None:
     # create an attachment, but don't save it...
     # ... so we can generate a valid key with it...
     key = KeyManager().generate_key(None, correlation_id=attachment_data.correlation_id)
@@ -120,7 +121,7 @@ def test_attachment_not_found(django_app: DjangoTestApp, attachment_data) -> Non
     assert response.status_code == 404
 
 
-def test_recipients_view(django_app: DjangoTestApp, occurrence: "Occurrence") -> None:
+def test_recipients_view(django_app: "DjangoTestApp", occurrence: "Occurrence") -> None:
     key = KeyManager().generate_key(None, occurrence=occurrence.pk)
     url = reverse("recipients", kwargs={"token": key})
     response = django_app.get(url)

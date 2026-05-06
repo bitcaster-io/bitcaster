@@ -1,6 +1,7 @@
 from typing import Any
 
 import pytest
+
 from strategy_field.utils import fqn, get_attr
 
 from bitcaster.dispatchers import GMailDispatcher

@@ -2,9 +2,9 @@ from typing import Any
 
 from django import forms
 
-from bitcaster.forms.mixins import Scoped2FormMixin
 from bitcaster.models import Channel, Organization
 
+from .mixins import Scoped2FormMixin
 from .unfold import UnfoldAdminSelect2Widget
 
 

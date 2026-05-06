@@ -1,13 +1,14 @@
-import logging
 from typing import TYPE_CHECKING
+
+import logging
 
 from rest_framework import authentication, permissions
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from bitcaster.auth.constants import Grant
-from bitcaster.exceptions import InvalidGrantError
-from bitcaster.models import ApiKey, User
+from ..auth.constants import Grant
+from ..exceptions import InvalidGrantError
+from ..models import ApiKey, User
 
 logger = logging.getLogger(__name__)
 

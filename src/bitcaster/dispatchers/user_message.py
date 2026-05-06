@@ -1,15 +1,17 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
+import logging
+
 from constance import config
+from unfold.widgets import UnfoldAdminSelect2Widget
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
-from unfold.widgets import UnfoldAdminSelect2Widget
 
+from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 from ..models.choices import FILTERING_EXTERNAL
 from ..utils.shortcuts import render_message
-from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
     from ..models import Assignment, User

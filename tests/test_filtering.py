@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+
 from django.core.exceptions import ValidationError
 
 from bitcaster.models import User

@@ -1,10 +1,12 @@
 from typing import Any
+
+from twilio.base.exceptions import TwilioRestException
+
+import pytest
 from unittest import mock
 from unittest.mock import Mock
 
-import pytest
 from strategy_field.utils import fqn
-from twilio.base.exceptions import TwilioRestException
 
 from bitcaster.dispatchers.base import Payload
 from bitcaster.dispatchers.twilio import TwilioSMS

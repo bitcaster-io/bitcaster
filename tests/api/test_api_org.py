@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 import factory
-import pytest
 from rest_framework.test import APIClient
-from strategy_field.utils import fqn
+
+import pytest
 from testutils.perms import key_grants
+
+from strategy_field.utils import fqn
 
 from bitcaster.auth.constants import Grant
 

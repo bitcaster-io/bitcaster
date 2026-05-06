@@ -1,0 +1,77 @@
+rules:
+  - id: use-modern-union-syntax
+    patterns:
+      - pattern-either:
+          - pattern: Union[$X, $Y]
+          - pattern: Union[$X, $Y, ...]
+    message: |
+      Use 'X | Y' syntax instead of Union[X, Y] (available in Python 3.10+).
+      Replace 'Union[X, Y]' with 'X | Y'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/tests/**/*.py"
+
+  - id: use-modern-optional-syntax
+    patterns:
+      - pattern: Optional[$X]
+    message: |
+      Use 'X | None' syntax instead of Optional[X] (available in Python 3.10+).
+      Replace 'Optional[X]' with 'X | None'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/tests/**/*.py"
+
+  - id: use-builtin-list-type
+    patterns:
+      - pattern: List[$X]
+    message: |
+      Use 'list[X]' instead of 'List[X]' (available in Python 3.9+).
+      Replace 'List[X]' with 'list[X]'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/tests/**/*.py"
+
+  - id: use-builtin-dict-type
+    patterns:
+      - pattern: Dict[$K, $V]
+    message: |
+      Use 'dict[K, V]' instead of 'Dict[K, V]' (available in Python 3.9+).
+      Replace 'Dict[K, V]' with 'dict[K, V]'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/tests/**/*.py"
+
+  - id: use-builtin-tuple-type
+    patterns:
+      - pattern: Tuple[$X, ...]
+    message: |
+      Use 'tuple[X, ...]' instead of 'Tuple[X, ...]' (available in Python 3.9+).
+      Replace 'Tuple[X, ...]' with 'tuple[X, ...]'.
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "**/tests/**/*.py"
+
+  - id: use-builtin-type-type
+    patterns:
+      - pattern: Type[$X]
+    message: |
+      Use 'type[X]' instead of 'Type[X]' (available in Python 3.9+).
+      Replace 'Type[X]' with 'type[X]'.
+    severity: WARNING
+    languages:
+      - python

@@ -1,12 +1,15 @@
-import uuid
 from typing import Any, cast
+
+import uuid
 
 import factory
 from factory import Sequence
+
+from testutils.dispatcher import XDispatcher
+
 from strategy_field.utils import fqn
 
 from bitcaster.models import Channel
-from testutils.dispatcher import XDispatcher
 
 from .base import AutoRegisterModelFactory
 from .org import OrganizationFactory, ProjectFactory

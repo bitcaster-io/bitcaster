@@ -1,6 +1,7 @@
 from typing import Any
 
 import factory
+
 from django.utils import timezone
 
 from bitcaster.models import Occurrence

@@ -1,4 +1,5 @@
 import markdown
+
 import pytest
 
 from bitcaster.utils.markdown import BitcasterDocSiteExtension

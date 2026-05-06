@@ -1,4 +1,5 @@
 import factory
+
 from django.contrib.admin.models import LogEntry as DjangoLogEntry
 
 from bitcaster.models import LogEntry

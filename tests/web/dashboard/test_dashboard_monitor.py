@@ -1,8 +1,8 @@
+import pytest
+from testutils.perms import user_grant_permissions
 from unittest import mock
 
-import pytest
 from django.urls import reverse
-from testutils.perms import user_grant_permissions
 
 pytestmark = pytest.mark.django_db
 

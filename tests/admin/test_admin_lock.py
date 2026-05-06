@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Iterable
 
 import pytest
+
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -12,11 +13,13 @@ from django_webtest import DjangoTestApp
 from bitcaster.models.mixins import LockMixin
 
 if TYPE_CHECKING:
-    from django.db.models.options import Options
-    from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from pytest_django.fixtures import SettingsWrapper
     from responses import RequestsMock
+
     from testutils.factories.base import AutoRegisterModelFactory
+
+    from django.db.models.options import Options
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]

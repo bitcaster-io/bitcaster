@@ -1,17 +1,19 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
+import logging
+
 from admin_extra_buttons.decorators import button, view
+
 from django import forms
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.constants import bitcaster
 from bitcaster.models import Channel, Group, Organization
+from bitcaster.state import state
+from bitcaster.utils.django import url_related
 
-from ..constants import bitcaster
-from ..state import state
-from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover

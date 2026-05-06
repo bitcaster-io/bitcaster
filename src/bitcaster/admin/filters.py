@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from adminactions.utils import flatten
+
 from django.contrib.admin.filters import SimpleListFilter
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _

@@ -1,13 +1,16 @@
+from typing import TYPE_CHECKING
+
 import os
 import random
 from io import StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING
-from unittest import mock
+
+from responses import RequestsMock
 
 import pytest
+from unittest import mock
+
 from django.core.management import CommandError, call_command
-from responses import RequestsMock
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper

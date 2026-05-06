@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 import pytest
+
 from django.urls import reverse
 
 if TYPE_CHECKING:

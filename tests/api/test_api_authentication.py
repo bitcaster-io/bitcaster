@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, TypedDict, cast
-from unittest.mock import MagicMock
 
-import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
+
+import pytest
+from unittest.mock import MagicMock
 
 from bitcaster.api.event import EventList
 from bitcaster.api.permissions import ApiKeyAuthentication

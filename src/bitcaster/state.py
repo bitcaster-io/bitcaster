@@ -1,15 +1,16 @@
+from typing import TYPE_CHECKING, Any, Iterator, Mapping
+
 import contextlib
 import json
 from copy import copy
 from threading import local
-from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
     from django.http import HttpRequest, HttpResponse
 
-    from bitcaster.types.django import JsonType
+    from .types.django import JsonType
 
 not_set = object()
 

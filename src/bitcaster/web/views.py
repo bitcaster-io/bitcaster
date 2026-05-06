@@ -1,7 +1,10 @@
+from typing import Any
+
 import mimetypes
 import posixpath
 from pathlib import Path
-from typing import Any
+
+from unfold.sites import UnfoldAdminSite
 
 from django.conf import settings
 from django.contrib.auth.views import LogoutView as BaseLogoutView
@@ -21,7 +24,6 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateView
 from django.views.static import directory_index, was_modified_since
-from unfold.sites import UnfoldAdminSite
 
 from bitcaster.exceptions import DecryptionError, KeyExpiredError
 from bitcaster.models import Attachment, Occurrence

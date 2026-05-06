@@ -1,5 +1,6 @@
-from django.apps import AppConfig
 from flags.conditions.registry import _conditions
+
+from django.apps import AppConfig
 
 
 class Config(AppConfig):

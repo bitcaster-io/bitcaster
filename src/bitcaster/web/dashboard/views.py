@@ -1,5 +1,8 @@
-from datetime import datetime
 from typing import Any
+
+from datetime import datetime
+
+from unfold.views import UnfoldModelAdminViewMixin
 
 from django import forms
 from django.apps import apps
@@ -9,7 +12,6 @@ from django.db.models import Model, QuerySet
 from django.forms import HiddenInput
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
-from unfold.views import UnfoldModelAdminViewMixin
 
 from bitcaster.cache.manager import CacheManager
 from bitcaster.constants import bitcaster

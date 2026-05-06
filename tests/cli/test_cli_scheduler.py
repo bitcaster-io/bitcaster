@@ -1,12 +1,14 @@
-import datetime
 from typing import TYPE_CHECKING
-from unittest import mock
-from unittest.mock import MagicMock, patch
+
+import datetime
+
+from apscheduler.schedulers.base import STATE_RUNNING, STATE_STOPPED
 
 import pytest
-from apscheduler.schedulers.base import STATE_RUNNING, STATE_STOPPED
 from freezegun import freeze_time
 from testutils.perms import configure_model
+from unittest import mock
+from unittest.mock import MagicMock, patch
 
 from bitcaster.cache.manager import epoch
 from bitcaster.cli.__main__ import cli

@@ -1,11 +1,14 @@
-import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
 
-import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
+import uuid
+
 from rest_framework import status
 from rest_framework.test import APIClient
+
+import pytest
 from testutils.perms import key_grants
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from bitcaster.models import Attachment
 

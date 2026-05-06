@@ -1,7 +1,9 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
+import logging
+
 import requests
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
 

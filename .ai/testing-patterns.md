@@ -32,6 +32,11 @@ def user() -> "User":
     return UserFactory.create()
 ```
 
+## Test Configuration
+- **Pytest markers:** `selenium`, `api`, `admin`, `skip_models`, `dispatcher`, `wizard`, `smoke`
+- **DB reuse:** pytest runs with `--reuse-db`; tox uses `--create-db` for CI
+- **Coverage:** 100% patch coverage enforced via `diff-cover` — run `tox -e tests` which includes this check
+
 ## Best Practices
 - **Importing:** Avoid importing Django models or Factories at the module level in test files to prevent premature Django initialisation. Import them inside the fixture function or use `if TYPE_CHECKING`.
 - **Customisation:** Use the `configure_model` context manager for minor object adjustments within a test instead of creating multiple similar fixtures.

@@ -1,10 +1,12 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
+import logging
+
 import requests
+from requests import Response
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from requests import Response
 
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 

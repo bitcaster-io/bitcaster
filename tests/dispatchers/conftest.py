@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, Any
+
 from urllib.parse import parse_qsl
 
 import pytest

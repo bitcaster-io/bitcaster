@@ -1,8 +1,9 @@
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 
-from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.media import MediaFileForm
 from bitcaster.models import MediaFile
+
+from .base import BaseAdmin
 
 
 class MediaFileAdmin(BaseAdmin[MediaFile]):

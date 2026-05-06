@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from django.db.migrations.serializer import BaseSerializer
 from rest_framework import views
 from rest_framework.authentication import (
     BaseAuthentication,
@@ -11,15 +10,18 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..exceptions import InvalidGrantError
-from .permissions import ApiApplicationPermission, ApiKeyAuthentication
-from .throttling import SlidingWindowThrottle
+from django.db.migrations.serializer import BaseSerializer
+
+from bitcaster.api.permissions import ApiApplicationPermission, ApiKeyAuthentication
+from bitcaster.api.throttling import SlidingWindowThrottle
+from bitcaster.exceptions import InvalidGrantError
 
 if TYPE_CHECKING:
-    from django.utils.datastructures import _ListOrTuple
     from rest_framework.permissions import BasePermission
 
-    from ..auth.constants import Grant
+    from django.utils.datastructures import _ListOrTuple
+
+    from bitcaster.auth.constants import Grant
 
 
 class SecurityMixin(APIView):

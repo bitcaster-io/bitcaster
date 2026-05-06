@@ -1,20 +1,22 @@
-import logging
 from typing import TYPE_CHECKING, Any, cast
+
+import logging
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.forms import TypedChoiceField
 from django.urls import URLPattern, path, reverse
 from django.utils.translation import gettext_lazy as _
-from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
+from bitcaster.constants import bitcaster
 from bitcaster.forms.unfold import UnfoldAdminSelect2Widget
+from bitcaster.models import User
+from bitcaster.utils.django import admin_toggle_bool_action
 from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
 
-from ..constants import bitcaster
-from ..models import User
-from ..utils.django import admin_toggle_bool_action
 from .base import BaseAdmin
 
 if TYPE_CHECKING:

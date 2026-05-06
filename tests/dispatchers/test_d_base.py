@@ -1,6 +1,6 @@
+import pytest
 from unittest.mock import Mock, patch
 
-import pytest
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers.base import Dispatcher, dispatcherManager

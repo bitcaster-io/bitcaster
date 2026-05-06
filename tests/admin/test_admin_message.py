@@ -1,8 +1,10 @@
-import json
 from typing import TYPE_CHECKING, Any
-from unittest import mock
+
+import json
 
 import pytest
+from unittest import mock
+
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from strategy_field.utils import fqn
@@ -11,10 +13,11 @@ from bitcaster.forms.message import MessageTemplateChangeForm, MessageTemplateCr
 from bitcaster.models.protocols import CreateMessage
 
 if TYPE_CHECKING:
+    from responses import RequestsMock
+
     from django.db.models.options import Options
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from responses import RequestsMock
 
     from bitcaster.models import Channel, MessageTemplate
 

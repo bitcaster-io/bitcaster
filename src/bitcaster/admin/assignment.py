@@ -1,15 +1,18 @@
-import logging
 from typing import TYPE_CHECKING, Any, TypeVar
+
+import logging
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+
 from django.contrib import messages
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
-from bitcaster.admin.base import BaseAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.models import Address, Assignment
+
+from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.forms import ModelForm

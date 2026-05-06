@@ -1,6 +1,7 @@
 from typing import Any
 
 import factory
+
 from django.contrib.auth.models import Group, Permission
 
 from .base import AutoRegisterModelFactory

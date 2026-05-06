@@ -1,9 +1,6 @@
 from datetime import timedelta
 
 import pytest
-from django.contrib.admin.sites import site as admin_site
-from django.utils import timezone
-from strategy_field.utils import fqn
 from testutils.factories import (
     AddressFactory,
     AssignmentFactory,
@@ -12,6 +9,10 @@ from testutils.factories import (
     NotificationFactory,
     UserMessageFactory,
 )
+
+from django.contrib.admin.sites import site as admin_site
+from django.utils import timezone
+from strategy_field.utils import fqn
 
 from bitcaster.admin.filters import AddressByList, AddressByNotification, UserMessageExpiredFilter
 from bitcaster.dispatchers import UserMessageDispatcher

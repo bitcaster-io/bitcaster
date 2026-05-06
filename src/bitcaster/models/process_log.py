@@ -9,8 +9,9 @@ from strategy_field.utils import fqn
 from bitcaster.utils.json import safe_dumps
 
 if TYPE_CHECKING:
-    from django.utils.functional import _StrPromise
     from dramatiq import Actor
+
+    from django.utils.functional import _StrPromise
 
 
 def mask_secrets(data: Any) -> Any:

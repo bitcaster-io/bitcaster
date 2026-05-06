@@ -1,8 +1,10 @@
-import os
 from typing import TYPE_CHECKING
-from unittest import mock
+
+import os
 
 import pytest
+from unittest import mock
+
 from django.test.client import RequestFactory
 
 from bitcaster.state import state

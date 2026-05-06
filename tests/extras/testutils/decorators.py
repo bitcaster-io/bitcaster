@@ -1,7 +1,8 @@
 import os
 
-import pytest
 from _pytest.mark.structures import MarkDecorator
+
+import pytest
 
 
 def requires_env(*envs: str) -> MarkDecorator:

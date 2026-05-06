@@ -1,17 +1,18 @@
 from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
+from jsoneditor.forms import JSONEditor
+
 from django import forms
 from django.db.models import Field, Model
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from jsoneditor.forms import JSONEditor
 
+from bitcaster.forms.task import TaskAddForm, TaskForm
 from bitcaster.models import LogEntry, Task
 
-from ..forms.task import TaskAddForm, TaskForm
 from .base import BaseAdmin, UnfoldModelAdmin
 
 if TYPE_CHECKING:

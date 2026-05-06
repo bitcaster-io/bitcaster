@@ -1,1 +1,7 @@
-exclude_dirs: ['tests',]
+exclude_dirs: ['tests', '.venv', '.tox', 'node_modules']
+number: 3
+severity-level: HIGH
+confidence-level: HIGH
+debug: false
+silent: true
+quiet: true

@@ -1,7 +1,8 @@
 from datetime import date
-from unittest import mock
 
 import pytest
+from unittest import mock
+
 from django.test import RequestFactory
 
 from bitcaster.models import Occurrence

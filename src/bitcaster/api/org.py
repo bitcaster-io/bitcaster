@@ -1,8 +1,5 @@
 from typing import Any
 
-from django.db.models import QuerySet
-from django.urls import reverse
-from django.utils.translation import gettext as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import RetrieveAPIView
@@ -10,11 +7,15 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from bitcaster.api.base import SecurityMixin
-from bitcaster.auth.constants import Grant
-from bitcaster.constants import bitcaster
-from bitcaster.models import Organization
-from bitcaster.utils.http import absolute_uri
+from django.db.models import QuerySet
+from django.urls import reverse
+from django.utils.translation import gettext as _
+
+from .base import SecurityMixin
+from ..auth.constants import Grant
+from ..constants import bitcaster
+from ..models import Organization
+from ..utils.http import absolute_uri
 
 
 class OrgSerializer(serializers.ModelSerializer[Organization]):

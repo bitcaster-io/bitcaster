@@ -1,5 +1,6 @@
-from django.urls import path
 from rest_framework_extensions.routers import ExtendedDefaultRouter
+
+from django.urls import path
 
 from .application import ApplicationView
 from .attachments import AttachmentView

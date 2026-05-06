@@ -1,9 +1,10 @@
 from pathlib import Path
-from unittest import mock
-from unittest.mock import Mock, patch
+
+from pytest_localftpserver.servers import PytestLocalFTPServer
 
 import pytest
-from pytest_localftpserver.servers import PytestLocalFTPServer
+from unittest import mock
+from unittest.mock import Mock, patch
 
 from bitcaster.agents.ftp import AgentFTP
 from bitcaster.models import Event, Monitor
@@ -76,6 +77,7 @@ def test_agent_ftp_check_with_tls(agent: AgentFTP, server: PytestLocalFTPServer)
 
 def test_agent_ftp_tls_fallback_to_plain(agent: AgentFTP, server: PytestLocalFTPServer) -> None:
     import ftplib
+
     from unittest.mock import Mock
 
     from bitcaster.agents.ftp import AgentFTPConfig

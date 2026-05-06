@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-import pytest
 from rest_framework.test import APIClient
+
+import pytest
 
 if TYPE_CHECKING:
     from bitcaster.models import User

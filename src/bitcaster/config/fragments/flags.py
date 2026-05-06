@@ -1,4 +1,4 @@
-from ..settings import DEBUG
+from bitcaster.config.settings import DEBUG
 
 FLAGS_STATE_LOGGING = DEBUG
 FLAGS = {

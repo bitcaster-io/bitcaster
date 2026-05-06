@@ -1,14 +1,15 @@
 from typing import TYPE_CHECKING, TypedDict
 
-import pytest
 from constance.test.pytest import override_config
-from django import template
+
+import pytest
 from testutils.factories.attachment import AttachmentFactory
 from testutils.factories.event import EventFactory
 from testutils.factories.org import ApplicationFactory
 
-from bitcaster.web.templatetags.attachments import UnrelatedEventError
-from bitcaster.web.templatetags.attachments import attachment as attachment_tag
+from django import template
+
+from bitcaster.web.templatetags.attachments import UnrelatedEventError, attachment as attachment_tag
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Attachment, Event

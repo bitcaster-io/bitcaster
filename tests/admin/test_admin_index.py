@@ -1,18 +1,21 @@
 from typing import TYPE_CHECKING, Any
 
+from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
+
 import pytest
+from testutils.factories.user import SuperUserFactory
+
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
-from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
-from testutils.factories.user import SuperUserFactory
 
 from bitcaster.state import state
 
 if TYPE_CHECKING:
+    from responses import RequestsMock
+
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from responses import RequestsMock
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 

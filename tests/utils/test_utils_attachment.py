@@ -1,11 +1,14 @@
-from datetime import datetime
 from typing import Callable
+
+from datetime import datetime
+
+from constance.test.pytest import override_config
 
 import freezegun
 import pytest
-from constance.test.pytest import override_config
-from django.core.files.uploadedfile import SimpleUploadedFile
 from testutils.factories import AttachmentFactory
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from bitcaster.exceptions import DecryptionError, KeyExpiredError
 from bitcaster.models.attachment import Attachment

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers.log import LocalDatabaseDispatcher

@@ -1,6 +1,7 @@
+from typing import TYPE_CHECKING, Any
+
 import json
 import logging
-from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.conf import settings

@@ -1,7 +1,8 @@
 import pytest
+from testutils.factories import SuperUserFactory
+
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
-from testutils.factories import SuperUserFactory
 
 from bitcaster.models import Application, Channel
 

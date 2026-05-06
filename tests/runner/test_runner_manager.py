@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
-from unittest import mock
 
 import dramatiq
-import pytest
 from dramatiq import Message, MessageProxy
+
+import pytest
+from unittest import mock
 
 from bitcaster.runner.tasks import SmartActor
 
@@ -132,7 +133,7 @@ def test_manager_get_queue_sizes(manager: "BackgroundManager", message):
 
 @pytest.mark.xdist_group(name="runner")
 def test_get_queue_sizes_unknown_key_type(manager: "BackgroundManager", broker):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test_unknown_type():
         pass
 
@@ -145,7 +146,7 @@ def test_get_queue_sizes_unknown_key_type(manager: "BackgroundManager", broker):
 
 @pytest.mark.xdist_group(name="runner")
 def test_get_queued_items_list_type(manager: "BackgroundManager", broker):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test_list_items():
         pass
 
@@ -157,7 +158,7 @@ def test_get_queued_items_list_type(manager: "BackgroundManager", broker):
 
 @pytest.mark.xdist_group(name="runner")
 def test_get_queued_items_no_key(manager: "BackgroundManager", broker):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test_no_key():
         pass
 

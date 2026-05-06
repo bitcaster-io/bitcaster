@@ -1,5 +1,6 @@
-import sys
 from typing import TYPE_CHECKING
+
+import sys
 
 from django_regex.utils import RegexList
 

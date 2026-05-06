@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from django.core.files.base import ContentFile
 
 from bitcaster.forms.media import MediaFileForm

@@ -2,8 +2,9 @@ from typing import Any
 
 from django import forms
 
-from bitcaster.forms import unfold
 from bitcaster.models import Address, Assignment
+
+from . import unfold
 
 
 class AssignmentForm(forms.ModelForm["Assignment"]):

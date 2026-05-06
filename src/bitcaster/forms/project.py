@@ -1,7 +1,8 @@
 from django import forms
 
-from bitcaster.forms import unfold
 from bitcaster.models import Project
+
+from . import unfold
 
 
 class ProjectBaseForm(forms.ModelForm["Project"]):

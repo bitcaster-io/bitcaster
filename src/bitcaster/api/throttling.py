@@ -1,11 +1,13 @@
-import time
-import uuid
 from typing import Any
 
-from django.core.cache import cache, caches
+import time
+import uuid
+
 from rest_framework.request import Request
 from rest_framework.throttling import BaseThrottle
 from rest_framework.views import APIView
+
+from django.core.cache import cache, caches
 
 # Rate limiting with Sliding Window using LUA for atomicity
 LUA_SLIDING_WINDOW = """

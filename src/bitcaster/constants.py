@@ -1,14 +1,17 @@
+from typing import TYPE_CHECKING, Any, cast
+
 import enum
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, cast
 
 from constance import config
+
 from django.db import models
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Event, Group, Occurrence, Organization, User
-    from bitcaster.models.occurrence import OccurrenceOptions
+    from .models import Application, Event, Group, Occurrence, Organization, User
+    from .models.occurrence import OccurrenceOptions
+
 
 logger = logging.getLogger(__name__)
 

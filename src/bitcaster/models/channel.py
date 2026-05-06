@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Any, Iterable
 
+from smart_selects.db_fields import ChainedForeignKey
+
 from django.db import models
 from django.db.models import Q
 from django.db.models.base import ModelBase
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from smart_selects.db_fields import ChainedForeignKey
 from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers.base import Dispatcher, MessageProtocol, dispatcherManager

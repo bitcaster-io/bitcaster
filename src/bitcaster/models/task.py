@@ -1,9 +1,11 @@
+from typing import Any
+
 import uuid
 from collections.abc import Iterable
-from typing import Any
 
 from apscheduler.triggers.cron import CronTrigger
 from cron_descriptor import Options
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import JSONField

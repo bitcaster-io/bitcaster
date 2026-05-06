@@ -1,7 +1,9 @@
-import os
 from typing import TYPE_CHECKING, Any
 
+import os
+
 import pytest
+
 from strategy_field.utils import fqn
 
 if TYPE_CHECKING:

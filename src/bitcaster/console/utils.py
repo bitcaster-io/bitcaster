@@ -1,5 +1,6 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
+
+from datetime import datetime
 
 from django.db.models import Max
 

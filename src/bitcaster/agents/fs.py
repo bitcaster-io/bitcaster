@@ -1,6 +1,7 @@
+from typing import Any
+
 from functools import cached_property
 from pathlib import Path
-from typing import Any
 
 from django import forms
 from django.conf import settings

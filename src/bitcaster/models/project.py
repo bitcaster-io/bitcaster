@@ -1,11 +1,13 @@
-import logging
 from typing import TYPE_CHECKING, Any
+
+import logging
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ..constants import bitcaster
+from bitcaster.constants import bitcaster
+
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
 from .organization import Organization
 from .user import User

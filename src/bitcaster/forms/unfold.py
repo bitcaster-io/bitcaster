@@ -1,7 +1,5 @@
 from typing import Any
 
-from django import forms
-from django.db.models import Model
 from smart_selects.widgets import ChainedSelect
 from unfold import widgets
 from unfold.forms import AdminForm
@@ -15,7 +13,10 @@ from unfold.widgets import (
     UnfoldBooleanSwitchWidget,
 )
 
-from bitcaster.dispatchers.base import DispatcherConfig
+from django import forms
+from django.db.models import Model
+
+from ..dispatchers.base import DispatcherConfig
 
 __all__ = [
     "UnfoldAdminTextInputWidget",

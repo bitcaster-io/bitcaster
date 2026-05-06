@@ -1,16 +1,16 @@
-import logging
 from typing import Any
+
+import logging
 
 from django.conf import settings
 from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from bitcaster import models
-from bitcaster.constants import AddressType
-from bitcaster.dispatchers import UserMessageDispatcher
-from bitcaster.models import Address, Assignment, Channel, Organization, Project
-from bitcaster.state import state
+from . import models
+from .constants import AddressType
+from .dispatchers import UserMessageDispatcher
+from .state import state
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ def save_last_choices(sender: Any, instance: Any, **kwargs: Any) -> None:
 
 @receiver(user_logged_in, sender=models.User)
 def on_login(sender: Any, user: models.User, **kwargs: Any) -> None:
-    if not state.get_cookie("organization") and (org := Organization.objects.local().first()):
+    if not state.get_cookie("organization") and (org := models.Organization.objects.local().first()):
         state.add_cookie("organization", org.pk)
-    if not state.get_cookie("project") and (prj := Project.objects.local().first()):
+    if not state.get_cookie("project") and (prj := models.Project.objects.local().first()):
         state.add_cookie("project", prj.pk)
 
 
@@ -47,10 +47,10 @@ def auto_set_superusers(sender: Any, instance: models.User, created: bool = Fals
 @receiver(post_save, sender=models.User)
 def auto_assign_to_messages(sender: Any, instance: models.User, created: bool = False, **kwargs: Any) -> None:
     if created and instance.email:
-        for channel in Channel.objects.filter(dispatcher=UserMessageDispatcher):
-            address, __ = Address.objects.get_or_create(
+        for channel in models.Channel.objects.filter(dispatcher=UserMessageDispatcher):
+            address, __ = models.Address.objects.get_or_create(
                 user=instance, value=instance.email, defaults={"name": "Email", "type": AddressType.EMAIL}
             )
-            Assignment.objects.get_or_create(
+            models.Assignment.objects.get_or_create(
                 channel=channel, address=address, validated=True, defaults={"active": True}
             )

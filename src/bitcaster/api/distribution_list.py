@@ -1,8 +1,7 @@
-import json
 from typing import Any
 
-from django.db.models import QuerySet
-from django.utils.translation import gettext_lazy as _
+import json
+
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
@@ -11,10 +10,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from bitcaster.api.base import SecurityMixin
-from bitcaster.auth.constants import Grant
-from bitcaster.models import Assignment, DistributionList, Project
-from bitcaster.utils.http import absolute_reverse
+from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
+
+from .base import SecurityMixin
+from ..auth.constants import Grant
+from ..models import Assignment, DistributionList, Project
+from ..utils.http import absolute_reverse
 
 
 class DistributionAddSerializer(serializers.Serializer[DistributionList]):

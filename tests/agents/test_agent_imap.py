@@ -1,8 +1,8 @@
 from email.message import EmailMessage
 from email.mime.text import MIMEText
-from unittest.mock import MagicMock, patch
 
 import pytest
+from unittest.mock import MagicMock, patch
 
 from bitcaster.agents.imap import AgentImap
 from bitcaster.models import Event, Monitor

@@ -2,8 +2,8 @@ import logging
 
 import click
 
-from bitcaster.cli.utils import configure_logging
-from bitcaster.runner.manager import BackgroundManager
+from .utils import configure_logging
+from ..runner.manager import BackgroundManager
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +13,8 @@ LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(log_color)s%(message)s%(reset
 def runit(args: list[str], log_level, comp_log_level, **extra) -> None:
     from dramatiq.cli import make_argument_parser
 
-    from bitcaster.cli.utils import configure_logging
-    from bitcaster.runner.config import dramatiq
+    from .utils import configure_logging
+    from ..runner.config import dramatiq
 
     click.echo(" ".join(args))
     try:

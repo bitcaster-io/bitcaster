@@ -1,14 +1,16 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
+import logging
+
 from anymail.backends.mailjet import EmailBackend as MailjetBackend
-from django import forms
-from django.utils.translation import gettext_lazy as _
 from mailjet_rest import Client
 
-from ..exceptions import DispatcherError
+from django import forms
+from django.utils.translation import gettext_lazy as _
+
 from .base import DispatcherConfig, Payload
 from .email import BaseEmailDispatcher
+from ..exceptions import DispatcherError
 
 if TYPE_CHECKING:
     from requests import Response

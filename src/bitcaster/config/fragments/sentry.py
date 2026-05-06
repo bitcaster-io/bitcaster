@@ -1,5 +1,5 @@
-from ...utils.sentry import init_sentry
-from ..settings import env
+from bitcaster.config.settings import env
+from bitcaster.utils.sentry import init_sentry
 
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_URL = env("SENTRY_URL")

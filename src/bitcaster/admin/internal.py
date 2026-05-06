@@ -1,10 +1,12 @@
 import logging
 
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from ..models.internal import LogMessage
+from bitcaster.models.internal import LogMessage
+
 from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)

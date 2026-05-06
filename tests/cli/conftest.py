@@ -1,8 +1,9 @@
 import dramatiq
-import pytest
 from click.testing import CliRunner
 from dramatiq import Worker
 from dramatiq.brokers.stub import StubBroker
+
+import pytest
 
 
 @pytest.fixture

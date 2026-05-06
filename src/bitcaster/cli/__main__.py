@@ -1,8 +1,10 @@
-import logging.config
-import os
 from typing import TYPE_CHECKING
 
+import logging.config
+import os
+
 import click
+
 import django
 from django.conf import settings
 

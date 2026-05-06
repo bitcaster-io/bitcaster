@@ -1,11 +1,13 @@
-import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
-from unittest import mock
 
-import pytest
+import uuid
+
 from rest_framework import status
 from rest_framework.test import APIClient
+
+import pytest
 from testutils.perms import configure_event, configure_model, key_grants, lock
+from unittest import mock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent

@@ -1,12 +1,14 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
 if TYPE_CHECKING:
-    from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from webtest.response import TestResponse
+
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
     from bitcaster.models import SocialProvider, User
 

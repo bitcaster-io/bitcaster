@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING, Any
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ..constants import bitcaster
-from ..utils.http import absolute_reverse
+from bitcaster.constants import bitcaster
+from bitcaster.utils.http import absolute_reverse
+
 from .application import Application
 from .channel import Channel
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin

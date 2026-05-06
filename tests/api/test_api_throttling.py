@@ -1,7 +1,5 @@
 import uuid
-from unittest.mock import MagicMock
 
-import pytest
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -9,6 +7,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
+
+import pytest
+from unittest.mock import MagicMock
 
 from bitcaster.api.throttling import SlidingWindowThrottle
 

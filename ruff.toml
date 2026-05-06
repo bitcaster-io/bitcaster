@@ -2,8 +2,28 @@ target-version = "py312"
 line-length = 120
 exclude = [".semgrep"]
 
+[lint.isort.sections]
+testing = ["pytest", "factory_boy", "freezegun", "pyfakefs", "unittest", "testutils"]
+django = ["django", "django_*", "strategy_field"]
+typing = ["typing"]
+
 [lint.isort]
 case-sensitive = true
+combine-as-imports = true
+order-by-type = true
+relative-imports-order = "closest-to-furthest"
+known-first-party = ["bitcaster"]
+section-order = [
+    "future",
+    "typing",
+    "standard-library",
+    "third-party",
+    "testing",
+    "django",
+    "first-party",
+    "local-folder"
+]
+
 
 [lint]
 select = [

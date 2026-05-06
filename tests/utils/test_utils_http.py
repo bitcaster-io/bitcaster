@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Generator
-from unittest import mock
 
 import pytest
+from unittest import mock
 
 from bitcaster.state import state
 from bitcaster.utils.http import (
@@ -13,9 +13,10 @@ from bitcaster.utils.http import (
 )
 
 if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
+
     from django.http import HttpRequest
     from django.test.client import RequestFactory
-    from pytest_django.fixtures import SettingsWrapper
 
 
 @pytest.fixture(autouse=True)

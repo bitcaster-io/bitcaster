@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Any, TypedDict
-from unittest.mock import Mock
+
+from pytest_django import DjangoAssertNumQueries
 
 import pytest
-from pytest_django import DjangoAssertNumQueries
+from unittest.mock import Mock
 
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 

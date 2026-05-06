@@ -1,15 +1,17 @@
-import os
-from pathlib import Path
 from typing import Any
 
+import os
+from pathlib import Path
+
 import sentry_sdk
+from sentry_sdk.utils import BadDsn
+
 from django.apps import AppConfig
 from django.conf import settings
 from django.core import checks
 from django.utils.module_loading import import_string
-from sentry_sdk.utils import BadDsn
 
-from bitcaster.config import env
+from .config import env
 
 E001 = checks.Error(
     "'%s' is not a valid function fully qualified name" % env("AGENT_FILESYSTEM_VALIDATOR"),
@@ -42,7 +44,7 @@ W002 = checks.Warning(
 
 @checks.register("config")
 def check_sentry(app_configs: AppConfig, **kwargs: Any) -> list[checks.CheckMessage]:
-    from bitcaster.config.fragments.sentry import init_sentry
+    from .config.fragments.sentry import init_sentry
 
     if settings.SENTRY_DSN:
         try:

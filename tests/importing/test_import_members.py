@@ -1,9 +1,10 @@
 from typing import Any
-from unittest import mock
 
 import pytest
-from django.core.files import File
 from testutils.helpers import get_resource
+from unittest import mock
+
+from django.core.files import File
 
 from bitcaster.constants import bitcaster
 from bitcaster.importing.members import import_members_csv, process_csv_line

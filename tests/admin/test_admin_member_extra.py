@@ -1,10 +1,4 @@
-from unittest.mock import MagicMock, patch
-
 import pytest
-from django import forms
-from django.contrib.admin import AdminSite
-from django.test import RequestFactory
-from django.urls import reverse
 from testutils.factories import (
     AddressFactory,
     AssignmentFactory,
@@ -12,6 +6,12 @@ from testutils.factories import (
     DistributionListFactory,
     MemberFactory,
 )
+from unittest.mock import MagicMock, patch
+
+from django import forms
+from django.contrib.admin import AdminSite
+from django.test import RequestFactory
+from django.urls import reverse
 
 from bitcaster.admin.member import (
     AddressInline,

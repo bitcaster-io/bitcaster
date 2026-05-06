@@ -1,12 +1,15 @@
-import logging
 from typing import TYPE_CHECKING, Any
 
-from django.contrib.admin.filters import ChoicesFieldListFilter
-from django.utils.translation import gettext as _
+import logging
+
 from unfold.contrib.filters.admin import AutocompleteSelectFilter
 from unfold.decorators import display
 
-from ..models import UserMessage
+from django.contrib.admin.filters import ChoicesFieldListFilter
+from django.utils.translation import gettext as _
+
+from bitcaster.models import UserMessage
+
 from .base import BaseAdmin
 from .filters import UserMessageExpiredFilter
 

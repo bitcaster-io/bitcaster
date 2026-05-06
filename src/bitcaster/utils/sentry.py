@@ -1,6 +1,7 @@
 import sentry_sdk
-from django.conf import settings
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from django.conf import settings
 
 
 def init_sentry(raise_exception: bool = False) -> bool:

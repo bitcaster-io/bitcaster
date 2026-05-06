@@ -1,6 +1,7 @@
-from django.conf import settings
 from dramatiq.brokers.redis import RedisBroker
 from dramatiq.middleware import CurrentMessage, Retries, ShutdownNotifications
+
+from django.conf import settings
 
 from .middlewares import ClickMiddleware, DbConnectionsMiddleware, WorkerHeartbeatMiddleware
 

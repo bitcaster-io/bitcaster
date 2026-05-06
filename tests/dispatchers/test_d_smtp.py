@@ -1,7 +1,7 @@
 import os
-from unittest.mock import ANY, Mock, patch
 
 import pytest
+from unittest.mock import ANY, Mock, patch
 
 from bitcaster.dispatchers.base import Payload
 from bitcaster.exceptions import DispatcherError

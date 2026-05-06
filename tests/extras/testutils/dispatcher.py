@@ -1,5 +1,6 @@
-import json
 from typing import TYPE_CHECKING, Any, Optional
+
+import json
 
 from django.core.cache import cache
 

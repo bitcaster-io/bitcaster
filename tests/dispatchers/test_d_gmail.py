@@ -1,8 +1,10 @@
-import os
 from typing import TYPE_CHECKING
-from unittest.mock import ANY, Mock, patch
+
+import os
 
 import pytest
+from unittest.mock import ANY, Mock, patch
+
 from django.core.exceptions import ValidationError
 
 from bitcaster.dispatchers import GMailDispatcher

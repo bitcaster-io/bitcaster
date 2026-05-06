@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
-from unittest.mock import Mock
+
+from responses import RequestsMock
 
 import pytest
+from unittest.mock import Mock
+
 from django.core.exceptions import ValidationError
-from responses import RequestsMock
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import MailJetDispatcher

@@ -1,13 +1,16 @@
-import os
 from typing import TYPE_CHECKING, Any, Generator
-from unittest.mock import Mock
+
+import os
+
+from constance.test.unittest import override_config
 
 import pytest
-from constance.test.unittest import override_config
+from testutils.helpers import assert_form_error
+from unittest.mock import Mock
+
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from strategy_field.utils import fqn
-from testutils.helpers import assert_form_error
 
 from bitcaster.dispatchers import UserMessageDispatcher
 from bitcaster.models.choices import FILTERING_EXTERNAL

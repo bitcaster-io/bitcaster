@@ -1,11 +1,13 @@
+from typing import TYPE_CHECKING
+
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
-from unittest import mock
-from unittest.mock import Mock
+
+from requests import HTTPError
 
 import pytest
-from requests import HTTPError
+from unittest import mock
+from unittest.mock import Mock
 
 from bitcaster.checks import (
     E002,

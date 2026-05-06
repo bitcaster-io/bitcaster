@@ -1,9 +1,12 @@
-import logging
 from typing import TYPE_CHECKING, Any, TypeVar, cast
+
+import logging
 
 from admin_extra_buttons.decorators import view
 from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from unfold.admin import TabularInline
+
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.db.models import QuerySet
@@ -12,12 +15,11 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from unfold.admin import TabularInline
 
-from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm, AssignToChannelForm
 from bitcaster.models import Address, Assignment, DistributionList, Notification
 
+from .base import BaseAdmin
 from .filters import AddressByList, AddressByNotification
 
 logger = logging.getLogger(__name__)

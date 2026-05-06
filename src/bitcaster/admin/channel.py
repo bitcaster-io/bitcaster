@@ -1,10 +1,12 @@
-import logging
 from typing import TYPE_CHECKING
+
+import logging
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
+
 from django import forms
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -13,11 +15,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.dispatchers.base import Payload
+from bitcaster.forms.channel import ChannelChangeForm
 from bitcaster.forms.unfold import UnfoldAdminForm
 from bitcaster.models import Assignment, Channel, User
 
-from ..dispatchers.base import Payload
-from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
 from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
@@ -25,7 +27,7 @@ from .mixins import LockMixinAdmin, TwoStepCreateMixin
 if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
-    from bitcaster.types.http import AuthHttpRequest
+    from ..types.http import AuthHttpRequest
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +108,7 @@ class ChannelAdmin(TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], BaseAdm
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
     def test(self, request: "AuthHttpRequest", pk: str) -> HttpResponse:
-        from bitcaster.models import Event
+        from ..models import Event
 
         ch: Channel = self.get_object_or_404(request, pk)
         user: User = request.user

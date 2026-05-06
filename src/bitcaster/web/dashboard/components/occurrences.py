@@ -1,10 +1,12 @@
+from typing import Any
+
 import json
 from datetime import timedelta
-from typing import Any
+
+from unfold.components import BaseComponent, register_component
 
 from django.db import models
 from django.db.models.functions import TruncDay
-from unfold.components import BaseComponent, register_component
 
 from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Occurrence

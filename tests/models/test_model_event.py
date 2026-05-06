@@ -1,5 +1,6 @@
-import uuid
 from typing import TYPE_CHECKING
+
+import uuid
 
 import pytest
 

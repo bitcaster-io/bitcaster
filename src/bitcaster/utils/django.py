@@ -1,5 +1,6 @@
-import urllib
 from typing import TYPE_CHECKING, Any
+
+import urllib
 
 from django.conf import settings
 from django.db.models import F, Model, QuerySet

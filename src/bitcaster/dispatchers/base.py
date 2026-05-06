@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING, Any, cast
+
 import abc
 import enum
 import logging
-from typing import TYPE_CHECKING, Any, Optional, cast
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -59,7 +60,7 @@ class Payload:
     subject: str | None = None
     html_message: str | None = None
     event: "Event"
-    user: Optional["User"] = None
+    user: "User | None" = None
 
     def __init__(
         self,

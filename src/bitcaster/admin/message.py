@@ -1,15 +1,26 @@
+from typing import TYPE_CHECKING, Any, TypeVar
+
 import logging
-from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from reversion.admin import VersionAdmin
+
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from reversion.admin import VersionAdmin
 
+from bitcaster.dispatchers.base import Dispatcher, Payload
+from bitcaster.forms.message import (
+    MessageTemplateChangeForm,
+    MessageTemplateCloneForm,
+    MessageTemplateCreationForm,
+    MessageTemplateEditForm,
+    MessageTemplateRenderForm,
+)
+from bitcaster.forms.unfold import UnfoldAdminForm
 from bitcaster.models import (
     Application,
     DistributionList,
@@ -19,18 +30,9 @@ from bitcaster.models import (
     Organization,
     Project,
 )
+from bitcaster.utils.shortcuts import render_message
+from bitcaster.web.templatetags.markdown import md
 
-from ..dispatchers.base import Dispatcher, Payload
-from ..forms.message import (
-    MessageTemplateChangeForm,
-    MessageTemplateCloneForm,
-    MessageTemplateCreationForm,
-    MessageTemplateEditForm,
-    MessageTemplateRenderForm,
-)
-from ..forms.unfold import UnfoldAdminForm
-from ..utils.shortcuts import render_message
-from ..web.templatetags.markdown import md
 from .base import BaseAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
@@ -116,7 +118,7 @@ class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTem
     def get_form(
         self,
         request: HttpRequest,
-        obj: Optional["MessageTemplate"] = None,
+        obj: "MessageTemplate | None" = None,
         change: bool = False,
         **kwargs: dict[str, Any],
     ) -> "type[forms.ModelForm[_MessageTemplateT]]":

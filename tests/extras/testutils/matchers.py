@@ -1,7 +1,9 @@
-import re
 from typing import TYPE_CHECKING
 
+import re
+
 import pytest
+
 from django_regex.utils import RegexList as _RegexList
 
 if TYPE_CHECKING:

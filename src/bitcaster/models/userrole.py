@@ -1,5 +1,6 @@
-import logging
 from typing import Any
+
+import logging
 
 from django.contrib.auth.models import Group
 from django.db import models

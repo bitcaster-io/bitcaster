@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
 from django.urls import reverse

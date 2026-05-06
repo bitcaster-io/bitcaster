@@ -1,13 +1,14 @@
-from collections.abc import Iterable
 from typing import override
+
+from collections.abc import Iterable
 from uuid import uuid4
 
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster.models.application import Application
-from bitcaster.models.mixins import BitcasterBaseModel
+from .application import Application
+from .mixins import BitcasterBaseModel
 
 
 class Attachment(BitcasterBaseModel):
