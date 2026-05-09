@@ -18,6 +18,7 @@
   - Twelve Factor
   - SOLID: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
   - DRY: Don't Repeat Yourself
+- **Testing: ** Every new feature needs a test before it gets merged.
 
 ## Linting & Format
 - **Ruff:** `ruff.toml` — line-length 120, double quotes, custom isort sections (django, testing)
