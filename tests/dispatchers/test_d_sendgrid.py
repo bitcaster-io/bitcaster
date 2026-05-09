@@ -42,6 +42,37 @@ def test_sendgrid_with_custom_from(mail_payload: Payload) -> None:
         assert result is True
 
 
+def test_sendgrid_send_with_html(mail_payload: Payload) -> None:
+    from bitcaster.models import Channel, Project
+
+    mail_payload.html_message = "<h1>Hello</h1>"
+    with patch("anymail.backends.sendgrid.EmailBackend.send_messages") as mock_send:
+        ch = Channel(
+            project=Project(from_email="sender@example.com", subject_prefix="[sendgrid] "),
+            dispatcher=fqn(SendGridDispatcher),
+            config={"api_key": "test-api-key"},
+        )
+        result = SendGridDispatcher(ch).send("recipient@example.com", mail_payload)
+        assert result is True
+        mock_send.assert_called_once()
+
+
+def test_sendgrid_backend_as_string(mail_payload: Payload) -> None:
+    from bitcaster.models import Channel, Project
+
+    with patch("anymail.backends.sendgrid.EmailBackend.send_messages") as mock_send:
+        ch = Channel(
+            project=Project(from_email="sender@example.com", subject_prefix="[sendgrid] "),
+            dispatcher=fqn(SendGridDispatcher),
+            config={"api_key": "test-api-key"},
+        )
+        dispatcher = SendGridDispatcher(ch)
+        dispatcher.backend = "anymail.backends.sendgrid.EmailBackend"
+        result = dispatcher.send("recipient@example.com", mail_payload)
+        assert result is True
+        mock_send.assert_called_once()
+
+
 def test_sendgrid_error(mail_payload: Payload) -> None:
     from bitcaster.models import Channel, Project
 
