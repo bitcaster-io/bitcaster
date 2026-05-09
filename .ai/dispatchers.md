@@ -15,8 +15,14 @@ This guide covers the creation and configuration of new Dispatchers (SMS, Webhoo
 ### 1. Dispatcher Class Structure
 ```python
 from typing import Any
-from .base import Dispatcher, MessageProtocol, Payload
+from django import forms
+from .base import Dispatcher, MessageProtocol, Payload, DispatcherConfig
 from ..exceptions import DispatcherError
+
+
+class MyDispatcherConfig(DispatcherConfig):
+    key = forms.CharField()
+
 
 class MyDispatcher(Dispatcher):
     slug = "my-dispatcher"
