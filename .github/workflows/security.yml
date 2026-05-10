@@ -40,6 +40,19 @@ jobs:
           token: ${{ github.token }}
           filters: .github/file-filters.yml
 
+  pip-audit:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - run: uv run pip-audit -l
+
   bandit:
     needs: changes
     runs-on: ubuntu-latest
