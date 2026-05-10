@@ -9,6 +9,7 @@ from .sys import SystemDispatcher
 from .teams import TeamsDispatcher
 from .twilio import TwilioSMS
 from .user_message import UserMessageDispatcher
+from .x import XDispatcher
 
 __all__ = [
     "LocalDatabaseDispatcher",
@@ -22,4 +23,5 @@ __all__ = [
     "TeamsDispatcher",
     "TwilioSMS",
     "UserMessageDispatcher",
+    "XDispatcher",
 ]
