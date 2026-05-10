@@ -7,8 +7,6 @@ from pytest_django.fixtures import SettingsWrapper
 
 import pytest
 
-from django.core.cache import cache
-
 from bitcaster.cache.storage import (
     qs_del_cache,
     qs_from_cache,
@@ -24,7 +22,6 @@ def data(settings: SettingsWrapper) -> None:
 
     settings.FLAGS = {"DISABLE_CACHE": [("boolean", False)]}
 
-    cache.clear()
     OccurrenceFactory()
 
 
@@ -48,6 +45,7 @@ def test_store_to_cache(data: Any, django_assert_num_queries: DjangoAssertNumQue
     qs = Occurrence.objects.all()
     if key:
         key = f"{key}-{os.environ.get('PYTEST_XDIST_WORKER', '')}"
+    qs_del_cache(qs, key=key)
     with django_assert_num_queries(2):
         ret = qs_to_cache(qs, key=key)
     assert ret == list(qs.values())
@@ -58,6 +56,7 @@ def test_get_from_cache(data: Any, django_assert_num_queries: DjangoAssertNumQue
     if key:
         key = f"{key}-{os.environ.get('PYTEST_XDIST_WORKER', '')}"
     qs = Occurrence.objects.all()
+    qs_del_cache(qs, key=key)
     qs_to_cache(qs, key=key)
     with django_assert_num_queries(1):
         assert qs_from_cache(qs, key=key)
@@ -68,6 +67,7 @@ def test_qs_get_or_store(data: Any, django_assert_num_queries: DjangoAssertNumQu
     if key:
         key = f"{key}-{os.environ.get('PYTEST_XDIST_WORKER', '')}"
     qs = Occurrence.objects.filter()[:1]
+    qs_del_cache(qs, key=key)
     with django_assert_num_queries(3):
         assert qs_get_or_store(qs, key=key)
 
@@ -80,6 +80,7 @@ def test_qs_delete(data: Any, django_assert_num_queries: DjangoAssertNumQueries,
     if key:
         key = f"{key}-{os.environ.get('PYTEST_XDIST_WORKER', '')}"
     qs = Occurrence.objects.filter()[:1]
+    qs_del_cache(qs, key=key)
     qs_to_cache(qs, key=key)
     with django_assert_num_queries(0):
         assert qs_del_cache(qs, key=key)
