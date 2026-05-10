@@ -40,6 +40,16 @@ jobs:
           token: ${{ github.token }}
           filters: .github/file-filters.yml
 
+  pip-audit:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: pypa/gh-action-pip-audit@v1.1.0
+
   bandit:
     needs: changes
     runs-on: ubuntu-latest

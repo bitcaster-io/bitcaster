@@ -263,6 +263,7 @@ dependencies = [
     { name = "oauthlib" },
     { name = "phonenumbers" },
     { name = "pillow" },
+    { name = "pip" },
     { name = "premailer" },
     { name = "psycopg2-binary" },
     { name = "py-vapid" },
@@ -370,8 +371,8 @@ requires-dist = [
     { name = "colorlog", specifier = ">=6.10.1" },
     { name = "cron-descriptor", specifier = ">=2.0.6" },
     { name = "cryptography", specifier = ">=46.0.7" },
-    { name = "django", specifier = ">=5.2.12,<6" },
-    { name = "django-ace", specifier = ">=1.43.3" },
+    { name = "django", specifier = ">=5.2.14,<6" },
+    { name = "django-ace", specifier = ">=1.43.5" },
     { name = "django-admin-extra-buttons", specifier = ">=2.1.1" },
     { name = "django-adminactions", specifier = ">=2.3" },
     { name = "django-adminfilters", specifier = ">=2.6" },
@@ -385,7 +386,7 @@ requires-dist = [
     { name = "django-filter", specifier = ">=24.2" },
     { name = "django-flags", specifier = ">=5.0.13" },
     { name = "django-jsoneditor", specifier = ">=0.2.4" },
-    { name = "django-markdownify", specifier = ">=0.9.5" },
+    { name = "django-markdownify", specifier = ">=0.9.6" },
     { name = "django-migration-linter", specifier = ">=5.2" },
     { name = "django-online-issues", extras = ["github"], specifier = ">=0.6" },
     { name = "django-push-notifications", specifier = ">=3.1" },
@@ -401,7 +402,7 @@ requires-dist = [
     { name = "django-taggit", specifier = ">=5.0.1" },
     { name = "django-tailwind", specifier = ">=4.4.2" },
     { name = "django-timezone-field", specifier = ">=6.1" },
-    { name = "django-tinymce", specifier = ">=4" },
+    { name = "django-tinymce", specifier = ">=5" },
     { name = "django-unfold", specifier = ">=0.72" },
     { name = "djangorestframework", specifier = ">=3.15" },
     { name = "dramatiq", specifier = ">=2" },
@@ -411,12 +412,13 @@ requires-dist = [
     { name = "httpagentparser", specifier = ">=1.9.5" },
     { name = "jmespath", specifier = ">=1.0.1" },
     { name = "jsonschema", specifier = ">=4.24" },
-    { name = "lxml", specifier = ">=6.1.0" },
+    { name = "lxml", specifier = ">=6.1" },
     { name = "mailjet-rest", specifier = ">=1.3.4" },
     { name = "msgpack", specifier = ">=1.1.2" },
     { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
     { name = "pillow", specifier = ">=12.2" },
+    { name = "pip", specifier = ">=26.1" },
     { name = "premailer", specifier = ">=3.10" },
     { name = "psycopg2-binary", specifier = ">=2.9.9" },
     { name = "py-vapid", specifier = ">=1.9" },
@@ -470,8 +472,8 @@ dev = [
     { name = "pytest-repeat", specifier = ">=0.9.3" },
     { name = "pytest-socket", specifier = ">=0.7" },
     { name = "pytest-testmon", specifier = ">=2.1.1" },
-    { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.6.1" },
-    { name = "pyupgrade", specifier = ">=3.15.1" },
+    { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.8.0" },
+    { name = "pyupgrade", specifier = ">=3.21.2" },
     { name = "responses", specifier = ">=0.25" },
     { name = "ruff", specifier = ">=0.11.13" },
     { name = "selenium", specifier = ">=4.18.1" },
@@ -970,16 +972,16 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "5.2.13"
+version = "5.2.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/c5/c69e338eb2959f641045802e5ea87ca4bf5ac90c5fd08953ca10742fad51/django-5.2.13.tar.gz", hash = "sha256:a31589db5188d074c63f0945c3888fad104627dfcc236fb2b97f71f89da33bc4", size = 10890368, upload-time = "2026-04-07T14:02:15.072Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/95/95f7faa0950867afaa0bef2460c6263afd6a2c78cc9434046ed28160b015/django-5.2.14.tar.gz", hash = "sha256:58a63ba841662e5c686b57ba1fec52ddd68c0b93bd96ac3029d55728f00bf8a2", size = 10895118, upload-time = "2026-05-05T13:57:31.104Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/b1/51ab36b2eefcf8cdb9338c7188668a157e29e30306bfc98a379704c9e10d/django-5.2.13-py3-none-any.whl", hash = "sha256:5788fce61da23788a8ce6f02583765ab060d396720924789f97fa42119d37f7a", size = 8310982, upload-time = "2026-04-07T14:02:08.883Z" },
+    { url = "https://files.pythonhosted.org/packages/14/44/f172870cf87aa25afef48fb72adba89ee8b77fcab6f3b23d240b923f1528/django-5.2.14-py3-none-any.whl", hash = "sha256:6f712143bd3064310d1f50fac859c3e9a274bdcfc9595339853be7779297fc76", size = 8311320, upload-time = "2026-05-05T13:57:25.795Z" },
 ]
 
 [[package]]
@@ -2862,11 +2864,11 @@ wheels = [
 
 [[package]]
 name = "pip"
-version = "26.0.1"
+version = "26.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/48/83/0d7d4e9efe3344b8e2fe25d93be44f64b65364d3c8d7bc6dc90198d5422e/pip-26.0.1.tar.gz", hash = "sha256:c4037d8a277c89b320abe636d59f91e6d0922d08a05b60e85e53b296613346d8", size = 1812747, upload-time = "2026-02-05T02:20:18.702Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/48/cb9b7a682f6fe01a4221e1728941dd4ac3cd9090a17db3779d6ff490b602/pip-26.1.1.tar.gz", hash = "sha256:d36762751d156a4ee895de8af39aa0abeeeb577f93a2eca6ab62467bbf0f8a78", size = 1840400, upload-time = "2026-05-04T19:02:21.248Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/f0/c81e05b613866b76d2d1066490adf1a3dbc4ee9d9c839961c3fc8a6997af/pip-26.0.1-py3-none-any.whl", hash = "sha256:bdb1b08f4274833d62c1aa29e20907365a2ceb950410df15fc9521bad440122b", size = 1787723, upload-time = "2026-02-05T02:20:16.416Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl", hash = "sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb", size = 1812777, upload-time = "2026-05-04T19:02:18.9Z" },
 ]
 
 [[package]]
