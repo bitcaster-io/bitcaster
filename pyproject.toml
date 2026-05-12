@@ -133,7 +133,7 @@ dev = [
   "responses>=0.25",
   "ruff>=0.11.13",
   "selenium>=4.18.1",
-  "seleniumbase>=4.38.3",
+  "seleniumbase>=4.48.4",
   "tox",
 ]
 docs = [
