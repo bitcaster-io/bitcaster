@@ -44,15 +44,4 @@ class WriteOnlyFieldMixin(forms.ModelForm[Model]):
 class SocialProviderForm(WriteOnlyFieldMixin, forms.ModelForm["SocialProvider"]):
     class Meta:
         model = SocialProvider
-        fields = ["label", "provider", "enabled", "client_id", "secret", "key", "configuration"]
-
-    def clean(self) -> Any:
-        cleaned_data = super().clean()
-        provider = cleaned_data.get("provider")
-        qs = SocialProvider.objects.filter(provider=provider)
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise forms.ValidationError({"provider": _("A configuration for this provider already exists.")})
-
-        return cleaned_data
+        fields = ["label", "slug", "provider", "enabled", "client_id", "secret", "key", "configuration"]

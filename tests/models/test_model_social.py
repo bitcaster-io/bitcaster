@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from bitcaster.social.models import Provider, SocialProvider
+from bitcaster.social.models import SocialProvider
 
 
 @pytest.fixture
@@ -10,9 +10,9 @@ def data(db: Any) -> "list[SocialProvider]":
     from testutils.factories.social import SocialProviderFactory
 
     return [
-        SocialProviderFactory.create(provider=Provider.GITHUB),
-        SocialProviderFactory.create(provider=Provider.GOOGLE),
-        SocialProviderFactory.create(provider=Provider.MICROSOFT),
+        SocialProviderFactory.create(provider="github", slug="github"),
+        SocialProviderFactory.create(provider="google", slug="google"),
+        SocialProviderFactory.create(provider="microsoft", slug="microsoft"),
     ]
 
 

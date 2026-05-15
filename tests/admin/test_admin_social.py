@@ -27,9 +27,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
 def context() -> "Context":
     from testutils.factories import SocialProviderFactory
 
-    from bitcaster.social.models import Provider
-
-    provider = SocialProviderFactory.create(provider=Provider.GOOGLE)
+    provider = SocialProviderFactory.create(provider="google", slug="google")
     return {"provider": provider}
 
 
@@ -39,6 +37,7 @@ def test_add(app: DjangoTestApp) -> None:
     frm = res.forms["socialprovider_form"]
 
     frm["label"] = "Google"
+    frm["slug"] = "google-slug"
     frm["provider"] = "google"
     res = frm.submit()
     assert res.status_code == 302
@@ -57,11 +56,13 @@ def test_validate_unique(app: DjangoTestApp) -> None:
     url = reverse("admin:social_socialprovider_add")
     res: "TestResponse" = app.get(url)
     res.forms["socialprovider_form"]["label"] = "Google"
+    res.forms["socialprovider_form"]["slug"] = "google-slug"
     res.forms["socialprovider_form"]["provider"] = "google"
     res = res.forms["socialprovider_form"].submit()
     assert res.status_code == 302
     res: "TestResponse" = app.get(url)
     res.forms["socialprovider_form"]["label"] = "Google"
+    res.forms["socialprovider_form"]["slug"] = "google-slug"
     res.forms["socialprovider_form"]["provider"] = "google"
     res = res.forms["socialprovider_form"].submit()
     assert res.status_code == 200
@@ -74,6 +75,7 @@ def test_write_only_widgets(app: DjangoTestApp) -> None:
     res: "TestResponse" = app.get(url)
     frm = res.forms["socialprovider_form"]
     frm["label"] = "Google"
+    frm["slug"] = "google-slug"
     frm["provider"] = "google"
     frm["secret"] = "123"
     res = frm.submit()

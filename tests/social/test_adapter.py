@@ -203,6 +203,44 @@ class TestBitcasterSocialAccountAdapter:
             adapter.get_app(request_mock, "nonexistent")
             mock_super.assert_called_once()
 
+    def test_get_app_with_client_id_disambiguates(self, adapter, request_mock):
+        SocialProvider.objects.create(
+            provider="openid_connect", slug="first", label="First", client_id="first-client", enabled=True
+        )
+        SocialProvider.objects.create(
+            provider="openid_connect", slug="second", label="Second", client_id="second-client", enabled=True
+        )
+        app = adapter.get_app(request_mock, "openid_connect", client_id="first-client")
+        assert app.client_id == "first-client"
+        assert app.provider == "openid_connect"
+
+    def test_get_allowed_emails_caching(self, adapter, request_mock):
+        from django.core.cache import cache
+
+        key = "bitcaster:social:allowed_emails"
+        cache.delete(key)
+        try:
+            with patch("bitcaster.social.adapter.config") as mock_config:
+                mock_config.SOCIAL_AUTH_ACCEPTED_USERS = "first@example.com, second@example.com"
+                result = adapter.get_allowed_emails()
+                assert len(result) == 2
+            with patch("bitcaster.social.adapter.config") as mock_config:
+                mock_config.SOCIAL_AUTH_ACCEPTED_USERS = "other@example.com"
+                result = adapter.get_allowed_emails()
+                assert len(result) == 2
+        finally:
+            cache.delete(key)
+
+    def test_get_app_raises_on_ambiguous_provider(self, adapter, request_mock):
+        SocialProvider.objects.create(
+            provider="openid_connect", slug="first", label="First", client_id="first-client", enabled=True
+        )
+        SocialProvider.objects.create(
+            provider="openid_connect", slug="second", label="Second", client_id="second-client", enabled=True
+        )
+        with pytest.raises(SocialProvider.MultipleObjectsReturned):
+            adapter.get_app(request_mock, "openid_connect")
+
 
 @pytest.mark.django_db
 class TestBitcasterAccountAdapter:
