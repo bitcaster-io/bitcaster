@@ -15,17 +15,11 @@ def get_provider_choices() -> "list[tuple[str, _StrPromise]]":
 
 class SocialProviderManager(models.Manager["SocialProvider"]):
     def as_choices(self) -> list[tuple[str, str]]:
-        return [(obj.slug, obj.label) for obj in self.filter(enabled=True)]
+        return [(str(obj.pk), obj.label) for obj in self.filter(enabled=True)]
 
 
 class SocialProvider(models.Model):
     label = models.CharField(verbose_name=_("label"), max_length=50, unique=True, help_text=_("Label"))
-    slug = models.SlugField(
-        verbose_name=_("Slug"),
-        max_length=50,
-        unique=True,
-        help_text=_("Unique identifier used in login URLs"),
-    )
     provider = models.CharField(
         verbose_name=_("provider"),
         max_length=30,

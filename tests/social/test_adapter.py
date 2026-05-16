@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.models import SocialAccount, SocialLogin
 
@@ -7,9 +9,7 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth.models import Group
 
 from bitcaster.constants import AddressType
-from bitcaster.models import Address, User
 from bitcaster.social.adapter import BitcasterAccountAdapter, BitcasterSocialAccountAdapter
-from bitcaster.social.models import SocialProvider
 
 
 @pytest.mark.django_db
@@ -22,25 +22,46 @@ class TestBitcasterSocialAccountAdapter:
     def request_mock(self):
         return MagicMock()
 
-    def test_get_app_from_dedicated_fields(self, adapter, request_mock):
-        SocialProvider.objects.create(
-            provider="google", label="Google", client_id="test-client-id", secret="test-secret"
-        )
-        app = adapter.get_app(request_mock, "google")
-        assert app.client_id == "test-client-id"
-        assert app.secret == "test-secret"
-        assert app.provider == "google"
+    @pytest.fixture
+    def google_provider(self):
+        from testutils.factories import SocialProviderFactory
 
-    def test_get_app_legacy_compatibility(self, adapter, request_mock):
-        # Test fallback to SOCIAL_AUTH_<PROVIDER>_KEY format in JSON configuration
-        SocialProvider.objects.create(
+        return SocialProviderFactory.create(provider="google", client_id="test-client-id", secret="test-secret")
+
+    @pytest.fixture
+    def provider_with_legacy_config(self):
+        from testutils.factories import SocialProviderFactory
+
+        return SocialProviderFactory.create(
             provider="google",
-            label="Google",
             configuration={
                 "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": "legacy-id",
                 "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": "legacy-secret",
             },
         )
+
+    @pytest.fixture
+    def oidc_providers(self):
+        from bitcaster.social.models import SocialProvider
+
+        SocialProvider.objects.create(provider="openid_connect", label="First", client_id="first-client", enabled=True)
+        SocialProvider.objects.create(
+            provider="openid_connect", label="Second", client_id="second-client", enabled=True
+        )
+
+    @pytest.fixture
+    def existing_user(self):
+        from testutils.factories import UserFactory
+
+        return UserFactory.create(email="test@example.com")
+
+    def test_get_app_from_dedicated_fields(self, adapter, request_mock, google_provider):
+        app = adapter.get_app(request_mock, "google")
+        assert app.client_id == "test-client-id"
+        assert app.secret == "test-secret"
+        assert app.provider == "google"
+
+    def test_get_app_legacy_compatibility(self, adapter, request_mock, provider_with_legacy_config):
         app = adapter.get_app(request_mock, "google")
         assert app.client_id == "legacy-id"
         assert app.secret == "legacy-secret"
@@ -104,15 +125,12 @@ class TestBitcasterSocialAccountAdapter:
 
         with patch("bitcaster.social.adapter.config") as mock_config:
             mock_config.SOCIAL_AUTH_CREATE_USER = False
-            # is_open_for_signup will return False when SOCIAL_AUTH_CREATE_USER is False
             with pytest.raises(ImmediateHttpResponse) as exc:
                 adapter.pre_social_login(request_mock, sociallogin)
 
             assert b"Registration is currently closed." in exc.value.response.content
 
-    def test_pre_social_login_auto_connect(self, adapter, request_mock):
-        user = User.objects.create(email="test@example.com", username="test@example.com")
-
+    def test_pre_social_login_auto_connect(self, adapter, request_mock, existing_user):
         sociallogin = MagicMock(spec=SocialLogin)
         sociallogin.is_existing = False
         email_address = MagicMock()
@@ -122,10 +140,9 @@ class TestBitcasterSocialAccountAdapter:
         adapter.pre_social_login(request_mock, sociallogin)
 
         assert email_address.verified is True
-        sociallogin.connect.assert_called_once_with(request_mock, user)
+        sociallogin.connect.assert_called_once_with(request_mock, existing_user)
 
     def test_pre_social_login_user_not_found(self, adapter, request_mock):
-        # Line 75 coverage: User.DoesNotExist
         sociallogin = MagicMock(spec=SocialLogin)
         sociallogin.is_existing = False
         sociallogin.user = MagicMock()
@@ -134,7 +151,6 @@ class TestBitcasterSocialAccountAdapter:
         sociallogin.email_addresses = [email_address]
         sociallogin.user.email = "nonexistent@example.com"
 
-        # Should not raise exception if is_open_for_signup returns True (default)
         adapter.pre_social_login(request_mock, sociallogin)
         sociallogin.connect.assert_not_called()
 
@@ -147,10 +163,12 @@ class TestBitcasterSocialAccountAdapter:
         assert populated_user.username == "new@example.com"
 
     def test_save_user_new_user_setup(self, adapter, request_mock, db):
+        from testutils.factories import UserFactory
+
         group_name = "SocialUsers"
         Group.objects.get_or_create(name=group_name)
 
-        user = User(email="newuser@example.com", username="newuser@example.com")
+        user = UserFactory.build(email="newuser@example.com")
         sociallogin = MagicMock()
         sociallogin.user = user
         sociallogin.account = MagicMock(spec=SocialAccount)
@@ -173,16 +191,18 @@ class TestBitcasterSocialAccountAdapter:
             saved_user.refresh_from_db()
 
             assert saved_user.groups.filter(name=group_name).exists()
+            from bitcaster.models import Address
+
             assert Address.objects.filter(user=saved_user, type=AddressType.EMAIL, value="newuser@example.com").exists()
 
     def test_save_user_group_not_found(self, adapter, request_mock, db):
-        # Line 96 coverage: Group.DoesNotExist
-        user = User(email="newuser2@example.com", username="newuser2@example.com")
+        from testutils.factories import UserFactory
+
+        user = UserFactory.build(email="newuser2@example.com")
         sociallogin = MagicMock()
         sociallogin.user = user
         sociallogin.account = MagicMock(spec=SocialAccount)
 
-        # Ensure user is saved before being passed to filters
         def mock_save_user_side_effect(*args, **kwargs):
             user.save()
             return user
@@ -203,13 +223,7 @@ class TestBitcasterSocialAccountAdapter:
             adapter.get_app(request_mock, "nonexistent")
             mock_super.assert_called_once()
 
-    def test_get_app_with_client_id_disambiguates(self, adapter, request_mock):
-        SocialProvider.objects.create(
-            provider="openid_connect", slug="first", label="First", client_id="first-client", enabled=True
-        )
-        SocialProvider.objects.create(
-            provider="openid_connect", slug="second", label="Second", client_id="second-client", enabled=True
-        )
+    def test_get_app_with_client_id_disambiguates(self, adapter, request_mock, oidc_providers):
         app = adapter.get_app(request_mock, "openid_connect", client_id="first-client")
         assert app.client_id == "first-client"
         assert app.provider == "openid_connect"
@@ -231,15 +245,19 @@ class TestBitcasterSocialAccountAdapter:
         finally:
             cache.delete(key)
 
-    def test_get_app_raises_on_ambiguous_provider(self, adapter, request_mock):
-        SocialProvider.objects.create(
-            provider="openid_connect", slug="first", label="First", client_id="first-client", enabled=True
-        )
-        SocialProvider.objects.create(
-            provider="openid_connect", slug="second", label="Second", client_id="second-client", enabled=True
-        )
+    def test_get_app_raises_on_ambiguous_provider(self, adapter, request_mock, oidc_providers):
+        from bitcaster.social.models import SocialProvider
+
         with pytest.raises(SocialProvider.MultipleObjectsReturned):
             adapter.get_app(request_mock, "openid_connect")
+
+    def test_get_app_with_numeric_provider(self, adapter, request_mock):
+        from testutils.factories import SocialProviderFactory
+
+        provider = SocialProviderFactory.create(provider="google", client_id="pk-client-id", secret="pk-secret")
+        app = adapter.get_app(request_mock, str(provider.pk))
+        assert app.client_id == "pk-client-id"
+        assert app.provider == "google"
 
 
 @pytest.mark.django_db
@@ -253,7 +271,6 @@ class TestBitcasterAccountAdapter:
         return MagicMock()
 
     def test_is_open_for_signup(self, adapter, request_mock):
-        # Line 18 coverage
         with patch("bitcaster.social.adapter.config") as mock_config:
             mock_config.SOCIAL_AUTH_CREATE_USER = True
             assert adapter.is_open_for_signup(request_mock) is True

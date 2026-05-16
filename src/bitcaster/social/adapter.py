@@ -51,7 +51,7 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
 
         return SocialApp(
             provider=db_provider.provider,
-            provider_id=db_provider.slug,
+            provider_id=str(db_provider.pk),
             name=db_provider.label,
             client_id=cid,
             secret=secret,
@@ -62,8 +62,9 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
     def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
         try:
             try:
-                db_provider = SocialProvider.objects.get(slug=provider, enabled=True)
-            except SocialProvider.DoesNotExist:
+                pk = int(provider)
+                db_provider = SocialProvider.objects.get(pk=pk, enabled=True)
+            except (ValueError, SocialProvider.DoesNotExist):
                 if client_id:
                     db_provider = SocialProvider.objects.get(provider=provider, client_id=client_id, enabled=True)
                 else:

@@ -10,18 +10,17 @@ def data(db: Any) -> "list[SocialProvider]":
     from testutils.factories.social import SocialProviderFactory
 
     return [
-        SocialProviderFactory.create(provider="github", slug="github"),
-        SocialProviderFactory.create(provider="google", slug="google"),
-        SocialProviderFactory.create(provider="microsoft", slug="microsoft"),
+        SocialProviderFactory.create(provider="github"),
+        SocialProviderFactory.create(provider="google"),
+        SocialProviderFactory.create(provider="microsoft"),
     ]
 
 
 def test_manager(data) -> None:
-    assert SocialProvider.objects.as_choices() == [
-        ("github", "Github"),
-        ("google", "Google"),
-        ("microsoft", "Microsoft"),
-    ]
+    choices = SocialProvider.objects.as_choices()
+    assert len(choices) == 3
+    assert all(k.isdigit() for k, _ in choices)
+    assert {v for _, v in choices} == {"Github", "Google", "Microsoft"}
 
 
 def test_code(data) -> None:

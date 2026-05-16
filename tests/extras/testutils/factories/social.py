@@ -21,7 +21,6 @@ PROVIDER_LABELS = {
 class SocialProviderFactory(AutoRegisterModelFactory[SocialProvider]):
     provider = fuzzy.FuzzyChoice(list(PROVIDER_LABELS.keys()))
     label = factory.LazyAttribute(lambda o: PROVIDER_LABELS.get(o.provider, o.provider))
-    slug = factory.Sequence(lambda n: f"provider-{n}")
 
     class Meta:
         model = SocialProvider

@@ -17,11 +17,11 @@ from bitcaster.social.forms import SocialProviderForm
 
 @admin.register(SocialProvider)
 class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]):
-    list_display = ("label", "slug", "provider", "enabled", "client_id")
+    list_display = ("label", "provider", "enabled", "client_id")
     change_form_template = "admin/social/socialprovider/change_form.html"
     form = SocialProviderForm
     fieldsets = (
-        (_("General"), {"classes": ["tab"], "fields": ["label", "slug", "enabled"]}),
+        (_("General"), {"classes": ["tab"], "fields": ["label", "enabled"]}),
         (
             _("Configuration"),
             {"classes": ["tab"], "fields": ["provider", "client_id", "secret", "key", "configuration"]},

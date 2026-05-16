@@ -44,4 +44,4 @@ class WriteOnlyFieldMixin(forms.ModelForm[Model]):
 class SocialProviderForm(WriteOnlyFieldMixin, forms.ModelForm["SocialProvider"]):
     class Meta:
         model = SocialProvider
-        fields = ["label", "slug", "provider", "enabled", "client_id", "secret", "key", "configuration"]
+        fields = ["label", "provider", "enabled", "client_id", "secret", "key", "configuration"]
