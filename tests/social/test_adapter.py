@@ -61,11 +61,6 @@ class TestBitcasterSocialAccountAdapter:
         assert app.secret == "test-secret"
         assert app.provider == "google"
 
-    def test_get_app_legacy_compatibility(self, adapter, request_mock, provider_with_legacy_config):
-        app = adapter.get_app(request_mock, "google")
-        assert app.client_id == "legacy-id"
-        assert app.secret == "legacy-secret"
-
     def test_is_auto_signup_allowed(self, adapter, request_mock):
         with patch("bitcaster.social.adapter.config") as mock_config:
             mock_config.SOCIAL_AUTH_CREATE_USER = True

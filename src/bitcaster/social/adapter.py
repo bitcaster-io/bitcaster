@@ -33,22 +33,6 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
         secret = db_provider.secret or db_provider.configuration.get("secret")
         key = db_provider.key or db_provider.configuration.get("key", "")
 
-        if not cid or not secret:
-            legacy_map = {
-                "google": "GOOGLE_OAUTH2",
-                "microsoft": "AZUREAD_OAUTH2",
-                "facebook": "FACEBOOK",
-                "github": "GITHUB",
-                "gitlab": "GITLAB",
-                "linkedin_oauth2": "LINKEDIN_OAUTH2",
-                "twitter": "TWITTER",
-                "openid_connect": "KEYCLOAK",
-                "wso2": "OAUTH2",
-            }
-            suffix = legacy_map.get(db_provider.provider, db_provider.provider.upper())
-            cid = cid or db_provider.configuration.get(f"SOCIAL_AUTH_{suffix}_KEY")
-            secret = secret or db_provider.configuration.get(f"SOCIAL_AUTH_{suffix}_SECRET")
-
         return SocialApp(
             provider=db_provider.provider,
             provider_id=str(db_provider.pk),
