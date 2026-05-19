@@ -7,6 +7,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import Group
+from django.core.exceptions import ImproperlyConfigured
 
 from bitcaster.constants import AddressType
 from bitcaster.social.adapter import BitcasterAccountAdapter, BitcasterSocialAccountAdapter
@@ -65,7 +66,7 @@ def existing_user():
 
 
 def test_get_app_from_dedicated_fields(social_adapter, request_mock, google_provider):
-    app = social_adapter.get_app(request_mock, "google")
+    app = social_adapter.get_app(request_mock, google_provider.id)
     assert app.client_id == "test-client-id"
     assert app.secret == "test-secret"
     assert app.provider == "google"
@@ -234,15 +235,8 @@ def test_save_user_group_not_found(social_adapter, request_mock, db):
 
 
 def test_get_app_not_found(social_adapter, request_mock):
-    with patch("allauth.socialaccount.adapter.DefaultSocialAccountAdapter.get_app") as mock_super:
-        social_adapter.get_app(request_mock, "nonexistent")
-        mock_super.assert_called_once()
-
-
-def test_get_app_with_client_id_disambiguates(social_adapter, request_mock, oidc_providers):
-    app = social_adapter.get_app(request_mock, "openid_connect", client_id="first-client")
-    assert app.client_id == "first-client"
-    assert app.provider == "openid_connect"
+    with pytest.raises(ImproperlyConfigured, match="SSO provider not found"):
+        social_adapter.get_app(request_mock, "-1")
 
 
 def test_get_allowed_emails_caching(social_adapter, request_mock):
@@ -261,13 +255,6 @@ def test_get_allowed_emails_caching(social_adapter, request_mock):
             assert len(result) == 2
     finally:
         cache.delete(key)
-
-
-def test_get_app_raises_on_ambiguous_provider(social_adapter, request_mock, oidc_providers):
-    from bitcaster.social.models import SocialProvider
-
-    with pytest.raises(SocialProvider.MultipleObjectsReturned):
-        social_adapter.get_app(request_mock, "openid_connect")
 
 
 def test_get_app_with_numeric_provider(social_adapter, request_mock):
