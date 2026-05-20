@@ -94,7 +94,7 @@ class Command(BaseCommand):
 
     def setup(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from bitcaster.models import Application, Channel, User
-        from bitcaster.social.models import Provider, SocialProvider
+        from bitcaster.social.models import SocialProvider
 
         try:
             self.echo("Configuring development environment", style_func=self.style.WARNING)
@@ -102,7 +102,7 @@ class Command(BaseCommand):
 
             if os.environ.get("GOOGLE_CLIENT_ID") and os.environ.get("GOOGLE_CLIENT_SECRET"):
                 sso, __ = SocialProvider.objects.update_or_create(
-                    provider=Provider.GOOGLE,
+                    provider="google",
                     defaults={
                         "configuration": {
                             "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": os.environ.get("GOOGLE_CLIENT_ID"),
@@ -117,7 +117,7 @@ class Command(BaseCommand):
                 self.echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
             if os.environ.get("GITHUB_KEY") and os.environ.get("GITHUB_SECRET"):
                 sso, __ = SocialProvider.objects.update_or_create(
-                    provider=Provider.GITHUB,
+                    provider="github",
                     defaults={
                         "configuration": {
                             "SOCIAL_AUTH_GITHUB_KEY": os.environ.get("GITHUB_KEY"),

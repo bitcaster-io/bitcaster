@@ -2,13 +2,23 @@
 
 from django.db import migrations, models
 
+LABEL_MAP = {
+    "facebook": "Facebook",
+    "github": "Github",
+    "gitlab": "Gitlab",
+    "google": "Google",
+    "linkedin_oauth2": "Linkedin",
+    "microsoft": "Microsoft",
+    "twitter": "Twitter",
+    "wso2": "Wso2",
+    "openid_connect": "Keycloak",
+}
+
 
 def forward(apps, schema_editor):
-    from bitcaster.social.models import Provider
-
     SocialProvider = apps.get_model("social", "SocialProvider")
     for obj in SocialProvider.objects.all():
-        obj.label = Provider[obj.provider.replace("-", "_")].label
+        obj.label = LABEL_MAP.get(obj.provider, obj.provider)
         obj.save()
 
 

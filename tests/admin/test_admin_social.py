@@ -27,9 +27,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
 def context() -> "Context":
     from testutils.factories import SocialProviderFactory
 
-    from bitcaster.social.models import Provider
-
-    provider = SocialProviderFactory.create(provider=Provider.GOOGLE)
+    provider = SocialProviderFactory.create(provider="google")
     return {"provider": provider}
 
 

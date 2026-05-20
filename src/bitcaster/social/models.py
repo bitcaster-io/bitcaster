@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, cast
 
+from allauth.socialaccount.providers import registry
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -7,25 +9,13 @@ if TYPE_CHECKING:
     from django.utils.functional import _StrPromise
 
 
-class Provider(models.TextChoices):
-    FACEBOOK = "facebook", "Facebook"
-    GITHUB = "github", "Github"
-    GITLAB = "gitlab", "Gitlab"
-    GOOGLE = "google", "Google"
-    LINKEDIN = "linkedin_oauth2", "Linkedin"
-    MICROSOFT = "microsoft", "Microsoft"
-    TWITTER = "twitter", "Twitter"
-    WSO2 = "wso2", "Wso2"
-    KEYCLOAK = "openid_connect", "Keycloak"
-
-
 def get_provider_choices() -> "list[tuple[str, _StrPromise]]":
-    return cast("list[tuple[str, _StrPromise]]", Provider.choices)
+    return cast("list[tuple[str, _StrPromise]]", registry.as_choices())
 
 
 class SocialProviderManager(models.Manager["SocialProvider"]):
     def as_choices(self) -> list[tuple[str, str]]:
-        return [(obj.provider, obj.label) for obj in self.filter(enabled=True)]
+        return [(str(obj.pk), obj.label) for obj in self.filter(enabled=True)]
 
 
 class SocialProvider(models.Model):
@@ -34,7 +24,6 @@ class SocialProvider(models.Model):
         verbose_name=_("provider"),
         max_length=30,
         choices=get_provider_choices,
-        unique=True,
         help_text=_("Social Login provider"),
     )
     client_id = models.CharField(
@@ -57,6 +46,9 @@ class SocialProvider(models.Model):
 
     class Meta:
         app_label = "social"
+        constraints = [
+            models.UniqueConstraint(fields=["client_id", "provider"], name="unique_client_provider"),
+        ]
 
     def __str__(self) -> str:
         return self.label

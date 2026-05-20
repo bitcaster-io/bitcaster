@@ -10,6 +10,7 @@ from constance import config
 
 from django.contrib.auth.models import Group
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -28,41 +29,27 @@ class BitcasterAccountAdapter(DefaultAccountAdapter):
 
 
 class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
+    def _build_social_app(self, db_provider: SocialProvider) -> SocialApp:
+        cid = db_provider.client_id or db_provider.configuration.get("client_id")
+        secret = db_provider.secret or db_provider.configuration.get("secret")
+        key = db_provider.key or db_provider.configuration.get("key", "")
+
+        return SocialApp(
+            provider=db_provider.provider,
+            provider_id=str(db_provider.pk),
+            name=db_provider.label,
+            client_id=cid,
+            secret=secret,
+            settings=db_provider.configuration,
+            key=key,
+        )
+
     def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
         try:
-            db_provider = SocialProvider.objects.get(provider=provider, enabled=True)
-
-            # Read from dedicated fields first, fallback to JSON
-            cid = db_provider.client_id or db_provider.configuration.get("client_id")
-            secret = db_provider.secret or db_provider.configuration.get("secret")
-            key = db_provider.key or db_provider.configuration.get("key", "")
-
-            # Legacy compatibility lookups (if still empty)
-            if not cid or not secret:
-                legacy_map = {
-                    "google": "GOOGLE_OAUTH2",
-                    "microsoft": "AZUREAD_OAUTH2",
-                    "facebook": "FACEBOOK",
-                    "github": "GITHUB",
-                    "gitlab": "GITLAB",
-                    "linkedin_oauth2": "LINKEDIN_OAUTH2",
-                    "twitter": "TWITTER",
-                    "openid_connect": "KEYCLOAK",
-                    "wso2": "OAUTH2",
-                }
-                suffix = legacy_map.get(provider, provider.upper())
-                cid = cid or db_provider.configuration.get(f"SOCIAL_AUTH_{suffix}_KEY")
-                secret = secret or db_provider.configuration.get(f"SOCIAL_AUTH_{suffix}_SECRET")
-
-            return SocialApp(
-                provider=provider,
-                name=db_provider.label,
-                client_id=cid,
-                secret=secret,
-                key=key,
-            )
+            if db_provider := SocialProvider.objects.get(pk=provider, enabled=True):
+                return self._build_social_app(db_provider)
         except SocialProvider.DoesNotExist:
-            return cast("SocialApp", super().get_app(request, provider, client_id))
+            raise ImproperlyConfigured(_("SSO provider not found")) from None
 
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         if not config.SOCIAL_AUTH_CREATE_USER:
