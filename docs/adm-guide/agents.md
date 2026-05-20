@@ -14,7 +14,7 @@ Detect changes in local filesystem
 
 ### AgentFTP
 
-Detect changes in remote FTP folder
+Detect changes in remote FTP folder. Supports FTP over TLS (FTPS) with automatic fallback to plain FTP.
 
 
 ### AgentImap

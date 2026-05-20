@@ -1,5 +1,5 @@
 ---
-description:  "Something happening in an Application that could be notified to users."
+description:  "Deployment environments for routing notifications (staging, QA, production)."
 template: term.html
 terms:
   - glossary:
