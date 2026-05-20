@@ -9,4 +9,5 @@ dispatchers:
     - sys.md
     - teams.md
     - twilio.md
+    - user_message.md
     - x.md

@@ -8,34 +8,37 @@ tags:
 Social Login is managed via **django-allauth** and can be configured at <https://SERVER_ADDRESS/admin/social/socialprovider/>
 
 1. Navigate to <https://SERVER_ADDRESS/admin/social/socialprovider/add/>
-2. Select a provider from the list (e.g., `google`, `github`, `microsoft`).
+2. Select a provider from the list — all registered `django-allauth` providers are available dynamically (e.g., `google`, `github`, `microsoft`, `openid_connect`).
 3. Fill in the **Client ID** and **Secret** fields.
 4. If the provider requires an extra key (like Twitter), fill in the **Key** field.
 5. Use the **Extra Configuration** JSON field for any provider-specific parameters (e.g., `server_url` for Keycloak).
 6. Ensure `enabled` is checked before saving.
 
-## Supported Providers
+## Dynamic Provider Support
 
-### Google
-Requires a Google Cloud Project with OAuth 2.0 credentials.
-The redirect URI must be: `http://<your-domain>/social/google/login/callback/`
+Providers are no longer hardcoded — any `django-allauth` provider registered in the system can be used. The provider list in the admin UI is built dynamically from the allauth registry.
 
-### GitHub
-Requires a GitHub OAuth App.
-Redirect URI: `http://<your-domain>/social/github/login/callback/`
+### OpenID Connect (OIDC) Multi-Tenancy
 
-### Microsoft (Azure AD)
-Requires an application registered in the Azure Portal.
-Redirect URI: `http://<your-domain>/social/microsoft/login/callback/`
+Bitcaster supports multiple OpenID Connect tenants (e.g., separate Keycloak realms or different OIDC providers) simultaneously. Each provider configuration is uniquely identified by the combination of **Client ID** and **Provider** type, allowing you to register distinct OIDC realms with their own credentials.
 
-### Keycloak (OpenID Connect)
-Managed via the **Keycloak** provider.
-Set **Client ID** and **Secret**, then add the server URL in **Extra Configuration**:
+To configure an OIDC provider:
+1. Select `openid_connect` as the provider.
+2. Set **Client ID** and **Secret** from your OIDC provider.
+3. Add the server URL in **Extra Configuration** as in following example:
 ```json
 {
   "server_url": "https://<keycloak-url>/auth/realms/<realm>/.well-known/openid-configuration"
 }
 ```
+4. Repeat for additional OIDC tenants with different Client IDs.
+
+### Redirect URIs
+
+The callback URL uses the `SocialProvider` primary key (visible in the admin list):
+`http://<your-domain>/social/<pk>/login/callback/`
+
+The pk is assigned automatically when you create the provider record.
 
 ---
 
