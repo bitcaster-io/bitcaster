@@ -22,6 +22,12 @@ Messages content is customised at user/receiver level using a flexible template 
 
 Administrators are empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
 
+## Bitcaster at a Glance
+
+<div class="align-center">
+<img src="_theme/img/bitcaster-features-infographic.svg" alt="Infographic of Bitcaster core characteristics including unified API, smart routing, rich templates, omnichannel delivery, user preferences, and enterprise readiness.">
+</div>
+
 ## What is Bitcaster?
 
 Bitcaster is a powerful, system-to-user notification hub designed to solve the complexity of enterprise messaging. For a large organization, its value lies in centralizing communication logic, ensuring governance, and providing a highly personalized experience for recipients.
