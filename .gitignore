@@ -16,6 +16,7 @@ latest_logs
 junit.xml
 !.git
 !.ai
+!.opencode
 !.codecov.yml
 !.semgrep
 !.semgrep/Makefile
