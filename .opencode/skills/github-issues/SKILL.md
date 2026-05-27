@@ -96,9 +96,33 @@ If mypy fails, fix the errors. If any source code changed during fixing, re-run 
 gh issue view <N> --comments
 ```
 
-If new comments or review requests have arrived since step 2, re-enter at step 6 (patch source code) or step 4 (write a new failing test) depending on what the feedback requires. Continue to step 11 only if nothing has changed.
+If new comments or review requests have arrived since step 2, re-enter at step 6 (patch source code) or step 4 (write a new failing test) depending on what the feedback requires. If nothing has changed, proceed to step 11.
 
-### 11. Fetch and rebase
+### 11. Propose and create a commit
+
+Present the changes to the user and ask for approval before committing:
+
+1. Show a summary of what changed:
+   ```
+   git diff --stat
+   ```
+2. Draft a commit message from the issue title, rephrased in the
+   **imperative mood** to describe what the commit *does*. Use the branch
+   prefix (`fix/`, `feat/`, `chore/`) as the Conventional Commits type:
+   ```
+   <type>: <issue title>
+
+   Closes #<N>
+   ```
+3. **Ask the user:** *"Shall I commit these changes with this message?
+   [y/n / edit]"*
+   - **y** → `git commit -m "<message>"`
+   - **edit** → prompt the user for their message and use that
+   - **n** → stop and report back to the user
+
+Do **not** proceed past this point without explicit approval.
+
+### 12. Fetch and rebase
 
 Detect the correct upstream remote. If `upstream` exists, rebase against the canonical repo (fork workflow). Otherwise fall back to `origin` (direct contributor):
 
@@ -114,11 +138,17 @@ fi
 
 If there are conflicts, **stop and alert the user**. Do not attempt to resolve conflicts automatically. If the user resolves them manually, re-enter at step 7 (iterate until tests pass) to re-verify the full pipeline.
 
-### 12. Push the branch
+### 13. Push the branch
 
-```
-git push origin <branch-name>
-```
+Ask the user for approval before pushing:
+
+- *"Branch `<branch-name>` is rebased and ready. Shall I push to `origin`?
+  [y/n]"*
+- If approved, push:
+  ```
+  git push origin <branch-name>
+  ```
+- If declined, stop and report back.
 
 Notify the user the branch is pushed and ready for them to open a PR.
 
