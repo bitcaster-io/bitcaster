@@ -24,16 +24,48 @@ gh issue view <N> --comments
 
 Read the full thread including all comments.
 
-### 2. Analyse the thread and determine if work is needed
+### 2. Analyse the thread and surface ambiguities
 
-Read the full thread and decide what action to take:
+Read the full thread and produce a structured analysis. You must explicitly
+list each of the following **before** proceeding:
 
-- **First run:** Check the original report for inconsistencies, missing info, or unclear requirements. Prompt the user if found.
-- **Re-run after feedback:** Evaluate the latest comments. If they are positive/approval, report to the user and stop. If they request changes, clarify any ambiguity with the user, then proceed.
+**What is clear:** Facts, requirements, and expected behavior that are
+unambiguous from the report.
+**Assumptions:** Anything you must assume to proceed (environment, edge
+cases, unstated behavior, implied requirements).
+**Open questions / Ambiguities:** Anything unclear, contradictory, vague,
+or missing.
 
-In all cases, if the issue is unclear, prompt the user before taking action.
+**First run:** Present this analysis to the user and ask:
+*"Here's my understanding of the issue. Is this correct?"*
 
-### 3. Create a branch
+- **Yes** → proceed to step 3.
+- **No / partially** → incorporate the user's clarifications, update the
+  analysis, and re-present. Repeat until the user confirms.
+
+Do **not** proceed past this point without explicit user confirmation.
+
+**Re-run after feedback:** Evaluate the latest comments. If they are
+positive/approval, report to the user and stop. If they request changes,
+clarify any ambiguity with the user before proceeding.
+
+### 3. Present a plan before branching
+
+Before creating a branch or writing any code, present a concrete plan:
+
+- Which test you will write and where (`tests/...`)
+- Which source files you will modify and how
+- What the expected outcome is
+
+Ask the user: *"Here's my plan. Shall I proceed?"*
+
+- **Yes** → proceed to step 4.
+- **No / revise** → discuss alternatives with the user, update the plan,
+  and re-present. Repeat until the user confirms.
+
+Do **not** create a branch or write any code until the user confirms.
+
+### 4. Create a branch
 
 Follow `.ai/branch-conventions.md` to name the branch. Create it with:
 
@@ -41,14 +73,14 @@ Follow `.ai/branch-conventions.md` to name the branch. Create it with:
 git checkout -b <branch-name>
 ```
 
-### 4. Write a failing test
+### 5. Write a failing test
 
 Write a test that reproduces the bug or validates the feature. Follow project conventions:
 - Place the test in `tests/`, mirroring the source path under `src/bitcaster/`
 - Use fixtures to wrap factories — never call factories directly in tests
 - See `.ai/testing-patterns.md` for details
 
-### 5. Confirm the test fails
+### 6. Confirm the test fails
 
 ```
 tox -e tests -- pytest <path-to-test> -x --no-cov
@@ -56,11 +88,11 @@ tox -e tests -- pytest <path-to-test> -x --no-cov
 
 Verify the test fails as expected.
 
-### 6. Patch the source code
+### 7. Patch the source code
 
 Find and fix the relevant code in `src/bitcaster/`.
 
-### 7. Iterate until tests pass
+### 8. Iterate until tests pass
 
 Repeat until the test passes:
 
@@ -74,31 +106,31 @@ If you need to run the full test suite:
 tox -e tests
 ```
 
-### 8. Lint and fix loop
+### 9. Lint and fix loop
 
 ```
 tox -e lint
 ```
 
-If lint fails, fix the errors. If any source code changed during fixing, re-run the tests (step 7). Repeat until both lint and tests are clean.
+If lint fails, fix the errors. If any source code changed during fixing, re-run the tests (step 8). Repeat until both lint and tests are clean.
 
-### 9. Mypy and fix loop
+### 10. Mypy and fix loop
 
 ```
 tox -e mypy
 ```
 
-If mypy fails, fix the errors. If any source code changed during fixing, re-run the tests (step 7). Repeat until both mypy and tests are clean.
+If mypy fails, fix the errors. If any source code changed during fixing, re-run the tests (step 8). Repeat until both mypy and tests are clean.
 
-### 10. Re-check issue for new comments
+### 11. Re-check issue for new comments
 
 ```
 gh issue view <N> --comments
 ```
 
-If new comments or review requests have arrived since step 2, re-enter at step 6 (patch source code) or step 4 (write a new failing test) depending on what the feedback requires. If nothing has changed, proceed to step 11.
+If new comments or review requests have arrived since step 2, re-enter at step 7 (patch source code) or step 5 (write a new failing test) depending on what the feedback requires. If nothing has changed, proceed to step 12.
 
-### 11. Propose and create a commit
+### 12. Propose and create a commit
 
 Present the changes to the user and ask for approval before committing:
 
@@ -122,7 +154,7 @@ Present the changes to the user and ask for approval before committing:
 
 Do **not** proceed past this point without explicit approval.
 
-### 12. Fetch and rebase
+### 13. Fetch and rebase
 
 Detect the correct upstream remote. If `upstream` exists, rebase against the canonical repo (fork workflow). Otherwise fall back to `origin` (direct contributor):
 
@@ -136,9 +168,9 @@ else
 fi
 ```
 
-If there are conflicts, **stop and alert the user**. Do not attempt to resolve conflicts automatically. If the user resolves them manually, re-enter at step 7 (iterate until tests pass) to re-verify the full pipeline.
+If there are conflicts, **stop and alert the user**. Do not attempt to resolve conflicts automatically. If the user resolves them manually, re-enter at step 8 (iterate until tests pass) to re-verify the full pipeline.
 
-### 13. Push the branch
+### 14. Push the branch
 
 Ask the user for approval before pushing:
 
