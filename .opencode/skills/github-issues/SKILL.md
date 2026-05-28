@@ -67,10 +67,12 @@ Do **not** create a branch or write any code until the user confirms.
 
 ### 4. Create a branch
 
-Follow `.ai/branch-conventions.md` to name the branch. Create it with:
+Follow `.ai/branch-conventions.md` to name the branch. Fetch the latest `develop` and branch from it:
 
 ```
-git checkout -b <branch-name>
+# origin/develop is assumed up-to-date with upstream
+git fetch origin develop
+git checkout -b <branch-name> origin/develop
 ```
 
 ### 5. Write a failing test
@@ -159,13 +161,16 @@ Do **not** proceed past this point without explicit approval.
 Detect the correct upstream remote. If `upstream` exists, rebase against the canonical repo (fork workflow). Otherwise fall back to `origin` (direct contributor):
 
 ```bash
-if git show-ref --verify refs/remotes/upstream/develop > /dev/null 2>&1; then
-  git fetch upstream
-  git rebase upstream/develop
+DEFAULT_BRANCH="develop"
+
+if git remote get-url upstream > /dev/null 2>&1; then
+  TARGET_REMOTE="upstream"
 else
-  git fetch origin
-  git rebase origin/develop
+  TARGET_REMOTE="origin"
 fi
+
+git fetch "$TARGET_REMOTE" "$DEFAULT_BRANCH"
+git rebase "$TARGET_REMOTE/$DEFAULT_BRANCH"
 ```
 
 If there are conflicts, **stop and alert the user**. Do not attempt to resolve conflicts automatically. If the user resolves them manually, re-enter at step 8 (iterate until tests pass) to re-verify the full pipeline.
