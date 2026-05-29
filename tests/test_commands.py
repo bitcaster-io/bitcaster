@@ -82,6 +82,20 @@ def test_upgrade(verbosity: int, migrate: int, monkeypatch: pytest.MonkeyPatch, 
     assert "error" not in str(out.getvalue())
 
 
+def test_upgrade_multi_superuser(environment: dict[str, str]) -> None:
+    from testutils.factories import OrganizationFactory, SuperUserFactory
+
+    from bitcaster.constants import bitcaster
+
+    owner = SuperUserFactory()
+    OrganizationFactory(name=bitcaster.ORGANIZATION, slug=bitcaster.ORGANIZATION.lower(), owner=owner)
+    SuperUserFactory()
+    out = StringIO()
+    with mock.patch.dict(os.environ, environment, clear=True):
+        call_command("upgrade", stdout=out, check=False)
+    assert "error" not in str(out.getvalue())
+
+
 def test_upgrade_next(mocked_responses: RequestsMock) -> None:
     from testutils.factories import ProjectFactory, SuperUserFactory
 
