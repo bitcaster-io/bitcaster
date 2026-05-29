@@ -11,7 +11,7 @@ Walk through a complete GitHub issue resolution: read the ticket, analyse it, br
 
 ## When to use me
 
-Use this when you are asked to fix a bug, implement a feature, or handle a chore tracked as a GitHub issue. The issue number is required — if there isn't one, this skill doesn't apply.
+Use this when you are asked to fix a bug, implement a feature, or handle a chore tracked as a GitHub issue. An issue number is required as the starting point. If you also have a PR number/URL, the agent can additionally monitor PR review comments.
 
 ## Procedure
 
@@ -124,13 +124,50 @@ tox -e mypy
 
 If mypy fails, fix the errors. If any source code changed during fixing, re-run the tests (step 8). Repeat until both mypy and tests are clean.
 
-### 11. Re-check issue for new comments
+### 11. Re-check for new feedback
+
+#### 11a. Always check issue comments
 
 ```
 gh issue view <N> --comments
 ```
 
-If new comments or review requests have arrived since step 2, re-enter at step 7 (patch source code) or step 5 (write a new failing test) depending on what the feedback requires. If nothing has changed, proceed to step 12.
+#### 11b. Attempt to find a linked PR
+
+Try to derive a PR number from the issue:
+
+```
+PR_NUM=$(gh issue view <N> --json closedByPullRequestsReferences \
+  --jq 'if length > 0 then .[0].number else "" end' 2>/dev/null)
+```
+
+**If `gh` succeeded and a PR is found** (non-empty `$PR_NUM`):
+
+Present to the user: *"I found PR #$PR_NUM linked to this issue. Shall I also check PR review comments? [y/n]"*
+
+- **Yes** → fetch review comments: `gh pr view $PR_NUM --comments`
+- **No** → skip PR channel.
+
+**If `gh` succeeded but no PR is found** (`$PR_NUM` empty):
+
+Ask: *"Do you have a PR number? (leave blank for no)"*
+
+- **Provided** → verify it exists: `gh pr view <PR_NUM>`. If the command fails (non-zero exit), warn the user and skip. Otherwise, fetch review comments.
+- **Blank** → skip PR channel.
+
+**If `gh` failed** (unauthenticated or not installed):
+
+Ask: *"I could not reach GitHub CLI. Do you have a PR number? (leave blank for no)"*
+
+- **Provided** → parse the owner/repo from `git remote get-url origin` and build the PR URL (`https://github.com/OWNER/REPO/pull/<PR_NUM>`). Use `webfetch` to retrieve the page. If it returns an error (e.g. 404), warn the user and skip. Otherwise, advise the user that review comments could not be fetched and suggest they paste relevant feedback.
+- **Blank** → skip PR channel.
+
+#### 11c. Evaluate feedback
+
+Combine issue comments and PR review comments (if any). Decide:
+
+- **New change requests / review requests** → re-enter at step 7 (patch source code) or step 5 (write a new failing test), depending on what the feedback requires.
+- **Nothing new or only approval** → proceed to step 12.
 
 ### 12. Propose and create a commit
 
@@ -187,6 +224,8 @@ Ask the user for approval before pushing:
   ```
 - If declined, stop and report back.
 
-Notify the user the branch is pushed and ready for them to open a PR.
+Notify the user the branch is pushed and ready for them to open a PR:
 
-If new feedback arrives later and the user asks you to handle it, re-enter the procedure at step 1.
+*"Branch `<branch-name>` is pushed. Once a PR is created from it, it will be auto-linked to issue #<N>. You can ask me to handle PR feedback later — I will try to detect the PR automatically."*
+
+If new feedback arrives later and the user asks you to handle it, re-enter at step 1 with the same issue number. The agent will attempt to find a linked PR (step 11b) and check both issue comments and PR review comments.
