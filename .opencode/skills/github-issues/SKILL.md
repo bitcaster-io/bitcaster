@@ -104,6 +104,10 @@ tox -e tests -- pytest <path-to-test> -x --no-cov
 
 If you need to run the full test suite:
 
+> **Note:** The full suite can take several minutes. When invoking the bash
+> tool for this command, pass `timeout=600000` (10 minutes) to prevent
+> premature timeout.
+
 ```
 tox -e tests
 ```
