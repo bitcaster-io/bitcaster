@@ -2,7 +2,7 @@
 name: Adds labels
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, edited, ready_for_review]
 
 permissions:
@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Check for file changes
