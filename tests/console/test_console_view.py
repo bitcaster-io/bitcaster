@@ -94,3 +94,67 @@ def test_pwa_index_filtering(django_app, user: "User", user_messages: "list[User
         assert all(m.instance.read is None for m in messages)
     elif status == "read":
         assert all(m.instance.read is not None for m in messages)
+
+
+@pytest.mark.django_db
+def test_console_index_filter_by_application(django_app, user: "User") -> None:
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory()
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    django_app.set_user(user)
+    response = django_app.get(reverse("console:index") + f"?application={event1.application.pk}")
+    assert response.status_code == 200
+    messages = [f.instance for f in response.context["user_messages"]]
+    assert len(messages) == 1
+    assert messages[0].pk == msg1.pk
+
+
+@pytest.mark.django_db
+def test_console_index_filter_by_application_no_messages(django_app, user: "User") -> None:
+    from testutils.factories import ApplicationFactory
+
+    app = ApplicationFactory()
+
+    django_app.set_user(user)
+    response = django_app.get(reverse("console:index") + f"?application={app.pk}")
+    assert response.status_code == 200
+    messages = [f.instance for f in response.context["user_messages"]]
+    assert len(messages) == 0
+
+
+@pytest.mark.django_db
+def test_console_index_filter_by_event(django_app, user: "User") -> None:
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory(application=event1.application)
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    django_app.set_user(user)
+    response = django_app.get(reverse("console:index") + f"?event={event1.pk}")
+    assert response.status_code == 200
+    messages = [f.instance for f in response.context["user_messages"]]
+    assert len(messages) == 1
+    assert messages[0].pk == msg1.pk
+
+
+@pytest.mark.django_db
+def test_console_index_applications_context(django_app, user: "User") -> None:
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory()
+    UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    django_app.set_user(user)
+    response = django_app.get(reverse("console:index"))
+    assert response.status_code == 200
+    apps = list(response.context["applications"])
+    assert event1.application in apps
+    assert event2.application in apps

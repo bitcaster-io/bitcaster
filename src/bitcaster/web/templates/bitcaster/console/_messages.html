@@ -6,15 +6,47 @@
 {% endblock %}
 <!-- Filter Selector -->
 <div class="pwa-filter-container">
-    <a href="?status=all" class="pwa-filter-item {% if current_status == 'all' %}active{% endif %}">
+    <a href="?status=all{% if current_application %}&application={{ current_application }}{% endif %}{% if current_event %}&event={{ current_event }}{% endif %}"
+       class="pwa-filter-item {% if current_status == 'all' %}active{% endif %}">
         {% trans "All" %}
     </a>
-    <a href="?status=unread" class="pwa-filter-item {% if current_status == 'unread' %}active{% endif %}">
+    <a href="?status=unread{% if current_application %}&application={{ current_application }}{% endif %}{% if current_event %}&event={{ current_event }}{% endif %}"
+       class="pwa-filter-item {% if current_status == 'unread' %}active{% endif %}">
         {% trans "Not Read" %}
     </a>
-    <a href="?status=read" class="pwa-filter-item {% if current_status == 'read' %}active{% endif %}">
+    <a href="?status=read{% if current_application %}&application={{ current_application }}{% endif %}{% if current_event %}&event={{ current_event }}{% endif %}"
+       class="pwa-filter-item {% if current_status == 'read' %}active{% endif %}">
         {% trans "Read" %}
     </a>
+</div>
+<div class="pwa-filter-container">
+    <div class="pwa-filter-item" style="flex: 1;">
+        <select class="w-full bg-transparent border-none focus:ring-0 focus:outline-none cursor-pointer p-1 text-sm"
+                onchange="location.href='?status={{ current_status }}{% if current_event %}&event={{ current_event }}{% endif %}&application=' + encodeURIComponent(this.value)">
+            <option value="">
+                {% trans "All Applications" %}
+            </option>
+            {% for app in applications %}
+                <option value="{{ app.pk }}" {% if current_application|slugify == app.pk|slugify %}selected{% endif %}>
+                    {{ app.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="pwa-filter-item" style="flex: 1;">
+        <select class="w-full bg-transparent border-none focus:ring-0 focus:outline-none p-1 text-sm{% if not current_application %} opacity-40 cursor-not-allowed{% else %} cursor-pointer{% endif %}"
+                onchange="location.href='?status={{ current_status }}{% if current_application %}&application={{ current_application }}{% endif %}&event=' + encodeURIComponent(this.value)"
+                {% if not current_application %}disabled{% endif %}>
+            <option value="">
+                {% trans "All Events" %}
+            </option>
+            {% for ev in events %}
+                <option value="{{ ev.pk }}" {% if current_event|slugify == ev.pk|slugify %}selected{% endif %}>
+                    {{ ev.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 </div>
 <div class="space-y-4" id="user_messages">
     {% for message in user_messages %}
@@ -48,7 +80,8 @@
 </div>
 <div class="pwa-pagination mb-10">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" class="btn">{% trans "Previous" %}</a>
+        <a href="?page={{ page_obj.previous_page_number }}&status={{ current_status }}{% if current_application %}&application={{ current_application }}{% endif %}{% if current_event %}&event={{ current_event }}{% endif %}"
+           class="btn">{% trans "Previous" %}</a>
     {% else %}
         <span class="btn disabled">{% trans "Previous" %}</span>
     {% endif %}
@@ -56,7 +89,8 @@
         {{ page_obj.number }} / {{ paginator.num_pages }}
     </span>
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="btn">{% trans "Next" %}</a>
+        <a href="?page={{ page_obj.next_page_number }}&status={{ current_status }}{% if current_application %}&application={{ current_application }}{% endif %}{% if current_event %}&event={{ current_event }}{% endif %}"
+           class="btn">{% trans "Next" %}</a>
     {% else %}
         <span class="btn disabled">{% trans "Next" %}</span>
     {% endif %}
