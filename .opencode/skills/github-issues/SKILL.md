@@ -95,13 +95,16 @@ Write a test that reproduces the bug or validates the feature. Follow project co
 - Use fixtures to wrap factories — never call factories directly in tests
 - See `.ai/testing-patterns.md` for details
 
-### 6. Confirm the test fails
+### 6. Confirm the test fails (RED phase)
 
 ```
 tox -e tests -- pytest <path-to-test> -x --no-cov
 ```
 
-Verify the test fails as expected.
+The test MUST fail against the unpatched codebase. Follow the mandatory TDD RED-phase discipline defined in `.ai/workflow.md`.
+
+- **Test fails as expected** → proceed to step 7.
+- **Test passes or errors** → the test is wrong. Go back to step 5 and rewrite. Do **not** patch any source code until the test is RED.
 
 ### 7. Patch the source code
 
