@@ -15,6 +15,19 @@ Use this when you are asked to fix a bug, implement a feature, or handle a chore
 
 ## Procedure
 
+### 0. Load project context
+
+Before reading the issue, load the project's conventions and domain model:
+
+1. Read `AGENTS.md` — it lists every `.ai/` instruction file.
+2. Read **all** `.ai/` files referenced there. These are the single source of truth for standards, architecture, testing, safety, dispatchers, and the domain model.
+3. Pay special attention to:
+   - `.ai/standards.md` — multi-tenancy isolation, relative imports, British English
+   - `.ai/architecture.md` — src layout, module structure
+   - `.ai/domain.md` — model hierarchy, owner cascading, access control patterns
+
+Do **not** skip this step. The `.ai/` files contain mandatory rules the agent must follow.
+
 ### 1. Read the ticket and thread
 
 ```
@@ -93,6 +106,13 @@ Verify the test fails as expected.
 ### 7. Patch the source code
 
 Find and fix the relevant code in `src/bitcaster/`.
+
+When creating or modifying models (Organization, Project, Application, Event, etc.):
+- Respect the **org → project → application → event** FK chain — never leave a gap
+- Set `owner` with fallback: `Application.save()` auto-cascades from `project.owner`; `Project.save()` auto-cascades from `organization.owner`
+- Use `.local()` queryset method to exclude the system `OS4D` org where appropriate
+- For scoped models (ApiKey, MessageTemplate), use `ScopedManager` to auto-resolve the org/project/application hierarchy from kwargs
+- See `.ai/domain.md` for the complete reference
 
 ### 8. Iterate until tests pass
 
