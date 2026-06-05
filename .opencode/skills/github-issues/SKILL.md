@@ -49,14 +49,26 @@ cases, unstated behavior, implied requirements).
 **Open questions / Ambiguities:** Anything unclear, contradictory, vague,
 or missing.
 
-**First run:** Present this analysis to the user and ask:
-*"Here's my understanding of the issue. Is this correct?"*
+**First run:** Present this analysis to the user, then explicitly ask
+about each open question or assumption:
+
+*"I found a few things I need your input on:*
+*- <ambiguity A> — e.g. what should happen when X is missing?*
+*- <ambiguity B> — e.g. should this apply to all environments or just production?*
+*- <assumption C> — I assumed Y, is that right?"*
+
+Wait for the user to answer each question. Incorporate their answers,
+update the analysis, then re-present for final confirmation:
+
+*"Here's the updated analysis with your clarifications. Is this correct?"*
 
 - **Yes** → proceed to step 3.
 - **No / partially** → incorporate the user's clarifications, update the
   analysis, and re-present. Repeat until the user confirms.
 
 Do **not** proceed past this point without explicit user confirmation.
+Do **not** skip the questioning step — a passive list that the user can
+gloss over is not sufficient.
 
 **Re-run after feedback:** Evaluate the latest comments. If they are
 positive/approval, report to the user and stop. If they request changes,
@@ -69,8 +81,20 @@ Before creating a branch or writing any code, present a concrete plan:
 - Which test you will write and where (`tests/...`)
 - Which source files you will modify and how
 - What the expected outcome is
+- **Uncertainties / trade-offs in the approach** — surface any decisions
+  where there is more than one reasonable path
 
-Ask the user: *"Here's my plan. Shall I proceed?"*
+Ask the user about each uncertainty or trade-off explicitly:
+
+*"- <trade-off 1> — I see two ways to fix this. Option A is simpler but
+narrower. Option B is more general but touches more files. Which do you
+prefer?"*
+*"- <trade-off 2> — I'm not sure where the test should live. Under
+tests/integration/ or tests/unit/?"*
+
+After the user's input, update the plan and ask:
+
+*"Here's my plan. Shall I proceed?"*
 
 - **Yes** → proceed to step 4.
 - **No / revise** → discuss alternatives with the user, update the plan,
