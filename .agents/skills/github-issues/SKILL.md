@@ -1,6 +1,6 @@
 ---
 name: github-issues
-description: Resolve GitHub issues using TDD: read, analyse, branch, test, fix, lint, type-check, rebase
+description: "Resolve GitHub issues using TDD: read, analyse, branch, test, fix, lint, type-check, rebase"
 license: MIT
 compatibility: opencode
 ---
