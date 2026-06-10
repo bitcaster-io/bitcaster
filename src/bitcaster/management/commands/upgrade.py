@@ -174,8 +174,6 @@ class Command(BaseCommand):
                     )
 
                 admin = User.objects.get(email=self.admin_email)
-            elif system_org := Organization.objects.filter(name=Bitcaster.ORGANIZATION).first():
-                admin = system_org.owner
             else:
                 admin = User.objects.filter(is_superuser=True).first()
 
@@ -192,11 +190,11 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
-            if not (system_org := Organization.objects.local().first()):
-                system_org = Organization.objects.create(name="Organization", owner=admin)
+            if not (org := Organization.objects.local().first()):
+                org = Organization.objects.create(name="Organization", owner=admin)
 
             if not Project.objects.local().exists():
-                Project.objects.create(name="Project", owner=admin, organization=system_org)
+                Project.objects.create(name="Project", owner=admin, organization=org)
             init_scheduler()
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
