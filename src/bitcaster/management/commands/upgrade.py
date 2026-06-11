@@ -175,7 +175,7 @@ class Command(BaseCommand):
 
                 admin = User.objects.get(email=self.admin_email)
             else:
-                admin = User.objects.filter(is_superuser=True).get()
+                admin = User.objects.filter(is_superuser=True).first()
 
             if not admin:
                 raise CommandError("Create an admin user")
