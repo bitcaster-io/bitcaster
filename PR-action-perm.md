@@ -80,16 +80,16 @@ Let me read the labelize workflow file to understand the issue.
 <content>
 1: # Adds labels to pull requests for the type of change the PR makes
 2: name: Adds labels
-3: 
+3:
 4: on:
 5:   pull_request:
 6:     types: [opened, synchronize, edited, ready_for_review]
-7: 
+7:
 8: permissions:
 9:   pull-requests: write
 10:   id-token: write
 11:   contents: read
-12: 
+12:
 13: jobs:
 14:   label-pullrequest:
 15:     permissions:
@@ -102,32 +102,32 @@ Let me read the labelize workflow file to understand the issue.
 22:       - uses: actions/checkout@v4
 23:         with:
 24:           persist-credentials: false
-25: 
+25:
 26:       - name: Check for file changes
 27:         uses: dorny/paths-filter@v3
 28:         id: changes
 29:         with:
 30:           token: ${{ github.token }}
 31:           filters: .github/file-filters.yml
-32: 
+32:
 33:       - name: Add Migration label
 34:         uses: actions-ecosystem/action-add-labels@v1
 35:         if: steps.changes.outputs.migrations == 'true'
 36:         with:
 37:           labels: 'Add/Change migration(s)'
-38: 
+38:
 39:       - name: Add Dependencies label
 40:         uses: actions-ecosystem/action-add-labels@v1
 41:         if: steps.changes.outputs.dependencies == 'true'
 42:         with:
 43:           labels: 'Add/Change dependencies'
-44: 
+44:
 45:       - name: Code configuration settings
 46:         uses: actions-ecosystem/action-add-labels@v1
 47:         if: steps.changes.outputs.code_settings == 'true'
 48:         with:
 49:           labels: 'Change Linters Configuration'
-50: 
+50:
 51:       - name: GitHub Configuration
 52:         uses: actions-ecosystem/action-add-labels@v1
 53:         if: steps.changes.outputs.actions == 'true'
@@ -246,27 +246,27 @@ Let me check if there are any actions workflow files that reference anything abo
 2: docker: &docker
 3:   - added|modified: './docker/**/*'
 4:   - added|modified: './docker/*'
-5: 
+5:
 6: dependencies: &dependencies
 7:   - 'uv.lock'
 8:   - 'pyproject.toml'
-9: 
+9:
 10: actions: &actions
 11:   - added|modified: './.github/**/*'
-12: 
+12:
 13: python: &python
 14:   - added|modified: 'src/**'
 15:   - added|modified: 'tests/**'
 16:   - 'manage.py'
-17: 
+17:
 18: changelog:
 19:   - added|modified: 'changes/**'
 20:   - 'CHANGELOG.md'
-21: 
+21:
 22: mypy:
 23:   - *python
 24:   - 'mypy.ini'
-25: 
+25:
 26: run_tests:
 27:   - *actions
 28:   - *python
@@ -274,20 +274,20 @@ Let me check if there are any actions workflow files that reference anything abo
 30:   - *dependencies
 31:   - 'pytest.ini'
 32:   - 'tox.ini'
-33: 
+33:
 34: package: &package
 35:   - *python
 36:   - *dependencies
-37: 
+37:
 38: dockerize:
 39:   - *package
 40:   - *docker
 41:   - '.github/workflows/test.yml'
 42:   - '.github/workflows/dockerize.yml'
-43: 
+43:
 44: migrations:
 45:   - added|modified: 'src/**/migrations/*'
-46: 
+46:
 47: code_settings: &code_settings
 48:   - '.pre-commit-config.yaml'
 49:   - '.semgrep.yaml'
@@ -302,12 +302,12 @@ Let me check if there are any actions workflow files that reference anything abo
 58:   - 'tox.ini'
 59:   - 'transifex.yml'
 60:   - 'trivy.yaml'
-61: 
-62: 
+61:
+62:
 63: lint:
 64:   - *python
 65:   - *code_settings
-66: 
+66:
 67: docs:
 68:   - added|modified: './docs/**/*'
 69:   - modified: '.mkdocs.yml'
@@ -394,4 +394,3 @@ And update the checkout to use the PR's head SHA so `paths-filter` evaluates the
 This is safe here because the workflow only reads file paths and applies labels — it never executes untrusted code from the fork.
 
 ---
-
