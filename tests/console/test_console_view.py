@@ -19,6 +19,18 @@ def message() -> "UserMessage":
 
 
 @pytest.fixture
+def messages(user) -> "tuple[UserMessage, UserMessage]":
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory()
+    msg1 = UserMessageFactory(user=user, event=event1)
+    msg2 = UserMessageFactory(user=user, event=event2)
+
+    return msg1, msg2
+
+
+@pytest.fixture
 def user_messages(user: "User") -> "list[UserMessage]":
     """User messages fixture for filtering tests."""
     from testutils.factories import UserMessageFactory
@@ -97,16 +109,13 @@ def test_pwa_index_filtering(django_app, user: "User", user_messages: "list[User
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_application(django_app, user: "User") -> None:
-    from testutils.factories import EventFactory, UserMessageFactory
-
-    event1 = EventFactory()
-    event2 = EventFactory()
-    msg1 = UserMessageFactory(user=user, event=event1)
-    UserMessageFactory(user=user, event=event2)
+def test_console_index_filter_by_application(
+    django_app, user: "User", messages: "tuple[UserMessage, UserMessage]"
+) -> None:
+    msg1, msg2 = messages
 
     django_app.set_user(user)
-    response = django_app.get(reverse("console:index") + f"?application={event1.application.pk}")
+    response = django_app.get(reverse("console:index") + f"?application={msg1.event.application.pk}")
     assert response.status_code == 200
     messages = [f.instance for f in response.context["user_messages"]]
     assert len(messages) == 1
@@ -127,16 +136,11 @@ def test_console_index_filter_by_application_no_messages(django_app, user: "User
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_event(django_app, user: "User") -> None:
-    from testutils.factories import EventFactory, UserMessageFactory
-
-    event1 = EventFactory()
-    event2 = EventFactory(application=event1.application)
-    msg1 = UserMessageFactory(user=user, event=event1)
-    UserMessageFactory(user=user, event=event2)
+def test_console_index_filter_by_event(django_app, user: "User", messages: "tuple[UserMessage, UserMessage]") -> None:
+    msg1, msg2 = messages
 
     django_app.set_user(user)
-    response = django_app.get(reverse("console:index") + f"?event={event1.pk}")
+    response = django_app.get(reverse("console:index") + f"?event={msg1.event.pk}")
     assert response.status_code == 200
     messages = [f.instance for f in response.context["user_messages"]]
     assert len(messages) == 1
