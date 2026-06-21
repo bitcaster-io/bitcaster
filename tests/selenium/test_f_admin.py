@@ -1,8 +1,5 @@
 from typing import TYPE_CHECKING
 
-from time import sleep
-
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 import pytest
@@ -46,23 +43,21 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     assert MessageTemplate.objects.filter(name="Template Name #1").exists()
 
 
-def _set_template_content(browser: TestBrowser, content: str):
-    browser.switch_to_frame("#id_html_content_ifr")
-    browser.type("#tinymce", content)
-    sleep(1)
-    browser.send_keys("#tinymce", Keys.TAB)
-    sleep(1)
-    browser.switch_to_default_content()
+def _set_template_content(browser: TestBrowser, content: str, expected: str | None = None):
+    if expected is None:
+        expected = content
+    browser.execute_script("tinymce.activeEditor.setContent(arguments[0])", content)
+    # Click HTML tab to trigger send() and update preview
+    browser.click("button#btn_html")
     browser.wait_for_element_visible("#preview")
     browser.switch_to_frame("#preview")
-    sleep(1)
+    browser.wait_for_text(expected, "body", timeout=5)
     text = browser.get_element("html>body").text
     browser.switch_to_default_content()
     return text
 
 
 @pytest.mark.xdist_group(name="message_template")
-@pytest.mark.flaky(max_runs=2)
 def test_edit_template_message(browser: TestBrowser, message_template: "MessageTemplate"):
     event = message_template.event
     channel = message_template.channel
@@ -77,13 +72,12 @@ def test_edit_template_message(browser: TestBrowser, message_template: "MessageT
     browser.wait_for_element(By.CSS_SELECTOR, "#btn_subject")
     browser.click("#btn_subject")
     browser.type("input[name=subject]", "Subject Test")
-    browser.click("button#btn_html")
-    text = _set_template_content(browser, "Sample context")
+    text = _set_template_content(browser, "Sample context", "Sample context")
 
     assert text == "Sample context"
-    text = _set_template_content(browser, "Event {{event.name}}")
+    text = _set_template_content(browser, "Event {{event.name}}", f"Event {event.name}")
     assert text == f"Event {event.name}"
-    text = _set_template_content(browser, "Address {{assignment.address.value}}")
+    text = _set_template_content(browser, "Address {{assignment.address.value}}", f"Address {browser.admin_user.email}")
     assert text == f"Address {browser.admin_user.email}"
-    text = _set_template_content(browser, "Channel {{channel.name}}")
+    text = _set_template_content(browser, "Channel {{channel.name}}", f"Channel {channel.name}")
     assert text == f"Channel {channel.name}"
