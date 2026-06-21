@@ -33,3 +33,8 @@ class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]
         if isinstance(db_field, models.JSONField):
             formfield.widget = JSONEditor()
         return formfield
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        if SocialProvider.objects.count() >= 1:
+            return False
+        return super().has_add_permission(request)

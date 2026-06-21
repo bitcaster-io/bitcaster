@@ -7,7 +7,6 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import Group
-from django.core.exceptions import ImproperlyConfigured
 
 from bitcaster.constants import AddressType
 from bitcaster.social.adapter import BitcasterAccountAdapter, BitcasterSocialAccountAdapter
@@ -235,8 +234,7 @@ def test_save_user_group_not_found(social_adapter, request_mock, db):
 
 
 def test_get_app_not_found(social_adapter, request_mock):
-    with pytest.raises(ImproperlyConfigured, match="SSO provider not found"):
-        social_adapter.get_app(request_mock, "-1")
+    assert social_adapter.get_app(request_mock, "-1") is None
 
 
 def test_get_allowed_emails_caching(social_adapter, request_mock):

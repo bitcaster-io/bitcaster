@@ -51,20 +51,6 @@ def test_change(app: DjangoTestApp, context: "Context") -> None:
     assert res.status_code == 302
 
 
-def test_validate_unique(app: DjangoTestApp) -> None:
-    url = reverse("admin:social_socialprovider_add")
-    res: "TestResponse" = app.get(url)
-    res.forms["socialprovider_form"]["label"] = "Google"
-    res.forms["socialprovider_form"]["provider"] = "google"
-    res = res.forms["socialprovider_form"].submit()
-    assert res.status_code == 302
-    res: "TestResponse" = app.get(url)
-    res.forms["socialprovider_form"]["label"] = "Google"
-    res.forms["socialprovider_form"]["provider"] = "google"
-    res = res.forms["socialprovider_form"].submit()
-    assert res.status_code == 200
-
-
 def test_write_only_widgets(app: DjangoTestApp) -> None:
     from bitcaster.models import SocialProvider
 
