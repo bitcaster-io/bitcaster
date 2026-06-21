@@ -10,7 +10,6 @@ from constance import config
 
 from django.contrib.auth.models import Group
 from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -45,11 +44,13 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
         )
 
     def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
-        try:
-            if db_provider := SocialProvider.objects.get(pk=provider, enabled=True):
-                return self._build_social_app(db_provider)
-        except SocialProvider.DoesNotExist:
-            raise ImproperlyConfigured(_("SSO provider not found")) from None
+        if (
+            db_provider := SocialProvider.objects.filter(pk=provider, enabled=True).first()
+            if isinstance(provider, int) or provider.isdigit()
+            else SocialProvider.objects.filter(provider=provider, enabled=True).first()
+        ):
+            return self._build_social_app(db_provider)
+        return None
 
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         if not config.SOCIAL_AUTH_CREATE_USER:

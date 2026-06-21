@@ -5,7 +5,7 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Application, Event, User, UserMessage
 
 pytestmark = [pytest.mark.xdist_group(name="console_view")]
@@ -54,6 +54,37 @@ def user_messages(user: "User") -> "list[UserMessage]":
         UserMessageFactory.create(user=user, displayed=True, read=None),  # unread
         UserMessageFactory.create(user=user, read=timezone.now()),  # read
     ]
+
+
+@pytest.fixture
+def same_app_event(user: "User"):
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory(application=event1.application)
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    return event1, event2, msg1
+
+
+@pytest.fixture
+def diff_app_event(user: "User"):
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory()
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    return event1, event2, msg1
+
+
+@pytest.fixture
+def app():
+    from testutils.factories import ApplicationFactory
+
+    return ApplicationFactory()
 
 
 @pytest.mark.django_db
@@ -123,10 +154,8 @@ def test_pwa_index_filtering(django_app, user: "User", user_messages: "list[User
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_application(
-    django_app, user: "User", messages: "tuple[UserMessage, UserMessage]"
-) -> None:
-    msg1, msg2 = messages
+def test_console_index_filter_by_application(django_app, user: "User", diff_app_event) -> None:
+    event1, event2, msg1 = diff_app_event
 
     django_app.set_user(user)
     response = django_app.get(reverse("console:index") + f"?application={msg1.event.application.pk}")
@@ -137,17 +166,19 @@ def test_console_index_filter_by_application(
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_application_no_messages(django_app, user: "User", application: "Application") -> None:
+def test_console_index_filter_by_application_no_messages(django_app, user: "User", app: "Application") -> None:
     django_app.set_user(user)
-    response = django_app.get(reverse("console:index") + f"?application={application.pk}")
+    response = django_app.get(reverse("console:index") + f"?application={app.pk}")
     assert response.status_code == 200
     messages = [f.instance for f in response.context["user_messages"]]
     assert len(messages) == 0
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_event(django_app, user: "User", messages: "tuple[UserMessage, UserMessage]") -> None:
-    msg1, msg2 = messages
+def test_console_index_filter_by_event(
+    django_app, user: "User", same_app_event: "tuple[Event, Event, UserMessage]"
+) -> None:
+    event1, event2, msg1 = same_app_event
 
     django_app.set_user(user)
     response = django_app.get(reverse("console:index") + f"?event={msg1.event.pk}")
@@ -158,10 +189,8 @@ def test_console_index_filter_by_event(django_app, user: "User", messages: "tupl
 
 
 @pytest.mark.django_db
-def test_console_index_applications_context(
-    django_app, user: "User", messages: "tuple[UserMessage, UserMessage]"
-) -> None:
-    event1, event2 = messages[0].event, messages[1].event
+def test_console_index_applications_context(django_app, user: "User", diff_app_event) -> None:
+    event1, event2, _ = diff_app_event
     django_app.set_user(user)
     response = django_app.get(reverse("console:index"))
     assert response.status_code == 200

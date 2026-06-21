@@ -92,18 +92,6 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "SESSION_COOKIE_PATH": (str, "/", setting("session-cookie-path")),
     "SESSION_COOKIE_SECURE": (bool, True, setting("session-cookie-secure"), False),
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner", setting("signing-backend")),
-    "SOCIAL_AUTH_LOGIN_URL": (
-        str,
-        "/login/",
-        "https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html#urls-options",
-        False,
-    ),
-    "SOCIAL_AUTH_RAISE_EXCEPTIONS": (
-        bool,
-        False,
-        "https://python-social-auth.readthedocs.io/en/latest/configuration/django.html",
-        True,
-    ),
     "REDIRECT_TO_HTTPS": (
         bool,
         False,
