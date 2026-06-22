@@ -43,7 +43,7 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
             key=key,
         )
 
-    def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
+    def get_app(self, request: HttpRequest, provider: str | int, client_id: str | None = None) -> SocialApp:
         if (
             db_provider := SocialProvider.objects.filter(pk=provider, enabled=True).first()
             if isinstance(provider, int) or provider.isdigit()
