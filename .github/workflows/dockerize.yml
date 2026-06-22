@@ -50,7 +50,7 @@ jobs:
             echo "::notice title=latest :: ${{ github.event.inputs.latest }}"
 
       - name: Checkout code
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.git_reference || github.ref }}
           fetch-depth: 0
