@@ -91,6 +91,9 @@ class PwaDetailView(UnfoldViewMixin, LoginRequiredMixin, DetailView[UserMessage]
     model = UserMessage
     context_object_name = "message"
 
+    def get_queryset(self) -> QuerySet[UserMessage]:
+        return UserMessage.objects.filter(user=self.request.user)
+
     def get_object(self, queryset: QuerySet[UserMessage] | None = None) -> UserMessage:
         obj = super().get_object(queryset)
         if not obj.read:

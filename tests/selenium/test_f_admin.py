@@ -72,6 +72,7 @@ def test_edit_template_message(browser: TestBrowser, message_template: "MessageT
     browser.wait_for_element(By.CSS_SELECTOR, "#btn_subject")
     browser.click("#btn_subject")
     browser.type("input[name=subject]", "Subject Test")
+    browser.click("button#btn_html")
     text = _set_template_content(browser, "Sample context", "Sample context")
 
     assert text == "Sample context"

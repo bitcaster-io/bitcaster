@@ -78,8 +78,12 @@ function Editor() {
         self.iframeElement.contentWindow.document.close();
     }
 
+    var pendingTestXHR = null;
     function send_message() {
-        django.jQuery.post(self.test_url, {
+        if (pendingTestXHR) {
+            pendingTestXHR.abort();
+        }
+        pendingTestXHR = django.jQuery.post(self.test_url, {
                 "content_type": "text/plain",
                 "recipient": $("#id_recipient").val(),
                 "subject": self.$subject.val(),
@@ -90,6 +94,7 @@ function Editor() {
         );
     }
 
+    var pendingXHR = null;
     function send() {
         var selected = self.ACTIVE.attr("id");
         var content = "";
@@ -111,9 +116,13 @@ function Editor() {
             "context": context,
             "recipient": $("#id_recipient").val(),
         }
-        django.jQuery.post(self.render_url, payload,
+        if (pendingXHR) {
+            pendingXHR.abort();
+        }
+        pendingXHR = django.jQuery.post(self.render_url, payload,
             function (data) {
-                replaceIframeContent(data)
+                replaceIframeContent(data);
+                pendingXHR = null;
             }
         );
     }
