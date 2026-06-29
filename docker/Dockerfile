@@ -28,7 +28,6 @@ RUN set -x \
 cmake \
 curl \
 gcc \
-git \
 libfontconfig1 \
 libgconf-2-4 \
 libglib2.0-0 \
@@ -61,21 +60,18 @@ RUN <<EOF cat> /RELEASE
   "date": "$BUILD_DATE"
 }
 EOF
-RUN mkdir /code /venv
 
 WORKDIR /code
 COPY . /code
-
-RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable --no-cache \
-    && git status \
     && uv build
 
 FROM base_os AS dist
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
+ARG PYTHON_VERSION=3.13
 ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
 
@@ -90,10 +86,13 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
     STATIC_URL="/static/" \
-    PYTHONPATH="/venv/lib/python3.13/site-packages"\
+    PYTHONPATH="/venv/lib/python${PYTHON_VERSION}/site-packages" \
     GIT_SHA=$GIT_SHA \
     PGSSLCERT="/tmp/postgresql.crt" \
     UWSGI_PROCESSES=4
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" || exit 1
 
 EXPOSE 8000
 USER bitcaster

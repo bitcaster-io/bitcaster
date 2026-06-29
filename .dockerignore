@@ -6,5 +6,20 @@
 !docker/bin/*.sh
 
 __pycache__/
+*.pyc
+node_modules/
+.venv/
+.eggs/
+*.egg-info/
+dist/
+build/
+docs/
+tests/
+coverage/
+htmlcov/
+*.xml
+.coverage*
+*.log
+*.md
 Makefile
-!.git
+docker/conf/config.toml
