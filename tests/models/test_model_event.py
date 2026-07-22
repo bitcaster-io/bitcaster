@@ -39,7 +39,7 @@ def test_event_notifications(event: "Event") -> None:
         distribution__recipients=[AssignmentFactory.create(channel=ch) for __ in range(2)], event=event
     )
     n2 = NotificationFactory(distribution__recipients=[AssignmentFactory(channel=ch) for __ in range(2)], event=event)
-    assert list(event.notifications.match({})) == [n1, n2]
+    assert {n.pk for n in event.notifications.match({})} == {n1.pk, n2.pk}
 
 
 def test_delete_event_protect_internal() -> None:

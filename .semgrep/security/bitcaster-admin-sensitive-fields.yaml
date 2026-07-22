@@ -1,0 +1,29 @@
+rules:
+  - id: bitcaster-admin-sensitive-fields-in-list-display
+    message: >-
+      Sensitive field '$FIELD' found in 'list_display' of admin class '$ADMIN'.
+      Exposing secrets, keys, passwords, or tokens in the changelist view is a
+      security risk. Remove it from list_display or use a method that masks the
+      value.
+    languages:
+      - python
+    severity: ERROR
+    patterns:
+      - pattern-inside: |
+          class $ADMIN(..., $BASE, ...):
+              ...
+      - metavariable-regex:
+          metavariable: $BASE
+          regex: (BitcasterModelAdmin|BaseAdmin|UnfoldModelAdmin|ModelAdmin)
+      - pattern-either:
+          - pattern: |
+              list_display = [..., "$FIELD", ...]
+          - pattern: |
+              list_display = (..., "$FIELD", ...)
+      - metavariable-regex:
+          metavariable: $FIELD
+          regex: (?i)^(secret|key|password|token|api_key|client_secret|private_key|access_token|refresh_token|auth_token|secret_key)$
+    metadata:
+      category: security
+      technology:
+        - django
