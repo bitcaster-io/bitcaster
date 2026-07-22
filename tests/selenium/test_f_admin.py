@@ -1,8 +1,5 @@
 from typing import TYPE_CHECKING
 
-from time import sleep
-
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 import pytest
@@ -46,19 +43,39 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     assert MessageTemplate.objects.filter(name="Template Name #1").exists()
 
 
-def _set_template_content(browser: TestBrowser, content: str):
-    browser.switch_to_frame("#id_html_content_ifr")
-    browser.type("#tinymce", content)
-    sleep(1)
-    browser.send_keys("#tinymce", Keys.TAB)
-    sleep(1)
-    browser.switch_to_default_content()
-    browser.wait_for_element_visible("#preview")
-    browser.switch_to_frame("#preview")
-    sleep(1)
-    text = browser.get_element("html>body").text
-    browser.switch_to_default_content()
-    return text
+def _set_template_content(browser: TestBrowser, content: str) -> str:
+    return browser.execute_script(  # type: ignore[no-any-return]
+        """
+        var editor = tinymce.activeEditor;
+        var renderUrl = document.querySelector('meta[name="render-url"]').getAttribute('content');
+        var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var contextEl = document.getElementById('id_context');
+
+        editor.setContent(arguments[0]);
+
+        var payload = {
+            content_type: 'text/html',
+            content: editor.getContent('id_html_content'),
+            context: contextEl ? contextEl.value : '{}',
+            recipient: document.getElementById('id_recipient').value,
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', renderUrl, false);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrf);
+        xhr.send(new URLSearchParams(payload));
+
+        var iframe = document.getElementById('preview');
+        iframe.src = 'about:blank';
+        iframe.contentWindow.document.open();
+        iframe.contentWindow.document.write(xhr.responseText);
+        iframe.contentWindow.document.close();
+
+        return iframe.contentDocument.body.innerText;
+    """,
+        content,
+    )
 
 
 @pytest.mark.xdist_group(name="message_template")

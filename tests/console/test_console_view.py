@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 if TYPE_CHECKING:
-    from bitcaster.models import User, UserMessage
+    from bitcaster.models import Application, Event, User, UserMessage
 
 pytestmark = [pytest.mark.xdist_group(name="console_view")]
 
@@ -19,13 +19,27 @@ def message() -> "UserMessage":
 
 
 @pytest.fixture
-def messages(user) -> "tuple[UserMessage, UserMessage]":
-    from testutils.factories import EventFactory, UserMessageFactory
+def application() -> "Application":
+    from testutils.factories import ApplicationFactory
 
-    event1 = EventFactory()
-    event2 = EventFactory()
-    msg1 = UserMessageFactory(user=user, event=event1)
-    msg2 = UserMessageFactory(user=user, event=event2)
+    return ApplicationFactory.create()
+
+
+@pytest.fixture
+def events(user, application) -> "tuple[Event, Event]":
+    from testutils.factories import EventFactory
+
+    event1 = EventFactory.create()
+    event2 = EventFactory.create()
+    return event1, event2
+
+
+@pytest.fixture
+def messages(user, events) -> "tuple[UserMessage, UserMessage]":
+    from testutils.factories import UserMessageFactory
+
+    msg1 = UserMessageFactory.create(user=user, event=events[0])
+    msg2 = UserMessageFactory.create(user=user, event=events[1])
 
     return msg1, msg2
 
@@ -123,13 +137,9 @@ def test_console_index_filter_by_application(
 
 
 @pytest.mark.django_db
-def test_console_index_filter_by_application_no_messages(django_app, user: "User") -> None:
-    from testutils.factories import ApplicationFactory
-
-    app = ApplicationFactory()
-
+def test_console_index_filter_by_application_no_messages(django_app, user: "User", application: "Application") -> None:
     django_app.set_user(user)
-    response = django_app.get(reverse("console:index") + f"?application={app.pk}")
+    response = django_app.get(reverse("console:index") + f"?application={application.pk}")
     assert response.status_code == 200
     messages = [f.instance for f in response.context["user_messages"]]
     assert len(messages) == 0
@@ -148,14 +158,10 @@ def test_console_index_filter_by_event(django_app, user: "User", messages: "tupl
 
 
 @pytest.mark.django_db
-def test_console_index_applications_context(django_app, user: "User") -> None:
-    from testutils.factories import EventFactory, UserMessageFactory
-
-    event1 = EventFactory()
-    event2 = EventFactory()
-    UserMessageFactory(user=user, event=event1)
-    UserMessageFactory(user=user, event=event2)
-
+def test_console_index_applications_context(
+    django_app, user: "User", messages: "tuple[UserMessage, UserMessage]"
+) -> None:
+    event1, event2 = messages[0].event, messages[1].event
     django_app.set_user(user)
     response = django_app.get(reverse("console:index"))
     assert response.status_code == 200
