@@ -293,7 +293,6 @@ dependencies = [
     { name = "requests-oauthlib" },
     { name = "sentry-sdk" },
     { name = "setuptools" },
-    { name = "slack-notifications" },
     { name = "slack-sdk" },
     { name = "twilio" },
     { name = "user-agents" },
@@ -449,7 +448,6 @@ requires-dist = [
     { name = "requests-oauthlib", specifier = ">=2" },
     { name = "sentry-sdk", specifier = ">=1.43" },
     { name = "setuptools", specifier = ">=75.3" },
-    { name = "slack-notifications", specifier = ">=0.2.2" },
     { name = "slack-sdk", specifier = ">=3.27.1" },
     { name = "twilio", specifier = ">=9.10.5" },
     { name = "user-agents", specifier = ">=2.2" },
@@ -4259,18 +4257,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031, upload-time = "2024-12-04T17:35:28.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050, upload-time = "2024-12-04T17:35:26.475Z" },
-]
-
-[[package]]
-name = "slack-notifications"
-version = "1.0.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/98/d30d81755545505e90be96929ec83fdf85cb7ced527d3aad5e0f15b99be5/slack_notifications-1.0.1.tar.gz", hash = "sha256:83840ff6ba6de22f54285c87213b779d7e1e81b220b1f36fd342d40100745bee", size = 11960, upload-time = "2024-07-23T12:33:50.542Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/c9/b43a9a903d84db279b6b8de11152d973fbf14ef5b66e98ee32bbaf8527a9/slack_notifications-1.0.1-py3-none-any.whl", hash = "sha256:9110b890c995a4902c8b2cbdb56a65036aa12ca4e9e567ae7ad4e7fc93dcfbd0", size = 15698, upload-time = "2024-07-23T12:33:49.153Z" },
 ]
 
 [[package]]
