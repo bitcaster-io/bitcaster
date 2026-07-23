@@ -99,6 +99,9 @@ class UserConsoleDetailView(UserConsoleMixin, LoginRequiredMixin, DetailView[Use
     template_name = "bitcaster/console/detail.html"
     model = UserMessage
 
+    def get_queryset(self) -> QuerySet[UserMessage]:
+        return UserMessage.objects.filter(user=self.request.user)
+
     def get_object(self, queryset: QuerySet["UserMessage"] | None = None) -> UserMessage:
         obj = super().get_object(queryset)
         if not obj.read:

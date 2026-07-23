@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from testutils.perms import configure_event
 
 from django.urls import reverse
 from django.utils import timezone
@@ -149,12 +150,14 @@ def test_console_index_filter_by_application_no_messages(django_app, user: "User
 def test_console_index_filter_by_event(django_app, user: "User", messages: "tuple[UserMessage, UserMessage]") -> None:
     msg1, msg2 = messages
 
-    django_app.set_user(user)
-    response = django_app.get(reverse("console:index") + f"?event={msg1.event.pk}")
-    assert response.status_code == 200
-    messages = [f.instance for f in response.context["user_messages"]]
-    assert len(messages) == 1
-    assert messages[0].pk == msg1.pk
+    event1, event2 = messages[0].event, messages[1].event
+    with configure_event(event2, application=event1.application):
+        django_app.set_user(user)
+        response = django_app.get(reverse("console:index") + f"?event={msg1.event.pk}")
+        assert response.status_code == 200
+        msgs = [f.instance for f in response.context["user_messages"]]
+        assert len(msgs) == 1
+        assert msgs[0].pk == msg1.pk
 
 
 @pytest.mark.django_db

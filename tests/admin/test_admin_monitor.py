@@ -77,6 +77,24 @@ def test_configure(app: DjangoTestApp, monitor: "Monitor") -> None:
     assert res.status_code == 302
 
 
+def test_configure_redirect_valid(app: DjangoTestApp, monitor: "Monitor") -> None:
+    opts: Options[Monitor] = Monitor._meta
+    url = reverse(admin_urlname(opts, SafeString("configure")), args=[monitor.pk])
+    next_url = reverse("admin:index")
+    res = app.post(url + f"?next={next_url}", {"path": "/"})
+    assert res.status_code == 302
+    assert res.url == next_url
+
+
+def test_configure_redirect_invalid(app: DjangoTestApp, monitor: "Monitor") -> None:
+    opts: Options[Monitor] = Monitor._meta
+    url = reverse(admin_urlname(opts, SafeString("configure")), args=[monitor.pk])
+    res = app.post(url + "?next=https://evil.com", {"path": "/"})
+    assert res.status_code == 302
+    admin_url = reverse(admin_urlname(opts, SafeString("change")), args=[monitor.pk])
+    assert res.url == admin_url
+
+
 def test_monitor_test(app: DjangoTestApp, monitor: "Monitor") -> None:
     msg: Message
 

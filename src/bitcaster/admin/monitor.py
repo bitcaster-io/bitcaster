@@ -14,6 +14,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.forms.monitor import MonitorForm
@@ -85,8 +86,9 @@ class MonitorAdmin(BaseAdmin[Monitor], TwoStepCreateMixin[Monitor], VersionAdmin
                 monitor.result = {}
                 monitor.save()
                 self.message_user(request, f"Configured Monitor {monitor.name}")
-                if "next" in request.GET:
-                    return HttpResponseRedirect(request.GET["next"])
+                next_url = request.GET.get("next")
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts=None):
+                    return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(monitor.get_admin_change())
         else:
             config_form = form_class(
