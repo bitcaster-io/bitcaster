@@ -112,6 +112,7 @@ dev = [
   "factory-boy>=3.3",
   "flaky>=3.8.1",
   "freezegun>=1.4",
+  "licensecheck>=2026.0.8",
   "pdbpp>=0.10.3",
   "pip-audit>=2.7.3",
   "poethepoet>=0.34",
@@ -196,6 +197,24 @@ script = "poethepoet.scripts:rm('dist', '~build', '*.xml', '*.coverage*')"
 
 [tool.poe.tasks.fullclean]
 script = "poethepoet.scripts:rm('dist', '~build', '.tox', '.act', '.venv')"
+
+[tool.licensecheck]
+license = "mit"               # Specify the project license explicitly
+format = "simple"             # Output format (e.g., "json", "csv", etc.)
+requirements_paths = [  ]     # List of filenames to read from
+groups = [  ]                 # List of selected groups
+extras = [  ]                 # List of selected extras
+file = ""                     # Output file (leave empty for stdout)
+ignore_packages = [  ]        # Packages/dependencies to ignore
+fail_packages = [  ]          # Packages/dependencies that cause failure
+ignore_licenses = [  ]        # Licenses to ignore
+fail_licenses = [  ]          # Licenses that cause failure
+only_licenses = [  ]          # Allowed licenses (all others will fail)
+skip_dependencies = [  ]      # Dependencies to skip (compatibility = True)
+hide_output_parameters = [  ] # Parameters to hide from output
+show_only_failing = false     # Show only incompatible/failing packages
+pypi_api = "https://pypi.org" # Custom PyPI API endpoint
+zero = false                  # Return non-zero exit code for incompatible licenses (for CI/CD)
 
 [tool.uv]
 package = true
