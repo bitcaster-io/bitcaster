@@ -31,3 +31,37 @@ Your user will be empowered with an easy to use console to choose how to receive
 - [Bug Tracker](https://github.com/bitcaster-io/bitcaster/issues)
 - [Code](https://github.com/bitcaster-io/bitcaster/)
 - [Transifex](https://explore.transifex.com/bitcaster/bitcaster/) (Translate Bitcaster\!)
+
+## Code Quality & Security
+
+The project uses several tools to ensure code quality and security:
+
+- [Django](https://www.djangoproject.com/) for the web framework
+- [Semgrep](https://semgrep.dev/) for static analysis and security scanning
+- [Pytest](https://docs.pytest.org/en/stable/) for testing
+- [ESLint](https://eslint.org/) for JavaScript linting
+- [Prettier](https://prettier.io/) for code formatting
+
+### Security Rules
+
+#### Admin List_Display Sensitive Fields Detection
+A new Semgrep security rule has been added to detect sensitive fields in Django admin `list_display` configurations. This rule prevents exposure of secrets, keys, passwords, or tokens in the changelist view which poses a significant security risk.
+
+**Fields Detected:**
+- `secret`
+- `key`
+- `password`
+- `token`
+- `api_key`
+- `client_secret`
+- `private_key`
+- `access_token`
+- `refresh_token`
+- `auth_token`
+- `secret_key`
+
+**Why This Matters:**
+Exposing sensitive information like API keys, passwords, or tokens in admin changelist views allows unauthorized users to gain access to critical system resources. Even users with limited permissions might be able to see these values if they are displayed in the list view.
+
+**How It Helps Prevent Security Issues:**
+This rule automatically detects and flags any instance where sensitive fields appear in `list_display`, preventing accidental exposure of confidential data. It enforces security best practices by requiring developers to explicitly hide or mask sensitive information in Django admin interfaces.
