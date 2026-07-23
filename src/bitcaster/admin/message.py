@@ -133,7 +133,7 @@ class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTem
     ) -> dict[str, str]:
         from bitcaster.models import Event, Notification, Occurrence
 
-        event = obj.event if obj.event else Event(name="Sample Event")
+        event = obj.event or Event(name="Sample Event")
         dl = DistributionList(name="Sample DistributionList", project=event.application.project)
         no = Notification(name="Sample Notification", event=event, distribution=dl)
         oc = Occurrence(event=event, timestamp=timezone.now(), pk=-1)

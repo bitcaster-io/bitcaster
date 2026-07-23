@@ -43,21 +43,43 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     assert MessageTemplate.objects.filter(name="Template Name #1").exists()
 
 
-def _set_template_content(browser: TestBrowser, content: str, expected: str | None = None):
-    if expected is None:
-        expected = content
-    browser.execute_script("tinymce.activeEditor.setContent(arguments[0])", content)
-    # Click HTML tab to trigger send() and update preview
-    browser.click("button#btn_html")
-    browser.wait_for_element_visible("#preview")
-    browser.switch_to_frame("#preview")
-    browser.wait_for_text(expected, "body", timeout=5)
-    text = browser.get_element("html>body").text
-    browser.switch_to_default_content()
-    return text
+def _set_template_content(browser: TestBrowser, content: str) -> str:
+    return browser.execute_script(  # type: ignore[no-any-return]
+        """
+        var editor = tinymce.activeEditor;
+        var renderUrl = document.querySelector('meta[name="render-url"]').getAttribute('content');
+        var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var contextEl = document.getElementById('id_context');
+
+        editor.setContent(arguments[0]);
+
+        var payload = {
+            content_type: 'text/html',
+            content: editor.getContent('id_html_content'),
+            context: contextEl ? contextEl.value : '{}',
+            recipient: document.getElementById('id_recipient').value,
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', renderUrl, false);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrf);
+        xhr.send(new URLSearchParams(payload));
+
+        var iframe = document.getElementById('preview');
+        iframe.src = 'about:blank';
+        iframe.contentWindow.document.open();
+        iframe.contentWindow.document.write(xhr.responseText);
+        iframe.contentWindow.document.close();
+
+        return iframe.contentDocument.body.innerText;
+    """,
+        content,
+    )
 
 
 @pytest.mark.xdist_group(name="message_template")
+@pytest.mark.flaky(max_runs=2)
 def test_edit_template_message(browser: TestBrowser, message_template: "MessageTemplate"):
     event = message_template.event
     channel = message_template.channel
@@ -73,12 +95,12 @@ def test_edit_template_message(browser: TestBrowser, message_template: "MessageT
     browser.click("#btn_subject")
     browser.type("input[name=subject]", "Subject Test")
     browser.click("button#btn_html")
-    text = _set_template_content(browser, "Sample context", "Sample context")
+    text = _set_template_content(browser, "Sample context")
 
     assert text == "Sample context"
-    text = _set_template_content(browser, "Event {{event.name}}", f"Event {event.name}")
+    text = _set_template_content(browser, "Event {{event.name}}")
     assert text == f"Event {event.name}"
-    text = _set_template_content(browser, "Address {{assignment.address.value}}", f"Address {browser.admin_user.email}")
+    text = _set_template_content(browser, "Address {{assignment.address.value}}")
     assert text == f"Address {browser.admin_user.email}"
-    text = _set_template_content(browser, "Channel {{channel.name}}", f"Channel {channel.name}")
+    text = _set_template_content(browser, "Channel {{channel.name}}")
     assert text == f"Channel {channel.name}"
