@@ -51,11 +51,25 @@ def pytest_addoption(parser) -> None:
         help="set sentry environment",
     )
 
+    parser.addoption(
+        "--test-docker",
+        action="store_true",
+        dest="test_docker",
+        default=False,
+        help="run only docker container integration tests",
+    )
+
 
 def pytest_configure(config):
     os.environ.update(DJANGO_SETTINGS_MODULE="bitcaster.config.settings")
     os.environ.setdefault("MEDIA_ROOT", "/tmp/static/")
     os.environ.setdefault("STATIC_ROOT", "/tmp/media/")
+
+    if config.option.test_docker:
+        config.option.cov_fail_under = 0
+        cov = config.pluginmanager.get_plugin("_cov")
+        if cov is not None:
+            cov.fail_under = 0
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
@@ -97,6 +111,7 @@ def pytest_configure(config):
         os.environ["SENTRY_ENVIRONMENT"] = config.option.sentry_environment
 
     config.addinivalue_line("markers", "skip_test_if_env(env): this mark skips the tests for the given env")
+    config.addinivalue_line("markers", "docker: docker container integration tests (use --test-docker)")
     from django.conf import settings
 
     settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
@@ -123,6 +138,16 @@ def pytest_configure(config):
         call_command("env", check=True)
     except CommandError:
         pytest.exit("FATAL: Environment variables missing")
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.option.test_docker:
+        items[:] = [item for item in items if item.get_closest_marker("docker")]
+    else:
+        skip = pytest.mark.skip(reason="use --test-docker to enable")
+        for item in items:
+            if item.get_closest_marker("docker"):
+                item.add_marker(skip)
 
 
 def run_sql(sql):
