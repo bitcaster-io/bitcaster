@@ -338,6 +338,7 @@ dev = [
     { name = "ruff" },
     { name = "selenium" },
     { name = "seleniumbase" },
+    { name = "testinfra" },
     { name = "tox" },
 ]
 docs = [
@@ -493,6 +494,7 @@ dev = [
     { name = "ruff", specifier = ">=0.11.13" },
     { name = "selenium", specifier = ">=4.18.1" },
     { name = "seleniumbase", specifier = ">=4.38.3" },
+    { name = "testinfra", specifier = ">=6.0.0" },
     { name = "tox" },
 ]
 docs = [
@@ -3732,6 +3734,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-testinfra"
+version = "10.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/15/b650133bb3eb3509704c7605348bec4205b6a399f7a79874ced6c30a3e15/pytest_testinfra-10.2.2.tar.gz", hash = "sha256:537fd5eb88da618c1f461248aa20594cf8d44512e8519b239837e83875e1e9cd", size = 76153, upload-time = "2025-03-30T09:06:02.224Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1c/75/8b002ad110ae4a71bce9bb47020ee77176e27defe99ce6d7b62e52debeb9/pytest_testinfra-10.2.2-py3-none-any.whl", hash = "sha256:b785602b0aa868c858e4ef121a8cc0d13a81c04b74ec0364d70969540f8e7c31", size = 76912, upload-time = "2025-03-30T09:06:00.358Z" },
+]
+
+[[package]]
 name = "pytest-testmon"
 version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4357,6 +4371,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/46/79/cf31d7a93a8fdc6aa0fbb665be84426a8c5a557d9240b6239e9e11e35fc5/termcolor-3.3.0.tar.gz", hash = "sha256:348871ca648ec6a9a983a13ab626c0acce02f515b9e1983332b17af7979521c5", size = 14434, upload-time = "2025-12-29T12:55:21.882Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/d1/8bb87d21e9aeb323cc03034f5eaf2c8f69841e40e4853c2627edf8111ed3/termcolor-3.3.0-py3-none-any.whl", hash = "sha256:cf642efadaf0a8ebbbf4bc7a31cec2f9b5f21a9f726f4ccbb08192c9c26f43a5", size = 7734, upload-time = "2025-12-29T12:55:20.718Z" },
+]
+
+[[package]]
+name = "testinfra"
+version = "6.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest-testinfra" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e8/aa/35319fcf8935036bb2f8049ffb515d4490b8bfc27cf2d9551d3b4686702e/testinfra-6.0.0.tar.gz", hash = "sha256:4225d36e4bb02eb1618429325280c4b62a18cea8a90c91564ee0cc1d31ca331a", size = 1705, upload-time = "2020-11-12T21:39:44.264Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/6b/021295ce3a3c9cdf8ebd643647c2eeb8329b960b07b4f983a488af291354/testinfra-6.0.0-py3-none-any.whl", hash = "sha256:1a75b5025dbe82ffedec50afeaf9a7f96a8cd1e294f0d40de3a089a369ceae0e", size = 2135, upload-time = "2020-11-12T21:39:43.232Z" },
 ]
 
 [[package]]
