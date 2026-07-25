@@ -146,7 +146,7 @@ body.pwa {
 
   /* Buttons */
   .pwa-btn {
-    @apply px-4 py-2 text-xs font-bold rounded-lg shadow-md transition-all;
+    @apply px-4 py-2 text-xs font-bold rounded-lg shadow-md transition-all cursor-pointer;
 
     &.primary {
       @apply bg-red-600 text-white hover:bg-red-700;
