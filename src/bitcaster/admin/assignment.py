@@ -28,6 +28,8 @@ class AssignmentAdmin(BaseAdmin[Assignment]):
     list_display = ("address", "channel", "validated", "active")
     list_filter = (
         "channel",
+        "active",
+        "validated",
         ("channel__project", AutoCompleteFilter),
         ("address__user", LinkedAutoCompleteFilter.factory(parent=None)),
         ("address", LinkedAutoCompleteFilter.factory(parent="address__user")),

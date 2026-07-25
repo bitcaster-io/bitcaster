@@ -41,7 +41,7 @@ class Assignment(BitcasterBaseModel):
     validated = models.BooleanField(
         verbose_name=_("Validated"), default=False, help_text=_("If the assignment has been validated")
     )
-    active = models.BooleanField(verbose_name=_("Validated"), default=True, help_text=_("If the assignment is acive"))
+    active = models.BooleanField(verbose_name=_("Active"), default=True, help_text=_("If the assignment is acive"))
     data = models.JSONField(
         verbose_name=_("Data"), blank=True, null=False, default=dict, help_text=_("system data of this assignment")
     )
