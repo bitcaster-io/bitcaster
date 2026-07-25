@@ -9,10 +9,10 @@
         <div class="flex justify-center">
             {#            <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}" />#}
             <template x-if="adminTheme === 'dark'">
-                <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
+                <img alt="Bitcaster" class="align-middle h-8" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
             </template>
             <template x-if="adminTheme !== 'dark'">
-                <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name.svg" %}" />
+                <img alt="Bitcaster" class="align-middle h-8" src="{% static "bitcaster/images/logos/name.svg" %}" />
             </template>
         </div>
         <div class="flex justify-center gap-2 mt-4 mb-10">

@@ -1,7 +1,4 @@
 FROM python:3.13-slim-bookworm AS base_os
-ARG VERSION
-ARG GIT_SHA
-ARG BUILD_DATE
 
 RUN set -x \
   && apt-get update && apt-get install -y --no-install-recommends debian-archive-keyring \
@@ -66,11 +63,8 @@ RUN mkdir /code /venv
 WORKDIR /code
 COPY . /code
 
-RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable --no-cache \
-    && git status \
-    && uv build
+    && uv sync --no-dev --frozen --no-editable --no-cache
 
 FROM base_os AS dist
 ARG VERSION
@@ -81,6 +75,7 @@ ADD docker/bin/* /usr/local/bin/
 
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
 COPY --from=builder /venv /venv
+COPY --from=builder /RELEASE /RELEASE
 RUN mkdir -p /var/storage/media/ /var/storage/static/ \
     && chown -R bitcaster /var/storage/
 
@@ -90,7 +85,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
     STATIC_URL="/static/" \
-    PYTHONPATH="/venv/lib/python3.13/site-packages"\
+    PYTHONPATH="/venv/lib/python*/site-packages"\
     GIT_SHA=$GIT_SHA \
     PGSSLCERT="/tmp/postgresql.crt" \
     UWSGI_PROCESSES=4
