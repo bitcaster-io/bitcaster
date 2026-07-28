@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.linkedin_oauth2",
     "allauth.socialaccount.providers.openid_connect",
     "allauth.socialaccount.providers.twitter",
+    "axes",
     "csp",
     "smart_selects",
     "adminfilters",
@@ -105,6 +106,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -184,6 +186,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
     "bitcaster.auth.backends.BitcasterBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
@@ -272,4 +275,5 @@ from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa
 from .fragments.tinymce import *  # noqa
 from .fragments.unfold import *  # noqa
+from .fragments.axes import *  # noqa
 from .fragments.json_editor import *  # noqa

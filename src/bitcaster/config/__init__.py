@@ -37,6 +37,11 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "AGENT_FILESYSTEM_DISALLOWED": (list, "", "AgentFilesystem disallowed directories"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
+    "AXES_ENABLED": (bool, True, "Enable django-axes login attempt tracking", True),
+    "AXES_FAILURE_LIMIT": (int, 5, "Number of failed login attempts before lockout"),
+    "AXES_COOLOFF_TIME": (int, 1, "Hours to wait before resetting failed attempts"),
+    "AXES_RESET_ON_SUCCESS": (bool, True, "Reset failed attempts on successful login", True),
+    "AXES_LOCKOUT_URL": (str, "/admin/login/", "URL to redirect on lockout"),
     "BITCASTER_DOCUMENTATION_SITE_URL": (
         str,
         "https://bitcaster-io.github.io/bitcaster",

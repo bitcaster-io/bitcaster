@@ -39,6 +39,8 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
         "socialaccount",
         "mfa",
         "depot",
+        "axes.AccessAttempt",
+        "axes.AccessLog",
     ]
 )
 
