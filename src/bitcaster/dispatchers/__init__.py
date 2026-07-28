@@ -3,6 +3,7 @@ from .gmail import GMailDispatcher
 from .log import LocalDatabaseDispatcher
 from .mailgun import MailgunDispatcher
 from .mailjet import MailJetDispatcher
+from .rabbitmq import RabbitMQDispatcher
 from .sendgrid import SendGridDispatcher
 from .slack import SlackDispatcher
 from .sys import SystemDispatcher
@@ -17,6 +18,7 @@ __all__ = [
     "GMailDispatcher",
     "MailJetDispatcher",
     "MailgunDispatcher",
+    "RabbitMQDispatcher",
     "SendGridDispatcher",
     "SlackDispatcher",
     "SystemDispatcher",

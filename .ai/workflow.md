@@ -4,6 +4,7 @@
 ```bash
 uv sync                    # install deps (uses uv.lock)
 tox -e lint               # ruff + pre-commit hooks (run first)
+tox -e semgrep            # semgrep validation
 tox -e mypy               # type checking (strict mode, mypy.ini)
 tox -e tests              # pytest with coverage
 tox -e tests -- -k "test_name"  # single test
@@ -28,10 +29,14 @@ If the test passes on the first run (before any patches), it is incorrect — ei
 
 Under no circumstances should production code be written before confirming the test is red. This is a **mandatory gate**, not a suggestion.
 
+Any code must pass `tox` before can be cosidered ready to commit.
+
+
 ## Validation Protocol
 - **Patch Coverage:** 100% patch coverage is mandatory — `diff-cover` compares against `origin/develop`
 - **Required Checks:** Before finishing any task, you must run:
     - `tox -e lint`: For code style and linting.
+    - `tox -e semgrep`: For code rules.
     - `tox -e mypy`: For static type checking.
     - `tox -e tests`: To ensure no regressions (includes diff-cover check).
     - `tox -e docs`: If documentation or docstrings are modified.

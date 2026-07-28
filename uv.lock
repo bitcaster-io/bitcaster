@@ -277,6 +277,7 @@ dependencies = [
     { name = "msgpack" },
     { name = "oauthlib" },
     { name = "phonenumbers" },
+    { name = "pika" },
     { name = "pillow" },
     { name = "pip" },
     { name = "premailer" },
@@ -433,6 +434,7 @@ requires-dist = [
     { name = "msgpack", specifier = ">=1.2.1" },
     { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
+    { name = "pika", specifier = ">=1.3" },
     { name = "pillow", specifier = ">=12.2" },
     { name = "pip", specifier = ">=26.1.2" },
     { name = "premailer", specifier = ">=3.10" },
@@ -494,7 +496,7 @@ dev = [
     { name = "ruff", specifier = ">=0.11.13" },
     { name = "selenium", specifier = ">=4.18.1" },
     { name = "seleniumbase", specifier = ">=4.38.3" },
-    { name = "testinfra", specifier = ">=6.0.0" },
+    { name = "testinfra", specifier = ">=6" },
     { name = "tox" },
 ]
 docs = [
@@ -2918,6 +2920,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/5e/bf/277ae37edb6f5189937223cc3b2a21b8de9d70ac2d0eb684cf33ba055fdd/phonenumbers-9.0.24.tar.gz", hash = "sha256:97c38e4b5b8af992c75de01bd9c0f84e61701a9c900fd84f49744714910a4dc3", size = 2298138, upload-time = "2026-02-13T11:28:57.724Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2a/c7/b01beac6077df7261d92c6b52408617690147144d8946f6f6ecb7d9766ab/phonenumbers-9.0.24-py2.py3-none-any.whl", hash = "sha256:fa86ab7112ef8b286a811392311bd76bbbae7d1d271c2ed26cf73f2e9fa4d3c6", size = 2584198, upload-time = "2026-02-13T11:28:55.334Z" },
+]
+
+[[package]]
+name = "pika"
+version = "1.4.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/06/a5e4589eccb22be5790bf1327e20c5387b64327daa40c4d857cf9265ec3c/pika-1.4.2.tar.gz", hash = "sha256:48d1f50297e76be4fc798fd5232d4d532d7a4758e51f7c0ae6c4004b9808a26b", size = 154365, upload-time = "2026-07-23T02:11:26.003Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/82/3b047c707700e08539cde489475eb5eaca13550599baaa17a8da038003e7/pika-1.4.2-py3-none-any.whl", hash = "sha256:b1df7389cdffaa45856bd01ade4e81bd488e0e199c443faf0c7bea89015f373f", size = 165087, upload-time = "2026-07-23T02:11:24.712Z" },
 ]
 
 [[package]]

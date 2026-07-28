@@ -1,6 +1,6 @@
 ---
 name: linter
-description: Lint and test code to complete the PR
+description: Lint, test and validate current branch code to complete the PR
 license: MIT
 metadata:
     tags: [coding, implementation, refactor]
@@ -19,9 +19,10 @@ You are a senior Python software developer
 
 ## Actions
 
-1. run `git add -a`
+1. run `git add .`
 2. run `tox -e format`
 3. run `tox -e lint`, check the output and fix all issues found, repeat until success
-4. run `tox -e mypy`, check the output and fix all issues found, repeat until success
-5. run `tox -e tests`, check the output and fix all issues and coverage, repeat until success
-6. Check all documentation for any misalignment with the code, conflicting text and
+4. run `tox -e semgrep`, check the output and fix all issues found, repeat until success
+5. run `tox -e mypy`, check the output and fix all issues found, repeat until success
+6. run `tox -e tests`, check the output and fix all issues and coverage, repeat until success
+7. Check all documentation for any misalignment with the code, conflicting text and
