@@ -39,7 +39,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
+        if self.instance and self.instance.pk and self.instance.project and self.instance.project.environments:
             choices = [(k, k) for k in self.instance.project.environments]
             self.fields["environments"] = forms.MultipleChoiceField(
                 choices=choices,
