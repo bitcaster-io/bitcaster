@@ -301,6 +301,7 @@ dependencies = [
     { name = "msgpack" },
     { name = "oauthlib" },
     { name = "phonenumbers" },
+    { name = "pika" },
     { name = "pillow" },
     { name = "pip" },
     { name = "premailer" },
@@ -457,6 +458,7 @@ requires-dist = [
     { name = "msgpack", specifier = ">=1.2.1" },
     { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
+    { name = "pika", specifier = ">=1.3.2" },
     { name = "pillow", specifier = ">=12.2" },
     { name = "pip", specifier = ">=26.1.2" },
     { name = "premailer", specifier = ">=3.10" },
@@ -2924,6 +2926,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/47/9c/af506fdd7220cdf6fcea27a3b8d3dc5feb239f5072137c7900155c0c6cf9/phonenumbers-9.0.35.tar.gz", hash = "sha256:b19d97e8c448ccfd8d646888d2a65635372f75b9916006cc0a2f809b531baaea", size = 2306830, upload-time = "2026-07-26T08:28:17.303Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/62/35/80f35904033e5584966c255a0140f48934d18c4711c04d4bcbdf5b330bfb/phonenumbers-9.0.35-py2.py3-none-any.whl", hash = "sha256:57ef9787ddf2bc8cc0906d5c876d43fcd65fa25e7330d00b9f2ba8528870b72a", size = 2595440, upload-time = "2026-07-26T08:28:14.033Z" },
+]
+
+[[package]]
+name = "pika"
+version = "1.4.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/06/a5e4589eccb22be5790bf1327e20c5387b64327daa40c4d857cf9265ec3c/pika-1.4.2.tar.gz", hash = "sha256:48d1f50297e76be4fc798fd5232d4d532d7a4758e51f7c0ae6c4004b9808a26b", size = 154365, upload-time = "2026-07-23T02:11:26.003Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/82/3b047c707700e08539cde489475eb5eaca13550599baaa17a8da038003e7/pika-1.4.2-py3-none-any.whl", hash = "sha256:b1df7389cdffaa45856bd01ade4e81bd488e0e199c443faf0c7bea89015f373f", size = 165087, upload-time = "2026-07-23T02:11:24.712Z" },
 ]
 
 [[package]]
