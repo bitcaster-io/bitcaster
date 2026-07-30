@@ -152,6 +152,7 @@ UNFOLD = {
                         "title": _("Members"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),
+                        "permission": lambda request: request.user.has_perm("bitcaster.view_member"),
                     },
                     {
                         "title": _("Stream"),
