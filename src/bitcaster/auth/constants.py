@@ -24,3 +24,4 @@ class Grant(TextChoices):
     EVENT_AUTO_CREATE = "EVENT_AUTO_CREATE", "Event Auto-Create"
 
     DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"
+    MANAGE_APPLICATION_USERS = "MANAGE_APPLICATION_USERS", "Manage Application Users"

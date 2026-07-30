@@ -3,6 +3,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Event, Notification, User
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
@@ -52,4 +53,8 @@ class NotificationForm(forms.ModelForm["Notification"]):
             envs = self.cleaned_data.get("environments", [])
         if not set(envs).issubset(prj_envs):
             raise ValidationError({"environments": "One or more values are not available in the project"})
+
+        distribution = self.cleaned_data.get("distribution")
+        if distribution and distribution.application_id and evt.application_id != distribution.application_id:
+            raise ValidationError({"distribution": _("DistributionList is pinned to a different application.")})
         return self.cleaned_data
