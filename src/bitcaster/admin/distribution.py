@@ -24,20 +24,22 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class DistributionListAdmin(TwoStepCreateMixin[DistributionList], BaseAdmin[DistributionList]):
     search_fields = ("name",)
-    list_display = ("name", "project")
+    list_display = ("name", "project", "application")
     list_filter = (
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("application", LinkedAutoCompleteFilter.factory(parent="project")),
         ("recipients__address__user", AutoCompleteFilter.factory()),
     )
-    autocomplete_fields = ("project",)
+    autocomplete_fields = ("project", "application")
     filter_horizontal = ("recipients",)
     fields = (
         "name",
         "project",
+        "application",
     )
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
-        return super().get_queryset(request).select_related("project__organization")
+        return super().get_queryset(request).select_related("project__organization", "application")
 
     @button(label=_("Recipients"), html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
     def members(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
