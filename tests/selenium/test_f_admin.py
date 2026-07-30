@@ -43,6 +43,17 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     assert MessageTemplate.objects.filter(name="Template Name #1").exists()
 
 
+@pytest.mark.flaky(max_runs=2)
+def test_left_menu_visible(browser: TestBrowser) -> None:
+    browser.login()
+    browser.open("/admin/")
+    if not browser.is_element_visible("#nav-sidebar"):
+        browser.click('span:contains("dock_to_right")')
+    assert browser.is_element_visible("#nav-sidebar")
+    assert browser.is_text_visible("Occurrences")
+    assert browser.is_text_visible("Members")
+
+
 def _set_template_content(browser: TestBrowser, content: str) -> str:
     return browser.execute_script(  # type: ignore[no-any-return]
         """

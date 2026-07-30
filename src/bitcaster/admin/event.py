@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 import logging
 
-from admin_extra_buttons.buttons import ButtonWidget
+from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from unfold import widgets as uwidgets
@@ -175,7 +175,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
         return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def notifications(self, button: ButtonWidget) -> None:
+    def notifications(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         event: Event = button.context["original"]
         if event:
@@ -184,7 +184,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             button.visible = False
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def occurrences(self, button: ButtonWidget) -> None:
+    def occurrences(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_occurrence_changelist")
         event: Event = button.context["original"]
         if event:
@@ -193,7 +193,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             button.visible = False
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def messages(self, button: ButtonWidget) -> None:
+    def messages(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_messagetemplate_changelist")
         event: Event = button.context["original"]
         if event:

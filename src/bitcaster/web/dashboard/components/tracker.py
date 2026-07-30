@@ -27,7 +27,8 @@ class ErrorTrackerComponent(BaseComponent):
                 .values("status")
                 .annotate(count=Count("id"))
             ):
-                data.extend([{"color": colors[c["status"]], "tooltip": c["count"]} for x in range(c["count"])])
+                status = Occurrence.Status(c["status"])
+                data.extend([{"color": colors[status], "tooltip": c["count"]} for x in range(c["count"])])
             cm.store("dashboard:tracker", data)
         context.update({"data": data})
         return context

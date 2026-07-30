@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from collections.abc import Callable
+
 from django.conf import settings
 from django.templatetags.static import static
 from django.urls import reverse_lazy
@@ -126,6 +128,13 @@ COMMON = {
     "BORDER_RADIUS": "6px",
 }
 
+
+def has_model_permission(
+    app_label: str = "bitcaster", model_name: str = "", codename: str = "view"
+) -> Callable[..., bool]:
+    return lambda request: request.user.is_superuser or request.user.has_perm(f"{app_label}.{codename}_{model_name}")
+
+
 UNFOLD = {
     **COMMON,
     "SITE_TITLE": "Bitcaster Admin",
@@ -147,27 +156,31 @@ UNFOLD = {
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_occurrence_changelist"),
                         "badge": "bitcaster.config.fragments.unfold.occurrence_callback",
+                        "permission": has_model_permission(model_name="occurrence"),
                     },
                     {
                         "title": _("Members"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),
-                        "permission": lambda request: request.user.has_perm("bitcaster.view_member"),
+                        "permission": has_model_permission(model_name="member"),
                     },
                     {
                         "title": _("Stream"),
                         "icon": "call_log",
                         "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
+                        "permission": has_model_permission(model_name="logmessage"),
                     },
                     {
                         "title": _("Messages"),
                         "icon": "inbox_text_person",
                         "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
+                        "permission": has_model_permission(model_name="usermessage"),
                     },
                     {
                         "title": _("Attachments"),
                         "icon": "attachment",
                         "link": reverse_lazy("admin:bitcaster_attachment_changelist"),
+                        "permission": has_model_permission(model_name="attachment"),
                     },
                 ],
             },
@@ -180,26 +193,31 @@ UNFOLD = {
                         "title": _("Addresses"),
                         "icon": "alternate_email",
                         "link": reverse_lazy("admin:bitcaster_address_changelist"),
+                        "permission": has_model_permission(model_name="address"),
                     },
                     {
                         "title": _("Distribution List"),
                         "icon": "patient_list",
                         "link": reverse_lazy("admin:bitcaster_distributionlist_changelist"),
+                        "permission": has_model_permission(model_name="distributionlist"),
                     },
                     {
                         "title": _("Events"),
                         "icon": "event_list",
                         "link": reverse_lazy("admin:bitcaster_event_changelist"),
+                        "permission": has_model_permission(model_name="event"),
                     },
                     {
                         "title": _("Notifications"),
                         "icon": "route",
                         "link": reverse_lazy("admin:bitcaster_notification_changelist"),
+                        "permission": has_model_permission(model_name="notification"),
                     },
                     {
                         "title": _("Message Templates"),
                         "icon": "article",
                         "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),
+                        "permission": has_model_permission(model_name="messagetemplate"),
                     },
                 ],
             },
@@ -212,21 +230,25 @@ UNFOLD = {
                         "title": _("Channels"),
                         "icon": "business_messages",
                         "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                        "permission": has_model_permission(model_name="channel"),
                     },
                     {
                         "title": _("Applications"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_application_changelist"),
+                        "permission": has_model_permission(model_name="application"),
                     },
                     {
                         "title": _("Projects"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_project_changelist"),
+                        "permission": has_model_permission(model_name="project"),
                     },
                     {
                         "title": _("Organization"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_organization_changelist"),
+                        "permission": has_model_permission(model_name="organization"),
                     },
                 ],
             },
@@ -239,35 +261,37 @@ UNFOLD = {
                         "title": _("Users"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_user_changelist"),
-                        "permission": lambda request: request.user.is_superuser,
+                        "permission": has_model_permission(model_name="user"),
                     },
                     {
                         "title": _("Roles"),
                         "icon": "account_child_invert",
                         "link": reverse_lazy("admin:bitcaster_userrole_changelist"),
-                        "permission": lambda request: request.user.is_superuser,
+                        "permission": has_model_permission(model_name="userrole"),
                     },
                     {
                         "title": _("Groups"),
                         "icon": "group",
                         "link": reverse_lazy("admin:bitcaster_group_changelist"),
-                        "permission": lambda request: request.user.is_superuser,
+                        "permission": has_model_permission(app_label="auth", model_name="group"),
                     },
                     {
                         "title": _("API Keys"),
                         "icon": "key",
                         "link": reverse_lazy("admin:bitcaster_apikey_changelist"),
-                        "permission": lambda request: request.user.is_superuser,
+                        "permission": has_model_permission(model_name="apikey"),
                     },
                     {
                         "title": _("System Log"),
                         "icon": "data_alert",
                         "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
+                        "permission": has_model_permission(app_label="admin", model_name="logentry"),
                     },
                     {
                         "title": _("SSO Providers"),
                         "icon": "captive_portal",
                         "link": reverse_lazy("admin:social_socialprovider_changelist"),
+                        "permission": has_model_permission(app_label="social", model_name="socialprovider"),
                     },
                 ],
             },
