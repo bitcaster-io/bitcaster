@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import logging
 
-from admin_extra_buttons.buttons import ButtonWidget
+from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
@@ -69,14 +69,14 @@ class ChannelAdmin(TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], BaseAdm
         return []
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def events(self, button: ButtonWidget) -> None:
+    def events(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
         if ch:
             button.href = f"{url}?channels__exact={ch.pk}"
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def assignments(self, button: ButtonWidget) -> None:
+    def assignments(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_assignment_changelist")
         ch: Channel = button.context["original"]
         if ch:

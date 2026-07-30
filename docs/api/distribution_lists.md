@@ -1,6 +1,12 @@
 # Distribution Lists API
 
-The Distribution Lists API allows you to manage distribution lists and their members within a project.
+A Distribution List is a named group of recipients within a Project.
+Notifications reference a Distribution List to determine who should receive a
+message when an Event is triggered. A Distribution List can be optionally
+pinned to an Application — see the
+[Admin Guide](../adm-guide/dl.md) for the full concept.
+
+This API allows you to manage distribution lists and their members.
 
 ## List Distribution Lists
 
@@ -23,7 +29,8 @@ This endpoint retrieves a list of all distribution lists within a specific proje
         {
             "name": "<distribution_list_name>",
             "id": 123,
-            "members": "<url_to_members_list>"
+            "members": "<url_to_members_list>",
+            "application": null
         },
         ...
     ]
@@ -50,10 +57,12 @@ This endpoint creates a new distribution list within a specific project.
 ### Request Body
 
 -   `name` (string, required): The name of the new distribution list.
+-   `application` (integer, optional): The ID of the Application to pin this distribution list to.
 
     ```json
     {
-        "name": "My New Distribution List"
+        "name": "My New Distribution List",
+        "application": 42
     }
     ```
 
@@ -64,7 +73,8 @@ This endpoint creates a new distribution list within a specific project.
     {
         "name": "My New Distribution List",
         "id": 124,
-        "members": "<url_to_members_list>"
+        "members": "<url_to_members_list>",
+        "application": 42
     }
     ```
 -   **`400 BAD REQUEST`**: The request was invalid (e.g., the name already exists).
@@ -95,7 +105,8 @@ This endpoint retrieves the details of a specific distribution list.
     {
         "name": "<distribution_list_name>",
         "id": 123,
-        "members": "<url_to_members_list>"
+        "members": "<url_to_members_list>",
+        "application": null
     }
     ```
 -   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
@@ -171,3 +182,34 @@ This endpoint retrieves a list of all members of a specific distribution list.
 -   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
 -   **`403 FORBIDDEN`**: The API key does not have the required `distributionlist:read` permission.
 -   **`404 NOT FOUND`**: The specified organization, project, or distribution list does not exist.
+
+---
+
+## Unregister User from Application
+
+This endpoint removes a user from all Distribution Lists pinned to a specific
+application. It is intended to be called by the remote application when a user
+is removed.
+
+- **Endpoint:** `POST /api/o/{org}/p/{prj}/a/{app}/unregister/{username}/`
+- **Authentication:** `ApiKeyAuthentication`
+- **Permissions:** `manage_application_users`
+
+### URL Parameters
+
+-   `org` (string, required): The slug of the organization.
+-   `prj` (string, required): The slug of the project.
+-   `app` (string, required): The slug of the application.
+-   `username` (string, required): The username of the user to unregister.
+
+### Response
+
+-   **`200 OK`**: The request was successful. Returns the number of deleted entries.
+    ```json
+    {
+        "deleted": 3
+    }
+    ```
+-   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
+-   **`403 FORBIDDEN`**: The API key does not have the required `MANAGE_APPLICATION_USERS` grant.
+-   **`404 NOT FOUND`**: The specified organization, project, application, or user does not exist.

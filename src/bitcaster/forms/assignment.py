@@ -19,7 +19,7 @@ class AssignmentInlineForm(forms.ModelForm["Assignment"]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if self.user.pk:
+        if self.user is not None and self.user.pk:
             self.fields["address"].queryset = self.user.addresses.all()
             self.fields["address"].widget.queryset = self.user.addresses.all()
 
@@ -37,7 +37,7 @@ class DistributionListInlineForm(forms.ModelForm["Assignment"]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if self.user.pk:
+        if self.user is not None and self.user.pk:
             self.fields["address"].queryset = self.user.addresses.all()
             self.fields["address"].widget.queryset = self.user.addresses.all()
 

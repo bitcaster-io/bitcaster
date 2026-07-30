@@ -38,7 +38,7 @@ class DistributionListSerializer(serializers.ModelSerializer[DistributionList]):
 
     class Meta:
         model = DistributionList
-        fields = ("name", "id", "members")
+        fields = ("name", "id", "members", "application")
 
     def get_members(self, obj: Project) -> str:
         return absolute_reverse("api:members-list", args=[obj.project.organization.slug, obj.project.slug, obj.id])

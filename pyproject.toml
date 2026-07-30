@@ -142,7 +142,6 @@ docs = [
   "cairosvg>=2.9",
   "markupsafe>=2.1.5",
   "mdx-gh-links>=0.4",
-  "mkdocs>=1.5.3",
   "mkdocs-autolinks-plugin>=0.7.1",
   "mkdocs-awesome-pages-plugin>=2.9.3",
   "mkdocs-click>=0.8.1",
@@ -159,7 +158,8 @@ docs = [
   "mkdocs-redirects>=1.2.1",
   "mkdocs-simple-hooks>=0.1.5",
   "mkdocstrings[python]>=0.24.1",
-  "pymdown-extensions>=10.21.3",
+  "properdocs>=1.6.7",
+  "pymdown-extensions>=11.0.1",
 ]
 mypy = [
   "boto3-stubs>=1.34.105",

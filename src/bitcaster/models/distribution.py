@@ -2,6 +2,9 @@ from typing import TYPE_CHECKING, Any
 
 import logging
 
+from smart_selects.db_fields import ChainedForeignKey
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -36,6 +39,17 @@ class DistributionList(BitcasterBaseModel):
         on_delete=models.CASCADE,
         help_text=_("project linked to this distribution list"),
     )
+    application = ChainedForeignKey(
+        "bitcaster.Application",
+        verbose_name=_("Application"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        chained_field="project",
+        chained_model_field="project",
+        show_all=False,
+        help_text=_("when set, the distribution list is pinned to this application"),
+    )
     recipients = models.ManyToManyField(
         Assignment, verbose_name=_("Recipients"), blank=True, help_text=_("members of the list")
     )
@@ -48,6 +62,13 @@ class DistributionList(BitcasterBaseModel):
 
     def natural_key(self) -> tuple[str | None, ...]:
         return self.name, *self.project.natural_key()
+
+    def clean(self) -> None:
+        super().clean()
+        if self.application_id and self.application.project_id != self.project_id:
+            raise ValidationError(
+                {"application": _("Application must belong to the same project as the distribution list.")}
+            )
 
     class Meta:
         verbose_name = _("Distribution List")

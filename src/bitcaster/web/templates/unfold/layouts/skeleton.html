@@ -45,13 +45,12 @@
 {% endblock %}
 {% endcapture %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr,auto" }}" {% if theme %}class="{{ theme }}"{% endif %} x-data="{ adminTheme:
-    {% if theme %}
-        '{{ theme }}'
-    {% else %}
-        $persist('auto').as('adminTheme')
-    {% endif %}
-    }" x-bind:class="{'dark': adminTheme === 'dark' || (adminTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)};" x-cloak>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}"
+      dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr,auto" }}"
+      {% if theme %}class="{{ theme }}"{% endif %}
+      x-data="theme({% if theme %}'{{ theme }}'{% endif %})"
+      x-bind="themeBindings"
+      x-cloak>
     <head>
         <title>{{ environment_title_prefix|default:"" }}
             {% block title %}
@@ -70,7 +69,6 @@
                   {% if favicon.sizes %}sizes="{{ favicon.sizes }}"{% endif %} />
         {% endfor %}
         <link href="{% static 'unfold/css/styles.css' %}" rel="stylesheet" />
-        <link href="{% static 'unfold/css/simplebar/simplebar.css' %}" rel="stylesheet" />
         {% block alpine-init %}
         {% endblock %}
         <script src="{% static 'unfold/js/alpine/alpine.anchor.js' %}" defer></script>
@@ -99,7 +97,7 @@
         {% if opts %}
             activeTab: 'general',
         {% endif %}
-        sidebarMobileOpen: false, sidebarDesktopOpen: (localStorage.getItem('sidebarDesktopOpen') !== null) ? (localStorage.getItem('sidebarDesktopOpen') == '1') : true }" x-init=" activeTab = {% if opts %}window.location.hash?.replace('#', '') || 'general'{% else %}''{% endif %}; $watch('sidebarDesktopOpen', value => localStorage.setItem('sidebarDesktopOpen', value ? '1' : '0')); ">
+        }" x-init="activeTab = {% if opts %}window.location.hash?.replace('#', '') || 'general'{% else %}''{% endif %};">
         {% if colors %}
             <style id="unfold-theme-colors">
                 :root {
@@ -120,7 +118,6 @@
         <div id="modal-overlay" class="backdrop-blur-xs bg-base-900/80 bottom-0 fixed hidden left-0 mr-1 right-0 top-0 z-50">
         </div>
         {#        {% include "unfold/helpers/command.html" %}#}
-        <script src="{% static 'unfold/js/simplebar/simplebar.js' %}"></script>
         {% block bc-footer %}
         {% endblock %}
     </body>

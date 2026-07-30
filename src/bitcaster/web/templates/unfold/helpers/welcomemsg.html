@@ -2,11 +2,10 @@
 <div class="flex flex-row grow font-semibold items-center min-w-0 mr-3">
     {% if is_nav_sidebar_enabled %}
         <span class="cursor-pointer flex flex-row items-center">
-            <span class="material-symbols-outlined hidden! xl:block!"
-                  x-on:click="sidebarDesktopOpen = !sidebarDesktopOpen; localStorage.setItem('sidebarDesktopOpen', sidebarDesktopOpen ? '1' : '0');">
+            <span class="material-symbols-outlined hidden! xl:block!" x-on:click="sidebarToggle()">
                 dock_to_right
             </span>
-            <span class="material-symbols-outlined block! xl:hidden!" x-on:click="sidebarMobileOpen = !sidebarMobileOpen">
+            <span class="material-symbols-outlined block! xl:hidden!" x-on:click="sidebarToggle()">
                 dock_to_right
             </span>
         </span>
