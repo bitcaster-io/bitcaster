@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 @register(Browser)
 class BrowserAdmin(AssignmentAdmin):
-    @button()  # type: ignore[arg-type]
+    @button()
     def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":
         asm: Assignment = self.get_object_or_404(request, pk)
         secret = sign(asm)

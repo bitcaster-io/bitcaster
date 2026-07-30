@@ -22,12 +22,38 @@ def app(django_app_factory: "MixinWithInstanceVariables") -> "DjangoTestApp":
     return django_app
 
 
-def test_members_menu_visible_with_permission(app: "DjangoTestApp") -> None:
-    with user_grant_permissions(app._user, ["bitcaster.view_member"]):
+ALL_MENU_ITEMS = [
+    ("Occurrences", "bitcaster.view_occurrence"),
+    ("Members", "bitcaster.view_member"),
+    ("Stream", "bitcaster.view_logmessage"),
+    ("Messages", "bitcaster.view_usermessage"),
+    ("Attachments", "bitcaster.view_attachment"),
+    ("Addresses", "bitcaster.view_address"),
+    ("Distribution List", "bitcaster.view_distributionlist"),
+    ("Events", "bitcaster.view_event"),
+    ("Notifications", "bitcaster.view_notification"),
+    ("Message Templates", "bitcaster.view_messagetemplate"),
+    ("Channels", "bitcaster.view_channel"),
+    ("Applications", "bitcaster.view_application"),
+    ("Projects", "bitcaster.view_project"),
+    ("Organization", "bitcaster.view_organization"),
+    ("Users", "bitcaster.view_user"),
+    ("Roles", "bitcaster.view_userrole"),
+    ("Groups", "auth.view_group"),
+    ("API Keys", "bitcaster.view_apikey"),
+    ("System Log", "admin.view_logentry"),
+    ("SSO Providers", "social.view_socialprovider"),
+]
+
+
+@pytest.mark.parametrize(("menu_item", "permission"), ALL_MENU_ITEMS)
+def test_menu_item_visible_with_permission(app: "DjangoTestApp", menu_item: str, permission: str) -> None:
+    with user_grant_permissions(app._user, [permission]):
         res = app.get(reverse("admin:index"))
-    assert "Members" in res
+    assert menu_item in res
 
 
-def test_members_menu_hidden_without_permission(app: "DjangoTestApp") -> None:
+@pytest.mark.parametrize(("menu_item",), [(item[0],) for item in ALL_MENU_ITEMS])
+def test_menu_item_hidden_without_permission(app: "DjangoTestApp", menu_item: str) -> None:
     res = app.get(reverse("admin:index"))
-    assert "Members" not in res
+    assert menu_item not in res

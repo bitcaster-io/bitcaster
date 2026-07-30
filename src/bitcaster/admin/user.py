@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import logging
 
-from admin_extra_buttons.buttons import ButtonWidget
+from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import link
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
@@ -101,25 +101,25 @@ class UserAdmin(BaseAdmin[User], DjangoUserAdmin[User]):
         bitcaster.local_organization.enroll_users(queryset)
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def addresses(self, button: ButtonWidget) -> None:
+    def addresses(self, button: StandardButton) -> None:
         url = reverse(f"{self.admin_site.name}:bitcaster_address_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def lists(self, button: ButtonWidget) -> None:
+    def lists(self, button: StandardButton) -> None:
         url = reverse(f"{self.admin_site.name}:bitcaster_distributionlist_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?recipients__address__user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def notifications(self, button: ButtonWidget) -> None:
+    def notifications(self, button: StandardButton) -> None:
         url = reverse(f"{self.admin_site.name}:bitcaster_notification_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?distribution__recipients__address__user={user.pk}"
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def events(self, button: ButtonWidget) -> None:
+    def events(self, button: StandardButton) -> None:
         url = reverse(f"{self.admin_site.name}:bitcaster_event_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?notifications__distribution__recipients__address__user__exact={user.pk}"
