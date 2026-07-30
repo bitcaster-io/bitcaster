@@ -23,6 +23,9 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class DistributionListAdmin(TwoStepCreateMixin[DistributionList], BaseAdmin[DistributionList]):
+    class Media:
+        js = ("admin/js/distribution-list.js",)
+
     search_fields = ("name",)
     list_display = ("name", "project", "application")
     list_filter = (
