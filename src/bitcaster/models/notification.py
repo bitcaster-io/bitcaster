@@ -6,6 +6,7 @@ import jmespath
 import yaml
 
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
@@ -136,6 +137,14 @@ class Notification(BitcasterBaseModel):
 
     def __str__(self) -> str:
         return self.name
+
+    def clean(self) -> None:
+        if (
+            self.distribution
+            and self.distribution.application_id
+            and self.event.application_id != self.distribution.application_id
+        ):
+            raise ValidationError({"distribution": _("DistributionList is pinned to a different application.")})
 
     @cached_property
     def application(self) -> "Application":

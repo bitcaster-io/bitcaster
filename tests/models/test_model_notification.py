@@ -5,6 +5,8 @@ from pytest_django import DjangoAssertNumQueries
 import pytest
 from unittest.mock import Mock
 
+from django.core.exceptions import ValidationError
+
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 
 if TYPE_CHECKING:
@@ -266,3 +268,40 @@ def test_render_recursive_nested():
 
     results = set(qs.values_list("address__user__username", flat=True))
     assert results == {"user1", "user2"}
+
+
+def test_clean_pinned_dl_matches_event_application() -> None:
+    from testutils.factories import DistributionListFactory, EventFactory, NotificationFactory
+
+    event: "Event" = EventFactory()
+    dl = DistributionListFactory(project=event.application.project, application=event.application)
+    notification: "Notification" = NotificationFactory.build(event=event, distribution=dl)
+    notification.clean()
+
+
+def test_clean_pinned_dl_mismatched_event_application_raises_error() -> None:
+    from testutils.factories import DistributionListFactory, EventFactory, NotificationFactory
+
+    event1: "Event" = EventFactory()
+    event2: "Event" = EventFactory(application__project=event1.application.project)
+    dl = DistributionListFactory(project=event2.application.project, application=event2.application)
+    notification: "Notification" = NotificationFactory.build(event=event1, distribution=dl)
+    with pytest.raises(ValidationError):
+        notification.clean()
+
+
+def test_clean_non_pinned_dl_allowed() -> None:
+    from testutils.factories import DistributionListFactory, EventFactory, NotificationFactory
+
+    event: "Event" = EventFactory()
+    dl = DistributionListFactory(project=event.application.project, application=None)
+    notification: "Notification" = NotificationFactory.build(event=event, distribution=dl)
+    notification.clean()
+
+
+def test_clean_no_dl_allowed() -> None:
+    from testutils.factories import EventFactory, NotificationFactory
+
+    event: "Event" = EventFactory()
+    notification: "Notification" = NotificationFactory.build(event=event, distribution=None)
+    notification.clean()
