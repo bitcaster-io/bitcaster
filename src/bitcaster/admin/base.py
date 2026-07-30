@@ -53,7 +53,7 @@ class BitcasterModelAdmin[T](UnfoldModelAdmin):
     def formfield_for_foreignkey(
         self, db_field: ForeignKey[Any], request: HttpRequest, **kwargs: Any
     ) -> ModelChoiceField[Any] | None:
-        if isinstance(db_field, ChainedForeignKey):
+        if isinstance(db_field, ChainedForeignKey) and db_field.name not in self.get_autocomplete_fields(request):
             widget = UnfoldChainedSelect(
                 to_app_name=db_field.to_app_name,
                 to_model_name=db_field.to_model_name,

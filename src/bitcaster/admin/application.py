@@ -64,6 +64,15 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
 
         return cast("bool", super().has_add_permission(request) and Project.objects.local().count() > 0)
 
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet[Application], search_term: str
+    ) -> tuple[QuerySet[Application], bool]:
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        project_id = request.GET.get("project_id")
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        return queryset, use_distinct
+
     def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
 

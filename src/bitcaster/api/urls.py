@@ -11,6 +11,7 @@ from .org import OrgView
 from .profile import UserProfileView
 from .project import ProjectView
 from .system import LoginView, PingView
+from .unregister import ApplicationUnregisterView
 from .user import UserView
 
 app_name = "api"
@@ -70,5 +71,10 @@ urlpatterns = [
         "o/<slug:org>/p/<slug:prj>/a/<slug:app>/attachment/<slug:correlation_id>/",
         AttachmentView.as_view(),
         name="attachment-upload-with-correlation-id",
+    ),
+    path(
+        "o/<slug:org>/p/<slug:prj>/a/<slug:app>/unregister/<str:username>/",
+        ApplicationUnregisterView.as_view(),
+        name="application-unregister",
     ),
 ]
