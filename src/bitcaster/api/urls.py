@@ -11,7 +11,7 @@ from .org import OrgView
 from .profile import UserProfileView
 from .project import ProjectView
 from .system import LoginView, PingView
-from .unregister import ApplicationUnregisterView
+from .unregister import ApplicationUnregisterView, ProjectUnregisterView
 from .user import UserView
 
 app_name = "api"
@@ -76,5 +76,10 @@ urlpatterns = [
         "o/<slug:org>/p/<slug:prj>/a/<slug:app>/unregister/<str:username>/",
         ApplicationUnregisterView.as_view(),
         name="application-unregister",
+    ),
+    path(
+        "o/<slug:org>/p/<slug:prj>/unregister/<str:username>/",
+        ProjectUnregisterView.as_view(),
+        name="project-unregister",
     ),
 ]

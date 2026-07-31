@@ -75,8 +75,12 @@ all Distribution Lists pinned to that application.
 ### API Reference
 
 - `POST /api/o/{org}/p/{prj}/a/{app}/unregister/{username}/` — Removes a user
-  from all Distribution Lists pinned to the application. Requires the new
+  from all Distribution Lists pinned to the application. Requires the
   `MANAGE_APPLICATION_USERS` grant.
+- `POST /api/o/{org}/p/{prj}/unregister/{username}/` — Removes a user from
+  **all** Distribution Lists of the project (pinned to any application or
+  non-pinned). Requires the `MANAGE_PROJECT_USERS` grant and an API key scoped
+  at project level or above; application-scoped keys are rejected.
 
 ## Creating a Distribution List
 

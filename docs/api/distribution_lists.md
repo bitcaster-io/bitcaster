@@ -213,3 +213,38 @@ is removed.
 -   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
 -   **`403 FORBIDDEN`**: The API key does not have the required `MANAGE_APPLICATION_USERS` grant.
 -   **`404 NOT FOUND`**: The specified organization, project, application, or user does not exist.
+
+---
+
+## Unregister User from Project
+
+This endpoint removes a user from **all** Distribution Lists of a project:
+lists pinned to any of the project's applications as well as non-pinned
+project-wide lists. It is intended for systems responsible for the user
+lifecycle across a whole project (e.g. offboarding).
+
+- **Endpoint:** `POST /api/o/{org}/p/{prj}/unregister/{username}/`
+- **Authentication:** `ApiKeyAuthentication`
+- **Permissions:** `manage_project_users`
+
+The API key must be scoped at project level (or organization level): keys
+scoped to a single application are rejected, so that one application's key
+cannot remove memberships belonging to other applications.
+
+### URL Parameters
+
+-   `org` (string, required): The slug of the organization.
+-   `prj` (string, required): The slug of the project.
+-   `username` (string, required): The username of the user to unregister.
+
+### Response
+
+-   **`200 OK`**: The request was successful. Returns the number of deleted entries.
+    ```json
+    {
+        "deleted": 3
+    }
+    ```
+-   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
+-   **`403 FORBIDDEN`**: The API key does not have the required `MANAGE_PROJECT_USERS` grant, or is scoped to a single application.
+-   **`404 NOT FOUND`**: The specified organization, project, or user does not exist.
