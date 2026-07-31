@@ -258,3 +258,33 @@ def test_member_distribution_lists_add_no_address(app: "DjangoTestApp", context:
     assert res.status_code == 200
     assert "This field is required" in res.text
     assert not dl.recipients.exists()
+
+
+def test_member_distribution_lists_form_without_assignment(app: "DjangoTestApp", context: "Context"):
+    from bitcaster.admin.member import ListsForm
+
+    member = context["members"][0]
+    dl = context["distributionlist"]
+
+    form = ListsForm(user=member, dl_initial=dl, assignment_initial=None)
+    assert form.fields["dl"].disabled is True
+    assert form.fields["dl"].initial == dl
+    assert form.fields["assignment"].disabled is False
+    assert form.fields["assignment"].initial is None
+
+
+def test_member_distribution_lists_formset_save_new_empty():
+    from types import SimpleNamespace
+
+    from unfold.contrib.inlines.forms import nonrelated_inline_formset_factory
+
+    from bitcaster.admin.member import ListsForm, ListsFormSet
+
+    formset = nonrelated_inline_formset_factory(
+        model=DistributionList,
+        queryset=DistributionList.objects.none(),
+        form=ListsForm,
+        formset=ListsFormSet,
+    )
+    form = SimpleNamespace(cleaned_data={"dl": None, "assignment": None})
+    assert formset().save_new(form) is None
