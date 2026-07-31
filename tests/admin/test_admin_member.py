@@ -170,3 +170,121 @@ def test_assignment_inline_list(app: "DjangoTestApp", context: "Context"):
     url = reverse("admin:bitcaster_member_change", args=[member.pk])
     res = app.get(url)
     assert res.status_code == 200
+
+
+def test_member_distribution_lists_assignment_shown(app: "DjangoTestApp", context: "Context"):
+    member = context["members"][0]
+    dl = context["distributionlist"]
+    asm = dl.recipients.first()
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    rows = res.pyquery("#bitcaster-distributionlist-group tbody.form-group:not(.template)")
+    assert len(rows) == 1
+    assert res.pyquery("#id_bitcaster-distributionlist-0-dl option[selected]").val() == str(dl.pk)
+    assert res.pyquery("#id_bitcaster-distributionlist-0-assignment option[selected]").val() == str(asm.pk)
+
+
+def test_member_distribution_lists_multiple_assignments_single_row(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import AddressFactory, AssignmentFactory
+
+    member = context["members"][0]
+    dl = context["distributionlist"]
+    channel = dl.recipients.first().channel
+    dl.recipients.add(AssignmentFactory(address=AddressFactory(user=member), channel=channel))
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    rows = res.pyquery("#bitcaster-distributionlist-group tbody.form-group:not(.template)")
+    assert len(rows) == 1
+    assert dl.name in res.text
+    assert member.email in res.text
+
+
+def test_member_distribution_lists_add(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import DistributionListFactory
+
+    member = context["members"][0]
+    dl = DistributionListFactory.create(project=context["distributionlist"].project)
+    asm = context["distributionlist"].recipients.first()
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    form = res.forms["member_form"]
+    prefix = "bitcaster-distributionlist"
+    form[f"{prefix}-1-dl"] = dl.pk
+    form[f"{prefix}-1-assignment"] = asm.pk
+
+    res = form.submit().follow()
+    assert res.status_code == 200
+    assert dl.recipients.filter(pk=asm.pk).exists()
+
+
+def test_member_distribution_lists_add_any_assignment(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import AddressFactory, AssignmentFactory, DistributionListFactory
+
+    member = context["members"][0]
+    dl = DistributionListFactory.create(project=context["distributionlist"].project)
+    first = context["distributionlist"].recipients.first()
+    second = AssignmentFactory(address=AddressFactory(user=member), channel=first.channel)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    form = res.forms["member_form"]
+    prefix = "bitcaster-distributionlist"
+    form[f"{prefix}-1-dl"] = dl.pk
+    form[f"{prefix}-1-assignment"] = second.pk
+
+    res = form.submit().follow()
+    assert res.status_code == 200
+    assert list(dl.recipients.values_list("pk", flat=True)) == [second.pk]
+
+
+def test_member_distribution_lists_add_no_address(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import DistributionListFactory
+
+    member = context["members"][1]
+    dl = DistributionListFactory.create(project=context["distributionlist"].project)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    form = res.forms["member_form"]
+    prefix = "bitcaster-distributionlist"
+    form[f"{prefix}-0-dl"] = dl.pk
+
+    res = form.submit()
+    assert res.status_code == 200
+    assert "This field is required" in res.text
+    assert not dl.recipients.exists()
+
+
+def test_member_distribution_lists_form_without_assignment(app: "DjangoTestApp", context: "Context"):
+    from bitcaster.admin.member import ListsForm
+
+    member = context["members"][0]
+    dl = context["distributionlist"]
+
+    form = ListsForm(user=member, dl_initial=dl, assignment_initial=None)
+    assert form.fields["dl"].disabled is True
+    assert form.fields["dl"].initial == dl
+    assert form.fields["assignment"].disabled is False
+    assert form.fields["assignment"].initial is None
+
+
+def test_member_distribution_lists_formset_save_new_empty():
+    from types import SimpleNamespace
+
+    from unfold.contrib.inlines.forms import nonrelated_inline_formset_factory
+
+    from bitcaster.admin.member import ListsForm, ListsFormSet
+
+    formset = nonrelated_inline_formset_factory(
+        model=DistributionList,
+        queryset=DistributionList.objects.none(),
+        form=ListsForm,
+        formset=ListsFormSet,
+    )
+    form = SimpleNamespace(cleaned_data={"dl": None, "assignment": None})
+    assert formset().save_new(form) is None
