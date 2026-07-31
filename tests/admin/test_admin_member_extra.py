@@ -172,6 +172,7 @@ def test_member_admin_formsets(admin_user):
     m = MagicMock(spec=ListsFormSet)
     m.instance = member
     m.form_kwargs = {}
+    m.initial_form_count.return_value = 0
     ret = ListsFormSet.get_form_kwargs(m, 0)
     assert ret["user"] == member
 

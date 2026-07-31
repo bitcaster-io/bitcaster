@@ -55,10 +55,11 @@ class ReadOnlyInline:
 
 class AddressInline(TabularInline):  # NonrelatedStackedInline is available as well
     model = Address
-    fields = ["name", "type"]  # Ignore property to display all fields
+    fields = ["name", "value", "type"]  # Ignore property to display all fields
     extra = 0
     tab = True
-    verbose_name = _("Addresses")
+    verbose_name = _("Address")
+    verbose_name_plural = _("Addresses")
     collapsible = True
 
     def get_form_queryset(self, obj: Member) -> QuerySet[Address]:
@@ -103,18 +104,78 @@ class AssignmentInline(NonrelatedTabularInline):  # NonrelatedStackedInline is a
         return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
 
 
+class ListsForm(forms.ModelForm):
+    dl = forms.ModelChoiceField(
+        label=_("Distribution List"),
+        queryset=DistributionList.objects.all(),
+        required=True,
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+    assignment = forms.ModelChoiceField(
+        label=_("Assignment"),
+        queryset=Assignment.objects.none(),
+        required=True,
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+
+    class Meta:
+        model = DistributionList
+        fields = ["dl", "assignment"]
+
+    def __init__(
+        self,
+        *args: Any,
+        user: Member | None = None,
+        dl_initial: DistributionList | None = None,
+        assignment_initial: Assignment | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.user = user
+        user_id = user.pk if user else None
+        self.fields["assignment"].queryset = Assignment.objects.filter(address__user_id=user_id)
+        if dl_initial is not None:
+            self.fields["dl"].initial = dl_initial
+            self.fields["dl"].disabled = True
+            if assignment_initial is not None:
+                self.fields["assignment"].initial = assignment_initial
+                self.fields["assignment"].disabled = True
+        else:
+            self.fields["dl"].queryset = DistributionList.objects.exclude(
+                recipients__address__user_id=user_id
+            ).distinct()
+
+
 class ListsFormSet(NonrelatedInlineModelFormSet):
-    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+    def get_form_kwargs(self, index: int | None) -> dict[str, Any]:
         ret = cast("dict[str, Any]", super().get_form_kwargs(index))
         ret["user"] = self.instance
+        if index is not None and index < self.initial_form_count():
+            dl = self.queryset.all()[index]
+            ret["dl_initial"] = dl
+            ret["assignment_initial"] = dl.recipients.filter(
+                address__user_id=self.instance.pk if self.instance else None
+            ).first()
         return ret
+
+    def save_new(self, form: forms.ModelForm, commit: bool = True) -> DistributionList:
+        dl = form.cleaned_data["dl"]
+        asm = form.cleaned_data["assignment"]
+        if dl is not None and asm is not None:
+            dl.recipients.add(asm)
+        return cast("DistributionList", dl)
 
 
 class ListsInline(NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
     model = DistributionList
     tab = True
-    fields = ["name", "project"]  # Ignore property to display all fields
-    extra = 0
+    fields = ["dl", "assignment"]
+    extra = 1
+    form = ListsForm
+    formset = ListsFormSet
+
+    def get_readonly_fields(self, request: HttpRequest, obj: Member | None = None) -> list[str]:
+        return []
 
     def get_form_queryset(self, obj: Member) -> QuerySet[DistributionList]:
         return obj.get_distribution_lists()
