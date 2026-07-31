@@ -311,3 +311,21 @@ class TestAgentAMQP:
             result = agent.process_message(body)
             assert result is False
             trigger.assert_not_called()
+
+    def test_check_connection_fails(self, agent: AgentAMQP) -> None:
+        with (
+            patch.object(agent, "get_connection_params"),
+            patch.object(pika, "BlockingConnection", side_effect=Exception("connect failed")),
+        ):
+            agent.check()
+
+    def test_check_process_message_error_nacks(self, agent: AgentAMQP, monitor: MagicMock) -> None:
+        body = make_message(monitor.event.slug)
+        channel = make_channel_mock([body])
+        conn = MagicMock()
+        conn.channel.return_value = channel
+
+        with patch.object(agent, "get_connection_params"), patch.object(pika, "BlockingConnection", return_value=conn):
+            with patch.object(agent, "process_message", side_effect=Exception("boom")):
+                agent.check()
+                channel.basic_nack.assert_called_once_with(1, requeue=False)
