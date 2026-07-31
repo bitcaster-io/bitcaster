@@ -87,3 +87,22 @@ click on `Add Distribution List`{ .bc-tool-button .action }
 
 Enter a name and optionally pin it to an Application. After saving, you can add
 recipients via the `Recipients` button.
+
+## Managing Recipients from the Member Page
+
+Recipients can also be added from a Member's admin page. Open any
+[Member](user_management.md) in the admin and switch to the
+**Distribution Lists** tab. The tab shows two columns per row:
+
+- **Distribution List**: the list the member belongs to.
+- **Assignment**: the member's assignment (`address - channel`) used to reach
+  them in that list.
+
+Existing memberships are shown as pre-selected, read-only rows — the tab does
+**not** create, edit, or delete Distribution Lists.
+
+To add the member to another list, use the empty row at the bottom: pick an
+existing Distribution List from the dropdown (lists the member is already in
+are hidden) and choose one of the member's Assignments. On save, the member
+receives the notification on that channel for the chosen list. Adding a member
+who is already in the list is a no-op.
