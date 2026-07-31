@@ -110,7 +110,7 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         """Retrieve all distribution lists this user is a recipient of via any assignment."""
         from bitcaster.models import DistributionList
 
-        return DistributionList.objects.filter(recipients__address__user=self)
+        return DistributionList.objects.filter(recipients__address__user=self).distinct()
 
     def format_date(self, d: datetime.datetime) -> str:
         return d.strftime(self.date_format)
