@@ -9,6 +9,7 @@ from testutils.factories import (
     AssignmentFactory,
     DistributionListFactory,
     EventFactory,
+    ProjectFactory,
     UserFactory,
     UserRoleFactory,
 )
@@ -61,6 +62,9 @@ def data(admin_user: "User", system_objects: Any) -> dict[str, Any]:
     dl_other_app: DistributionList = DistributionListFactory(
         project=app.project, application=other_app, recipients=[assignment]
     )
+    dl_other_project: DistributionList = DistributionListFactory(
+        project=ProjectFactory(organization=app.project.organization), recipients=[assignment]
+    )
 
     key: "ApiKey" = ApiKeyFactory(
         user=admin_user,
@@ -80,6 +84,7 @@ def data(admin_user: "User", system_objects: Any) -> dict[str, Any]:
         "dl_pinned_other_user": dl_pinned_other_user,
         "dl_not_pinned": dl_not_pinned,
         "dl_other_app": dl_other_app,
+        "dl_other_project": dl_other_project,
     }
 
 
@@ -185,6 +190,119 @@ def test_unregister_uses_post_verb(data: dict[str, Any]) -> None:
         organization=data["org"],
         project=data["prj"],
         application=data["app"],
+    ):
+        res_get = client.get(url)
+        res_post = client.post(url)
+
+    assert res_get.status_code == 405
+    assert res_post.status_code == 200
+
+
+def test_project_unregister_requires_grant(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{data['user'].username}/"
+    res = client.post(url)
+    assert res.status_code == 403
+
+
+def test_project_unregister_rejects_application_scoped_key(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{data['user'].username}/"
+
+    with key_grants(
+        data["key"],
+        [Grant.MANAGE_PROJECT_USERS],
+        organization=data["org"],
+        project=data["prj"],
+        application=data["app"],
+    ):
+        res = client.post(url)
+
+    assert res.status_code == 403
+
+
+def test_project_unregister_removes_user_from_all_project_dls(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{data['user'].username}/"
+
+    with key_grants(
+        data["key"],
+        [Grant.MANAGE_PROJECT_USERS],
+        organization=data["org"],
+        project=data["prj"],
+        application=None,
+    ):
+        res = client.post(url)
+
+    assert res.status_code == 200
+    assert res.json()["deleted"] == 3
+
+    for dl in ("dl_pinned", "dl_not_pinned", "dl_other_app"):
+        data[dl].refresh_from_db()
+        assert data[dl].recipients.count() == 0
+
+    data["dl_pinned_other_user"].refresh_from_db()
+    assert data["dl_pinned_other_user"].recipients.count() == 1
+
+
+def test_project_unregister_ignores_other_project_dl(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{data['user'].username}/"
+
+    with key_grants(
+        data["key"],
+        [Grant.MANAGE_PROJECT_USERS],
+        organization=data["org"],
+        project=data["prj"],
+        application=None,
+    ):
+        client.post(url)
+
+    data["dl_other_project"].refresh_from_db()
+    assert data["dl_other_project"].recipients.count() == 1
+
+
+def test_project_unregister_no_error_when_user_not_in_any_dl(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    unknown_user: "User" = UserFactory()
+    UserRoleFactory(user=unknown_user, organization=data["org"])
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{unknown_user.username}/"
+
+    with key_grants(
+        data["key"],
+        [Grant.MANAGE_PROJECT_USERS],
+        organization=data["org"],
+        project=data["prj"],
+        application=None,
+    ):
+        res = client.post(url)
+
+    assert res.status_code == 200
+    assert res.json()["deleted"] == 0
+
+
+def test_project_unregister_uses_post_verb(data: dict[str, Any]) -> None:
+    client = APIClient()
+    client._key = data["key"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    url = f"/api/o/{data['org'].slug}/p/{data['prj'].slug}/unregister/{data['user'].username}/"
+
+    with key_grants(
+        data["key"],
+        [Grant.MANAGE_PROJECT_USERS],
+        organization=data["org"],
+        project=data["prj"],
+        application=None,
     ):
         res_get = client.get(url)
         res_post = client.post(url)

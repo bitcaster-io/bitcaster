@@ -70,3 +70,10 @@ class ApiApplicationPermission(ApiBasePermission):
                 and request.user.is_superuser
             )
         return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
+
+
+class ApiProjectPermission(ApiApplicationPermission):
+    def _check_valid_scope(self, token: "ApiKey", view: "APIView") -> bool:
+        if token.application:
+            raise InvalidGrantError(f"Application scoped key cannot be used at project level: {token}")
+        return super()._check_valid_scope(token, view)

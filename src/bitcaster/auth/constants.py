@@ -25,3 +25,4 @@ class Grant(TextChoices):
 
     DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"
     MANAGE_APPLICATION_USERS = "MANAGE_APPLICATION_USERS", "Manage Application Users"
+    MANAGE_PROJECT_USERS = "MANAGE_PROJECT_USERS", "Manage Project Users"
