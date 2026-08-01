@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Any
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -44,6 +43,12 @@ class Subscription(BitcasterBaseModel):
     class Meta:
         verbose_name = _("Subscription")
         verbose_name_plural = _("Subscriptions")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("notification", "assignment"),
+                name="%(app_label)s_%(class)s_notification_assignment",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.assignment} - {self.notification}"
@@ -54,16 +59,3 @@ class Subscription(BitcasterBaseModel):
     @property
     def user(self) -> "User":
         return self.assignment.address.user
-
-    def clean(self) -> None:
-        if not self.notification_id or not self.assignment_id:
-            return
-        duplicates = (
-            Subscription.objects.filter(
-                notification=self.notification, assignment__channel_id=self.assignment.channel_id
-            )
-            .exclude(pk=self.pk)
-            .exists()
-        )
-        if duplicates:
-            raise ValidationError(_("A subscription for this notification and channel already exists."))

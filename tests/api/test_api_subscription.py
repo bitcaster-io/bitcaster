@@ -8,6 +8,7 @@ import pytest
 from testutils.factories import (
     ApiKeyFactory,
     AssignmentFactory,
+    ChannelFactory,
     EventFactory,
     MessageTemplateFactory,
     NotificationFactory,
@@ -26,31 +27,33 @@ if TYPE_CHECKING:
         notification: Notification
         assignment: Assignment
         url: str
+        channel: Channel
 
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 
 @pytest.fixture
-def data(admin_user: "User", email_channel: "Channel") -> "SubscriptionApiData":
+def data(admin_user: "User") -> "SubscriptionApiData":
     event: Event = EventFactory(
         application__project__organization__name="org-sub",
         application__project__name="prj-sub",
         application__name="app-sub",
-        channels=[email_channel],
-        messages=[MessageTemplateFactory(channel=email_channel)],
     )
+    org = event.application.project.organization
+    channel: Channel = ChannelFactory(organization=org)
+    MessageTemplateFactory(channel=channel, event=event)
     notification: Notification = NotificationFactory(event=event, policy=FILTERING_SUBSCRIPTION, distribution=None)
-    assignment: Assignment = AssignmentFactory(channel=email_channel)
+    assignment: Assignment = AssignmentFactory(channel=channel)
     key: ApiKey = ApiKeyFactory(
         user=admin_user,
         grants=[],
         application=None,
         project=None,
-        organization=event.application.project.organization,
+        organization=org,
     )
     url = "/api/o/{}/p/{}/a/{}/n/{}/subscribe/".format(
-        event.application.project.organization.slug,
+        org.slug,
         event.application.project.slug,
         event.application.slug,
         notification.pk,
@@ -61,6 +64,7 @@ def data(admin_user: "User", email_channel: "Channel") -> "SubscriptionApiData":
         "notification": notification,
         "assignment": assignment,
         "url": url,
+        "channel": channel,
     }
 
 
@@ -185,13 +189,39 @@ def test_subscribe_wrong_application(data: "SubscriptionApiData") -> None:
     assert res.status_code == 403
 
 
+def test_subscribe_assignment_different_org(data: "SubscriptionApiData") -> None:
+    """Assignment from a different organization should be rejected."""
+    from testutils.factories import AssignmentFactory, ChannelFactory
+
+    other_channel = ChannelFactory()
+    other_assignment = AssignmentFactory(channel=other_channel)
+    client = _auth_client(data)
+    with grants(data):
+        res = client.post(data["url"], data={"assignment": other_assignment.pk})
+
+    assert res.status_code == 404
+
+
+def test_subscribe_assignment_different_org_via_delete(data: "SubscriptionApiData") -> None:
+    """Assignment from a different organization should be rejected on DELETE too."""
+    from testutils.factories import AssignmentFactory, ChannelFactory
+
+    other_channel = ChannelFactory()
+    other_assignment = AssignmentFactory(channel=other_channel)
+    client = _auth_client(data)
+    with grants(data):
+        res = client.delete(f"{data['url']}?assignment={other_assignment.pk}")
+
+    assert res.status_code == 404
+
+
 def test_unsubscribe(data: "SubscriptionApiData") -> None:
     from testutils.factories import SubscriptionFactory
 
     SubscriptionFactory.create(notification=data["notification"], assignment=data["assignment"])
     client = _auth_client(data)
     with grants(data):
-        res = client.delete(data["url"], data={"assignment": data["assignment"].pk})
+        res = client.delete(f"{data['url']}?assignment={data['assignment'].pk}")
 
     assert res.status_code == 200
     assert res.json() == {"subscription": data["notification"].subscriptions.get().pk}
@@ -205,8 +235,8 @@ def test_unsubscribe_idempotent(data: "SubscriptionApiData") -> None:
     SubscriptionFactory.create(notification=data["notification"], assignment=data["assignment"])
     client = _auth_client(data)
     with grants(data):
-        first = client.delete(data["url"], data={"assignment": data["assignment"].pk})
-        second = client.delete(data["url"], data={"assignment": data["assignment"].pk})
+        first = client.delete(f"{data['url']}?assignment={data['assignment'].pk}")
+        second = client.delete(f"{data['url']}?assignment={data['assignment'].pk}")
 
     assert first.status_code == 200
     assert second.status_code == 200
@@ -216,6 +246,22 @@ def test_unsubscribe_idempotent(data: "SubscriptionApiData") -> None:
 def test_unsubscribe_missing_subscription(data: "SubscriptionApiData") -> None:
     client = _auth_client(data)
     with grants(data):
-        res = client.delete(data["url"], data={"assignment": data["assignment"].pk})
+        res = client.delete(f"{data['url']}?assignment={data['assignment'].pk}")
 
     assert res.status_code == 404
+
+
+def test_unsubscribe_missing_assignment_param(data: "SubscriptionApiData") -> None:
+    client = _auth_client(data)
+    with grants(data):
+        res = client.delete(data["url"])
+
+    assert res.status_code == 400
+
+
+def test_unsubscribe_invalid_assignment_param(data: "SubscriptionApiData") -> None:
+    client = _auth_client(data)
+    with grants(data):
+        res = client.delete(f"{data['url']}?assignment=not-an-int")
+
+    assert res.status_code == 400

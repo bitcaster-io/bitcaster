@@ -214,6 +214,12 @@ UNFOLD = {
                         "permission": has_model_permission(model_name="notification"),
                     },
                     {
+                        "title": _("Subscriptions"),
+                        "icon": "subscriptions",
+                        "link": reverse_lazy("admin:bitcaster_subscription_changelist"),
+                        "permission": has_model_permission(model_name="subscription"),
+                    },
+                    {
                         "title": _("Message Templates"),
                         "icon": "article",
                         "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),

@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from unittest.mock import Mock
 
-from django.core.exceptions import ValidationError
-
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_SUBSCRIPTION
 
 if TYPE_CHECKING:
@@ -27,32 +25,34 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def data(email_channel: "Channel") -> "SubscriptionData":
+def data() -> "SubscriptionData":
     from testutils.factories import (
         AssignmentFactory,
+        ChannelFactory,
         DistributionListFactory,
         MessageTemplateFactory,
         NotificationFactory,
         SubscriptionFactory,
     )
 
+    channel: Channel = ChannelFactory()
     notification: Notification = NotificationFactory.create(
-        event__channels=[email_channel],
+        event__channels=[channel],
         policy=FILTERING_SUBSCRIPTION,
         distribution=None,
     )
-    assignment: Assignment = AssignmentFactory.create(channel=email_channel)
+    assignment: Assignment = AssignmentFactory.create(channel=channel)
     subscription: Subscription = SubscriptionFactory.create(notification=notification, assignment=assignment)
-    MessageTemplateFactory(channel=email_channel, event=notification.event)
-    distribution = DistributionListFactory.create(recipients=[AssignmentFactory.create(channel=email_channel)])
+    MessageTemplateFactory(channel=channel, event=notification.event)
+    distribution = DistributionListFactory.create(recipients=[AssignmentFactory.create(channel=channel)])
 
     return {
         "notification": notification,
         "assignment": assignment,
         "subscription": subscription,
         "distribution": distribution,
-        "channel": email_channel,
-        "message_template": notification.get_message(email_channel),
+        "channel": channel,
+        "message_template": notification.get_message(channel),
     }
 
 
@@ -67,48 +67,24 @@ def test_user(data: "SubscriptionData") -> None:
 
 
 @pytest.mark.django_db
-def test_clean_duplicate_same_channel(data: "SubscriptionData") -> None:
+def test_unique_constraint_same_assignment(data: "SubscriptionData") -> None:
+    """The DB unique constraint prevents duplicate (notification, assignment) pairs."""
+    from django.db import IntegrityError
+
+    from bitcaster.models import Subscription
+
+    with pytest.raises(IntegrityError):
+        Subscription.objects.create(notification=data["notification"], assignment=data["assignment"])
+
+
+@pytest.mark.django_db
+def test_unique_constraint_allows_different_assignment_same_channel(data: "SubscriptionData") -> None:
+    """Different assignments on the same channel for the same notification are allowed."""
     from testutils.factories import AssignmentFactory, SubscriptionFactory
 
     other_assignment = AssignmentFactory.create(channel=data["channel"])
-    duplicate = SubscriptionFactory.build(notification=data["notification"], assignment=other_assignment)
-    with pytest.raises(ValidationError):
-        duplicate.clean()
-
-
-@pytest.mark.django_db
-def test_clean_duplicate_ignores_active(data: "SubscriptionData") -> None:
-    """`active` is not part of the unique key: an inactive subscription still blocks the pair."""
-    from testutils.factories import AssignmentFactory, SubscriptionFactory
-
-    other_assignment = AssignmentFactory.create(channel=data["channel"])
-    SubscriptionFactory.create(notification=data["notification"], assignment=other_assignment, active=False)
-    duplicate = SubscriptionFactory.build(notification=data["notification"], assignment=other_assignment)
-    with pytest.raises(ValidationError):
-        duplicate.clean()
-
-
-@pytest.mark.django_db
-def test_clean_different_channel_allowed(data: "SubscriptionData") -> None:
-    from testutils.factories import AssignmentFactory, ChannelFactory, SubscriptionFactory
-
-    other_channel = ChannelFactory.create()
-    other_assignment = AssignmentFactory.create(channel=other_channel)
-    duplicate = SubscriptionFactory.build(notification=data["notification"], assignment=other_assignment)
-    duplicate.clean()
-
-
-@pytest.mark.django_db
-def test_clean_own_record_allowed(data: "SubscriptionData") -> None:
-    data["subscription"].clean()
-
-
-@pytest.mark.django_db
-def test_clean_without_relations_allowed(data: "SubscriptionData") -> None:
-    from testutils.factories import SubscriptionFactory
-
-    partial = SubscriptionFactory.build(notification=None, assignment=None)
-    partial.clean()
+    other = SubscriptionFactory.create(notification=data["notification"], assignment=other_assignment)
+    assert other.pk is not None
 
 
 @pytest.mark.django_db

@@ -28,9 +28,10 @@ logger = logging.getLogger(__name__)
 
 class NotificationAdmin(BaseAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event", "application", "distribution", "active")
+    list_display = ("name", "event", "application", "policy", "active")
     list_filter = (
         "active",
+        "policy",
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),

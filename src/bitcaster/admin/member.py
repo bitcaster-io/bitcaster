@@ -143,6 +143,7 @@ class SubscriptionInline(NonrelatedTabularInline):
         return Subscription.objects.filter(assignment__address__user=obj)
 
     def save_new_instance(self, parent: Member, instance: Subscription) -> None:
+        instance.full_clean()
         instance.save()
 
     def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:

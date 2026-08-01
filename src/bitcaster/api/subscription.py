@@ -30,10 +30,30 @@ class NotificationSubscriptionView(BaseView):
             event__application__project__organization__slug=org,
         )
 
+    def _get_assignment(self, pk: int, notification: Notification) -> Assignment:
+        assignment = get_object_or_404(Assignment, pk=pk)
+        # Ensure the assignment belongs to the same organization as the notification
+        org_id = notification.event.application.project.organization_id
+        if assignment.channel.organization_id != org_id:
+            # Assignment exists but belongs to a different organization
+            from django.http import Http404
+
+            raise Http404
+        return assignment
+
     def _parse_payload(self, request: Request) -> dict[str, Any]:
         serializer = SubscriptionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
+
+    def _get_assignment_from_params(self, request: Request) -> int:
+        pk = request.query_params.get("assignment")
+        if pk is None:
+            raise serializers.ValidationError({"assignment": "This field is required."})
+        try:
+            return int(pk)
+        except (ValueError, TypeError):
+            raise serializers.ValidationError({"assignment": "Must be an integer."}) from None
 
     @extend_schema(
         request=SubscriptionSerializer,
@@ -46,7 +66,7 @@ class NotificationSubscriptionView(BaseView):
     def post(self, request: Request, org: str, prj: str, app: str, notification_pk: int) -> Response:
         notification = self._get_notification(org, prj, app, notification_pk)
         data = self._parse_payload(request)
-        assignment = get_object_or_404(Assignment, pk=data["assignment"])
+        assignment = self._get_assignment(data["assignment"], notification)
         active = bool(data.get("active", True))
         subscription, created = Subscription.objects.get_or_create(
             notification=notification, assignment=assignment, defaults={"active": active}
@@ -60,14 +80,16 @@ class NotificationSubscriptionView(BaseView):
         )
 
     @extend_schema(
-        request=SubscriptionSerializer,
+        request=None,
+        parameters=[SubscriptionSerializer],
         responses={status.HTTP_200_OK: SubscriptionSerializer},
         description=_("Unsubscribe an assignment from a notification. Idempotent."),
     )
     def delete(self, request: Request, org: str, prj: str, app: str, notification_pk: int) -> Response:
         notification = self._get_notification(org, prj, app, notification_pk)
-        data = self._parse_payload(request)
-        subscription = get_object_or_404(Subscription, notification=notification, assignment_id=data["assignment"])
+        assignment_pk = self._get_assignment_from_params(request)
+        assignment = self._get_assignment(assignment_pk, notification)
+        subscription = get_object_or_404(Subscription, notification=notification, assignment=assignment)
         if subscription.active:
             subscription.active = False
             subscription.save()
