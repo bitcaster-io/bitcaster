@@ -54,7 +54,8 @@ class NotificationAdmin(BaseAdmin["Notification"]):
                 "classes": ["tab"],
                 "description": _(
                     "Defines who should receive the notification. You can use a static distribution list, "
-                    "dynamic rules based on user attributes, or external filters passed via API."
+                    "direct user subscriptions, dynamic rules based on user attributes, or external filters "
+                    "passed via API."
                 ),
                 "fields": [
                     "active",

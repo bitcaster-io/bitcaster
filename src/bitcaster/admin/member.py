@@ -26,7 +26,7 @@ from bitcaster.forms import unfold as uwidgets
 from bitcaster.forms.assignment import AssignmentInlineForm
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
 from bitcaster.importing.members import import_members_csv
-from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
+from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, Subscription, User
 from bitcaster.utils.json import process_dict
 
 from .base import BaseAdmin
@@ -98,6 +98,51 @@ class AssignmentInline(NonrelatedTabularInline):  # NonrelatedStackedInline is a
         return Assignment.objects.filter(address__user=obj)
 
     def save_new_instance(self, parent: Member, instance: Assignment) -> None:
+        instance.save()
+
+    def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
+        return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
+
+
+class SubscriptionFormSet(NonrelatedInlineModelFormSet):
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        ret = cast("dict[str, Any]", super().get_form_kwargs(index))
+        ret["user"] = self.instance
+        return ret
+
+
+class SubscriptionForm(forms.ModelForm["Subscription"]):
+    assignment = forms.ModelChoiceField(
+        label=_("Assignment"),
+        queryset=Assignment.objects.none(),
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if self.user is not None and self.user.pk:
+            assignments = Assignment.objects.filter(address__user=self.user)
+            self.fields["assignment"].queryset = assignments
+            self.fields["assignment"].widget.queryset = assignments
+
+    class Meta:
+        model = Subscription
+        fields = ("notification", "assignment", "active")
+
+
+class SubscriptionInline(NonrelatedTabularInline):
+    model = Subscription
+    tab = True
+    extra = 0
+    form = SubscriptionForm
+    formset = SubscriptionFormSet
+    autocomplete_fields = ["notification"]
+
+    def get_form_queryset(self, obj: Member) -> QuerySet[Subscription]:
+        return Subscription.objects.filter(assignment__address__user=obj)
+
+    def save_new_instance(self, parent: Member, instance: Subscription) -> None:
         instance.save()
 
     def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
@@ -247,7 +292,7 @@ class MemberAdmin(BaseAdmin[Member]):
         ("custom_fields", JsonFieldFilter.factory(options=False)),
         UserDistributionListFilter,
     )
-    inlines = [AddressInline, AssignmentInline, ListsInline]
+    inlines = [AddressInline, AssignmentInline, SubscriptionInline, ListsInline]
 
     def changelist_view(self, request: HttpRequest, extra_context: dict[str, Any] | None = None) -> TemplateResponse:
         extra_context = extra_context or {}

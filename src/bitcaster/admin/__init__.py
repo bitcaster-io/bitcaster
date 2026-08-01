@@ -18,6 +18,7 @@ from .organization import OrganizationAdmin
 from .overrides import LogEntryAdmin
 from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
+from .subscription import SubscriptionAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
 from .user_message import UserMessageAdmin
@@ -44,6 +45,7 @@ __all__ = [
     "OrganizationAdmin",
     "ProcessLogEntryAdmin",
     "ProjectAdmin",
+    "SubscriptionAdmin",
     "TaskAdmin",
     "UserAdmin",
     "UserMessageAdmin",

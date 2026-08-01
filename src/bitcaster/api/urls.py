@@ -10,6 +10,7 @@ from .event import EventList, EventTrigger
 from .org import OrgView
 from .profile import UserProfileView
 from .project import ProjectView
+from .subscription import NotificationSubscriptionView
 from .system import LoginView, PingView
 from .unregister import ApplicationUnregisterView
 from .user import UserView
@@ -76,5 +77,10 @@ urlpatterns = [
         "o/<slug:org>/p/<slug:prj>/a/<slug:app>/unregister/<str:username>/",
         ApplicationUnregisterView.as_view(),
         name="application-unregister",
+    ),
+    path(
+        "o/<slug:org>/p/<slug:prj>/a/<slug:app>/n/<int:notification_pk>/subscribe/",
+        NotificationSubscriptionView.as_view(),
+        name="notification-subscribe",
     ),
 ]

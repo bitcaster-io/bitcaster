@@ -16,7 +16,7 @@ from bitcaster.dispatchers.base import Payload
 from bitcaster.utils.filtering import FilterManager
 
 from .assignment import Assignment
-from .choices import FILTERING, FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
+from .choices import FILTERING, FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE, FILTERING_SUBSCRIPTION
 from .distribution import DistributionList
 from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
 from .user import User
@@ -170,6 +170,8 @@ class Notification(BitcasterBaseModel):
                 return Template(obj).render(ctx)
             return obj
 
+        if self.policy == FILTERING_SUBSCRIPTION:
+            return self.get_subscription_pending_subscriptions(delivered, channel)
         if self.policy == FILTERING_DYNAMIC and self.recipients_filter:
             rules = self.recipients_filter
             if context:
@@ -187,6 +189,20 @@ class Notification(BitcasterBaseModel):
         if self.policy in [FILTERING_DYNAMIC, FILTERING_EXTERNAL]:
             return self.get_dynamic_pending_subscriptions(delivered, channel, filter_users=users)
         return self.get_distributionlist_pending_subscriptions(delivered, channel, filter_users=users)
+
+    def get_subscription_pending_subscriptions(
+        self, delivered: list[str | int], channel: "Channel"
+    ) -> QuerySet[Assignment]:
+        return (
+            Assignment.objects.select_related("address", "channel", "address__user")
+            .filter(
+                active=True,
+                channel=channel,
+                subscriptions__notification=self,
+                subscriptions__active=True,
+            )
+            .exclude(id__in=delivered)
+        )
 
     def get_dynamic_pending_subscriptions(
         self, delivered: list[str | int], channel: "Channel", filter_users: QuerySet[User]

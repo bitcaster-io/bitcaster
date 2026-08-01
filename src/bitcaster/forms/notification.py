@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Event, Notification, User
-from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE, FILTERING_SUBSCRIPTION
 from bitcaster.utils.filtering import validate_filters, validate_lookups, validate_schema
 
 
@@ -34,7 +34,7 @@ class NotificationForm(forms.ModelForm["Notification"]):
             except ValidationError as e:
                 raise ValidationError({"recipients_filter": e}) from None
 
-        elif policy == FILTERING_EXTERNAL:
+        elif policy in [FILTERING_EXTERNAL, FILTERING_SUBSCRIPTION]:
             self.cleaned_data["distribution"] = None
 
         elif (
