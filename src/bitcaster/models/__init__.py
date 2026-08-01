@@ -19,6 +19,7 @@ from .occurrence import Occurrence
 from .organization import Organization
 from .process_log import ProcessLogEntry
 from .project import Project
+from .subscription import Subscription
 from .task import Task
 from .user import Member, User
 from .user_message import UserMessage
@@ -47,6 +48,7 @@ __all__ = [
     "ProcessLogEntry",
     "Project",
     "SocialProvider",
+    "Subscription",
     "Task",
     "User",
     "UserMessage",

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from webtest import Upload
 
@@ -69,6 +69,68 @@ def test_member_check_custom_fields(app: "DjangoTestApp", value, expected) -> No
     res = res.forms["member_form"].submit("apply")
     assert res.status_code == 200
     assert_form_error(res, "custom_fields", expected)
+
+
+def test_member_subscriptions_inline(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import (
+        AddressFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        MessageTemplateFactory,
+        NotificationFactory,
+    )
+
+    from bitcaster.models import Subscription
+
+    member = context["members"][0]
+    addr = AddressFactory(user=member, value=member.email)
+    ch = ChannelFactory(organization=context["organization"])
+    assignment = AssignmentFactory(address=addr, channel=ch)
+    notification = NotificationFactory(event__channels=[ch])
+    MessageTemplateFactory(channel=ch, event=notification.event)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    form = res.forms["member_form"]
+    params: dict[str, Any] = {
+        name: [v for v in (f.value for f in fields) if v is not None]
+        for name, fields in form.fields.items()
+        if "__prefix__" not in name
+    }
+    params["custom_fields"] = "{}"
+    params["bitcaster-subscription-TOTAL_FORMS"] = "1"
+    params["bitcaster-subscription-INITIAL_FORMS"] = "0"
+    params["bitcaster-subscription-0-notification"] = str(notification.pk)
+    params["bitcaster-subscription-0-assignment"] = str(assignment.pk)
+    params["bitcaster-subscription-0-active"] = "on"
+    params["_save"] = "Save"
+    res = app.post(url, params=params)
+    assert res.status_code == 302, res
+    assert Subscription.objects.filter(assignment=assignment, notification=notification).exists()
+
+
+def test_member_subscriptions_inline_display(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import (
+        AddressFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        MessageTemplateFactory,
+        NotificationFactory,
+        SubscriptionFactory,
+    )
+
+    member = context["members"][0]
+    addr = AddressFactory(user=member, value=member.email)
+    ch = ChannelFactory(organization=context["organization"])
+    assignment = AssignmentFactory(address=addr, channel=ch)
+    notification = NotificationFactory(event__channels=[ch])
+    MessageTemplateFactory(channel=ch, event=notification.event)
+    subscription = SubscriptionFactory(notification=notification, assignment=assignment)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    assert str(subscription.pk) in res
+    assert "bitcaster-subscription" in res
 
 
 def test_add_to_distributionlist(app: "DjangoTestApp", distributionlist: "DistributionList") -> None:

@@ -21,6 +21,7 @@ from .occurrence import OccurrenceFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 from .processlog import ProcessLogEntryFactory
 from .social import SocialProviderFactory
+from .subscription import SubscriptionFactory
 from .task import TaskFactory
 from .user import SuperUserFactory, UserFactory
 from .usermessage import UserMessageFactory
@@ -53,6 +54,7 @@ __all__ = [
     "ProjectFactory",
     "ProcessLogEntryFactory",
     "SocialProviderFactory",
+    "SubscriptionFactory",
     "SuperUserFactory",
     "TaskFactory",
     "UserFactory",

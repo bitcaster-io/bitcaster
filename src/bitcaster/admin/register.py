@@ -29,6 +29,7 @@ from .overrides import (
 )
 from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
+from .subscription import SubscriptionAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
 from .user_message import UserMessageAdmin
@@ -60,6 +61,7 @@ admin.site.register(models.Occurrence, OccurrenceAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)
 admin.site.register(models.ProcessLogEntry, ProcessLogEntryAdmin)
 admin.site.register(models.Project, ProjectAdmin)
+admin.site.register(models.Subscription, SubscriptionAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)
 admin.site.register(models.UserMessage, UserMessageAdmin)

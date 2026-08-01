@@ -16,6 +16,14 @@ The policy defines the strategy for selecting recipients. You can choose one of 
 This is the default behavior. The notification is sent to everyone subscribed to the **Distribution List** linked to the notification.
 *   **Best for**: Static teams (e.g., "All System Administrators").
 
+### Direct Subscriptions
+Recipients are the **Assignments of all active Subscriptions** targeting the notification. Each user can directly subscribe to a Notification using one of their own Assignments, without being a member of any Distribution List.
+*   Subscriptions are managed in the admin (inline on the **Member** page, like Assignments) or via the [Subscriptions API](../api/subscriptions.md).
+*   A user can have multiple Subscriptions to the same Notification as long as the Assignments use **different channels**.
+*   Like the other exclusive policies, the Distribution List, the stored `recipients_filter` and the API `options.filters` are ignored.
+*   If the Assignment's channel is not in the Notification's Event channels, the assignment is excluded from processing.
+*   **Best for**: Users who want to opt-in to notifications directly (e.g., "Notify me when a new release is published").
+
 ### Fixed Ruled Filtering (Dynamic)
 Recipients are selected dynamically from the user database based on specific attributes.
 > **Note**: This policy only selects from users who have an **active Assignment** (configured address) for the channel being used.
@@ -210,5 +218,6 @@ curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
 | Policy | Source of Truth for Recipients | Format | Scope |
 | :--- | :--- | :--- | :--- |
 | **None** | Distribution List | N/A | Manual / Static |
+| **Subscription** | Direct Subscriptions | N/A | Per-user opt-in |
 | **Dynamic** | Database Query | JSON | Automatic / Attribute-based |
 | **External** | API Payload | JSON | Real-time / Dynamic |
