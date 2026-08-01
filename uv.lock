@@ -458,7 +458,7 @@ requires-dist = [
     { name = "msgpack", specifier = ">=1.2.1" },
     { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
-    { name = "pika", specifier = ">=1.3" },
+    { name = "pika", specifier = ">=1.3.2" },
     { name = "pillow", specifier = ">=12.2" },
     { name = "pip", specifier = ">=26.1.2" },
     { name = "premailer", specifier = ">=3.10" },
