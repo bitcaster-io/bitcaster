@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
+from constance.test.pytest import override_config
+
 import pytest
 
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -82,6 +84,30 @@ def test_trigger_event(app: "DjangoTestApp", context: "Context") -> None:
     assert msg.level == SUCCESS
 
 
+def test_trigger_event_permission_required(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import User
+
+    event: Event = context["event"]
+    user: User = User.objects.create_user("limited@example.com", password="p", is_staff=True)
+    app.set_user(user)
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "trigger_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, expect_errors=True)
+    assert res.status_code == 403
+
+
+def test_debug_event_permission_required(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import User
+
+    event: Event = context["event"]
+    user: User = User.objects.create_user("limited2@example.com", password="p", is_staff=True)
+    app.set_user(user)
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, expect_errors=True)
+    assert res.status_code == 403
+
+
 def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
     from bitcaster.models import Event
 
@@ -133,3 +159,362 @@ def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
     res.forms[delete_form_index].submit().follow()
     assert not Event.objects.filter(pk=event.pk).exists()
     assert Event.objects.filter(pk=internal_event.pk).exists()
+
+
+@pytest.fixture
+def debug_context(app: "DjangoTestApp") -> "Context":
+    from testutils.factories import AssignmentFactory, MessageTemplateFactory, NotificationFactory
+
+    asm: "Assignment" = AssignmentFactory(address__user=app._user)
+    n: "Notification" = NotificationFactory(
+        distribution__recipients=[asm], event__channels=[asm.channel], payload_filter="foo=='bar'"
+    )
+    MessageTemplateFactory(channel=asm.channel, event=n.event, content="Hello {{ foo }}")
+    return {
+        "channel": asm.channel,
+        "assignment": asm,
+        "event": n.event,
+    }
+
+
+def test_debug_event_get(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url)
+    assert res.status_code == 200
+    assert "debug-form" in res.text
+    assert res.pyquery("#id_context") is not None
+    assert res.pyquery("#id_mode") is not None
+    assert res.pyquery("#id_limit_to") is not None
+    assert res.pyquery("#id_execution") is not None
+    assert Occurrence.objects.count() == 0
+
+
+def test_debug_event_sync_fast(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {"context": '{"foo": "bar"}', "mode": "fast", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    assert debug_context["assignment"].address.value in res.text
+    assert 'id="preview-' not in res.text  # no rendered content in fast mode
+    assert Occurrence.objects.count() == 0  # no occurrence rows created
+    simulation = EventSimulation.objects.get()
+    assert simulation.status == Occurrence.Status.PROCESSED.value
+    assert simulation.mode == "fast"
+    assert simulation.context == {"foo": "bar"}
+
+
+def test_debug_event_sync_full(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {"context": '{"foo": "bar"}', "mode": "full", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    assert "Hello bar" in res.text  # rendered content shown in popup
+    assert "view" in res.text
+    assert Occurrence.objects.count() == 0
+    simulation = EventSimulation.objects.get()
+    assert simulation.status == Occurrence.Status.PROCESSED.value
+    assert simulation.mode == "full"
+
+
+def test_debug_event_sync_partial(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import AssignmentFactory
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    channel = debug_context["channel"]
+
+    for i in range(4):
+        asm = AssignmentFactory(channel=channel, address__value=f"u{i}@example.com")
+        event.notifications.first().distribution.recipients.add(asm)
+
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    with override_config(DEBUG_PREVIEW_RENDER_LIMIT=2):
+        res = app.post(url, {"context": '{"foo": "bar"}', "mode": "partial", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    assert "more recipients are not rendered" in res.text
+    assert Occurrence.objects.count() == 0
+    assert EventSimulation.objects.get().mode == "partial"
+
+
+def test_debug_event_payload_filter(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {"context": '{"foo": "dummy"}', "mode": "fast", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    assert "No recipients found" in res.text
+    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSED.value
+
+
+def test_debug_event_sync_failure(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from unittest.mock import patch
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    with patch("bitcaster.admin.event.Occurrence.preview", side_effect=RuntimeError("boom")):
+        res = app.post(url, {"context": "{}", "mode": "fast", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    simulation = EventSimulation.objects.get()
+    assert simulation.status == Occurrence.Status.FAILED.value
+    assert simulation.data["errors"] == ["RuntimeError: boom"]
+    assert "Simulation failed" in res.text
+    assert 'http-equiv="refresh"' not in res.text
+
+
+def test_debug_event_missing_template_ui(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {"context": "{}", "mode": "full", "execution": "sync"}).follow()
+    assert res.status_code == 200
+    assert "Recipients without a message template were skipped" in res.text
+    assert "missing" in res.text
+    assert Occurrence.objects.count() == 0
+    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSED.value
+
+
+def test_debug_event_session_persists(app: "DjangoTestApp", debug_context: "Context") -> None:
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    app.post(url, {"context": '{"foo": "bar"}', "mode": "fast", "execution": "sync"})
+    res = app.get(url)
+    assert res.status_code == 200
+    assert "{&quot;foo&quot;: &quot;bar&quot;}" in res.text  # context pre-filled from session
+
+
+def test_debug_event_background_post(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from unittest.mock import patch
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    with patch("bitcaster.admin.event.run_event_simulation.send") as mock_send:
+        res = app.post(url, {"context": '{"foo": "bar"}', "mode": "full", "execution": "background"})
+    simulation = EventSimulation.objects.get()
+    assert simulation.event == event
+    assert simulation.status == Occurrence.Status.NEW.value
+    assert simulation.mode == "full"
+    assert simulation.context == {"foo": "bar"}
+    mock_send.assert_called_once_with(simulation.pk)
+    assert res.status_code == 302
+    assert f"simulation={simulation.pk}" in res["Location"]
+
+
+def test_debug_event_background_running(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    event: "Event" = debug_context["event"]
+    sim = EventSimulationFactory(event=event, created_by=app._user, mode="full")
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {"simulation": sim.pk})
+    assert res.status_code == 200
+    assert 'http-equiv="refresh" content="3"' in res.text
+    assert "Simulation running..." in res.text
+
+
+def test_debug_event_background_processed(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    data = {
+        "delivered": [],
+        "recipients": [
+            [
+                debug_context["assignment"].address.value,
+                debug_context["channel"].name,
+                debug_context["assignment"].pk,
+                debug_context["channel"].pk,
+                event.notifications.first().pk,
+                event.notifications.first().get_message(debug_context["channel"]).pk,
+            ]
+        ],
+        "errors": [],
+        "notifications": [event.notifications.first().pk],
+        "channels": [debug_context["channel"].pk],
+        "messages": [event.notifications.first().get_message(debug_context["channel"]).pk],
+        "rendered": [
+            {
+                "assignment_pk": debug_context["assignment"].pk,
+                "notification_pk": event.notifications.first().pk,
+                "notification_name": event.notifications.first().name,
+                "channel_pk": debug_context["channel"].pk,
+                "channel_name": debug_context["channel"].name,
+                "address": debug_context["assignment"].address.value,
+                "subject": "",
+                "message": "Hello bar",
+                "html_message": "",
+            }
+        ],
+        "missing_template": [],
+    }
+    sim: EventSimulation = EventSimulationFactory(
+        event=event, created_by=app._user, mode="full", status=Occurrence.Status.PROCESSED, data=data
+    )
+    from testutils.factories import DeliverySimulationFactory
+
+    notification = event.notifications.first()
+    DeliverySimulationFactory(
+        simulation=sim,
+        assignment=debug_context["assignment"],
+        notification=notification,
+        message_template=notification.get_message(debug_context["channel"]),
+        status=Occurrence.Status.PROCESSED,
+        data={"rendered": {"subject": "", "message": "Hello bar", "html_message": ""}},
+    )
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {"simulation": sim.pk})
+    assert res.status_code == 200
+    assert "Simulation completed" in res.text
+    assert "Hello bar" in res.text
+    assert 'http-equiv="refresh"' not in res.text
+
+
+def test_debug_event_background_timeout(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from datetime import timedelta
+
+    from freezegun import freeze_time
+    from testutils.factories import EventSimulationFactory
+
+    from django.utils import timezone
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    sim: EventSimulation = EventSimulationFactory(event=event, created_by=app._user, mode="full")
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    with freeze_time(timezone.now() + timedelta(minutes=11)):
+        res = app.get(url, {"simulation": sim.pk})
+    assert res.status_code == 200
+    sim.refresh_from_db()
+    assert sim.status == Occurrence.Status.FAILED.value
+    assert sim.data["errors"] == ["simulation timed out"]
+    assert "Simulation failed" in res.text
+    assert 'http-equiv="refresh"' not in res.text
+
+
+def test_debug_event_background_superseded(app: "DjangoTestApp", debug_context: "Context") -> None:
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {"simulation": 9999})
+    assert res.status_code == 200
+    assert "superseded by a newer run" in res.text
+
+
+def test_debug_event_simulation_wrong_event(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    event: "Event" = debug_context["event"]
+    other = EventSimulationFactory(mode="full")
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {"simulation": other.pk}, expect_errors=True)
+    assert res.status_code == 404
+
+
+def test_debug_event_new_simulation_deletes_previous(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+    from unittest.mock import patch
+
+    from bitcaster.models import EventSimulation
+
+    event: "Event" = debug_context["event"]
+    old = EventSimulationFactory(event=event, created_by=app._user, mode="fast")
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    with patch("bitcaster.admin.event.run_event_simulation.send"):
+        res = app.post(url, {"context": "{}", "mode": "full", "execution": "background"})
+    assert res.status_code == 302
+    assert not EventSimulation.objects.filter(pk=old.pk).exists()
+    assert EventSimulation.objects.filter(event=event).count() == 1
+
+
+def test_debug_event_prepopulate_from_simulation(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    event: "Event" = debug_context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    # a previous run leaves a session context, but the simulation params must win
+    app.post(url, {"context": '{"foo": "from-session"}', "mode": "fast", "execution": "sync"})
+    sim = EventSimulationFactory(
+        event=event,
+        created_by=app._user,
+        mode="full",
+        context={"foo": "from-simulation"},
+        options={"limit_to": ["a@example.com"], "channels": [debug_context["channel"].pk]},
+    )
+    res = app.get(url, {"simulation": sim.pk})
+    assert res.status_code == 200
+    assert "from-simulation" in res.text  # simulation params beat session context
+
+
+def test_debug_event_lossy_options_warning(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    event: "Event" = debug_context["event"]
+    sim = EventSimulationFactory(event=event, created_by=app._user, mode="fast", options={"filters": {"include": []}})
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {"simulation": sim.pk})
+    assert res.status_code == 200
+    assert "cannot be edited via this form" in res.text
+
+
+def test_debug_event_channels_queryset(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import ChannelFactory
+
+    event: "Event" = debug_context["event"]
+    other_channel = ChannelFactory()
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url)
+    assert res.status_code == 200
+    options = list(res.pyquery("#id_channels option"))
+    pks = {int(opt.attrib["value"]) for opt in options}
+    assert debug_context["channel"].pk in pks
+    assert other_channel.pk not in pks
+
+
+def test_debug_event_changelist_badge(app: "DjangoTestApp", debug_context: "Context") -> None:
+    from testutils.factories import EventSimulationFactory
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    event: "Event" = debug_context["event"]
+    url = reverse("admin:bitcaster_event_changelist")  # type: ignore[arg-type]
+    res = app.get(url)
+    assert "simulation running" not in res.text
+    EventSimulationFactory(event=event, created_by=app._user, mode="full")
+    res = app.get(url)
+    assert "simulation running" in res.text
+    EventSimulation.objects.update(status=Occurrence.Status.PROCESSED)
+    res = app.get(url)
+    assert "simulation running" not in res.text

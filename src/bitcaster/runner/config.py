@@ -20,6 +20,12 @@ SCHEDULER = {
         "trigger": "interval",
         "days": 30,
     },
+    "purge_event_simulations": {
+        "func": "bitcaster.runner.tasks.purge_event_simulations",
+        "replace_existing": True,
+        "trigger": "interval",
+        "days": 1,
+    },
     "monitor_run": {
         "func": "bitcaster.runner.tasks.monitor_run",
         "replace_existing": True,

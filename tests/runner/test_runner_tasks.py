@@ -1,19 +1,27 @@
 import pytest
 from testutils.agent import XAgent
-from testutils.factories import ChannelFactory, EventFactory, MonitorFactory, OccurrenceFactory
+from testutils.factories import (
+    ChannelFactory,
+    EventFactory,
+    EventSimulationFactory,
+    MonitorFactory,
+    OccurrenceFactory,
+)
 from unittest.mock import MagicMock, patch
 
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import UserMessageDispatcher
-from bitcaster.models import Event, Occurrence, UserMessage
+from bitcaster.models import Event, EventSimulation, Occurrence, UserMessage
 from bitcaster.runner.tasks import (
     check_for_new_user_messages,
     delete_expired_user_messages,
     monitor_check,
     monitor_run,
     process_occurrence,
+    purge_event_simulations,
     purge_occurrences,
+    run_event_simulation,
     scan_occurrences,
 )
 
@@ -93,6 +101,87 @@ def test_purge_occurrences_empty():
 def test_purge_occurrences_exception():
     with patch.object(Occurrence.objects, "purgeable", side_effect=Exception("Purge error")):
         res = purge_occurrences()
+        assert isinstance(res, Exception)
+        assert str(res) == "Purge error"
+
+
+def test_run_event_simulation_success():
+    from constance.test.pytest import override_config
+
+    sim = EventSimulationFactory(mode="full")
+    with override_config(DEBUG_PREVIEW_RENDER_LIMIT=2):
+        with patch(
+            "bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": []})
+        ) as mock_preview:
+            run_event_simulation(sim.pk)
+    sim.refresh_from_db()
+    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.data["recipients_count"] == 0
+    assert sim.data["delivered"] == []
+    mock_preview.assert_called_once()
+
+
+def test_run_event_simulation_partial_uses_limit():
+    from constance.test.pytest import override_config
+
+    sim = EventSimulationFactory(mode="partial")
+    with override_config(DEBUG_PREVIEW_RENDER_LIMIT=7):
+        with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {})) as mock_preview:
+            run_event_simulation(sim.pk)
+    mock_preview.assert_called_once()
+    assert mock_preview.call_args.args == ("partial", 7)
+
+
+def test_run_event_simulation_failed():
+    sim = EventSimulationFactory(mode="full")
+    with patch("bitcaster.models.occurrence.Occurrence.preview", side_effect=Exception("Boom")):
+        run_event_simulation(sim.pk)
+    sim.refresh_from_db()
+    assert sim.status == Occurrence.Status.FAILED.value
+    assert sim.data["errors"] == ["Exception: Boom"]
+
+
+def test_run_event_simulation_not_found():
+    run_event_simulation(9999)  # should not raise
+
+
+def test_run_event_simulation_does_not_overwrite_processed():
+    """Atomic status guard: a concurrent completion is not overwritten by the task."""
+
+    sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSED.value, data={"errors": []})
+    with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": [1]})):
+        run_event_simulation(sim.pk)
+    sim.refresh_from_db()
+    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.data == {"errors": []}
+
+
+def test_purge_event_simulations():
+    from freezegun import freeze_time
+
+    from django.utils import timezone
+
+    with freeze_time(timezone.now()):
+        sim = EventSimulationFactory()
+    with freeze_time(timezone.now().replace(year=2000)):
+        old_sim = EventSimulationFactory()
+
+    purge_event_simulations()
+    assert not EventSimulation.objects.filter(pk=old_sim.pk).exists()
+    assert EventSimulation.objects.filter(pk=sim.pk).exists()
+
+
+def test_purge_event_simulations_empty():
+    with patch.object(EventSimulation.objects, "purgeable") as mock_purgeable:
+        mock_query = MagicMock()
+        mock_purgeable.return_value = mock_query
+        mock_query.order_by.return_value.values_list.return_value.__getitem__.return_value = []
+        purge_event_simulations(max_batches=1)
+
+
+def test_purge_event_simulations_exception():
+    with patch.object(EventSimulation.objects, "purgeable", side_effect=Exception("Purge error")):
+        res = purge_event_simulations()
         assert isinstance(res, Exception)
         assert str(res) == "Purge error"
 

@@ -73,6 +73,10 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             ("slug", "application"),
         )
         ordering = ("name",)
+        permissions = (
+            ("trigger_event", "Can trigger event"),
+            ("debug_event", "Can debug event"),
+        )
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, MessageTemplate] = {}

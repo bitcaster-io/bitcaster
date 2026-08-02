@@ -1,28 +1,35 @@
 from typing import TYPE_CHECKING, Any, Sequence
 
 import logging
+from datetime import timedelta
 
 from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from constance import config
 from unfold import widgets as uwidgets
+from unfold.decorators import display
 
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.constants import bitcaster
-from bitcaster.forms.event import EventChangeForm
-from bitcaster.models import Assignment, Event, Occurrence
+from bitcaster.forms.event import EventChangeForm, EventDebugForm
+from bitcaster.forms.unfold import UnfoldAdminForm
+from bitcaster.models import Assignment, Event, EventSimulation, Occurrence
+from bitcaster.runner.tasks import run_event_simulation
 from bitcaster.state import state
 
 from .base import BaseAdmin, ButtonColor
 from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
+from .simulation import simulation_page, simulation_results_context
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _FieldsetSpec
@@ -46,7 +53,7 @@ class EventTestForm(forms.Form):
 
 class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Event]):
     search_fields = ("name",)
-    list_display = ("name", "application", "active", "locked")
+    list_display = ("name", "application", "simulation_badge", "active", "locked")
     list_filter = (
         ("application__project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
@@ -136,7 +143,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             return ["channels", "locked"]
         return ["locked"]
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    @button(html_attrs={"class": ButtonColor.ACTION.value}, permission="bitcaster.trigger_event")  # type: ignore[arg-type]
     def trigger_event(self, request: HttpRequest, pk: str) -> HttpResponse:
         def get_form(*args: Any, **kwargs: Any) -> EventTestForm:
             frm = EventTestForm(*args, **kwargs)
@@ -173,6 +180,90 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             )
         context["form"] = config_form
         return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
+
+    @display(label={"simulation running": "info"})  # type: ignore[untyped-decorator]
+    def simulation_badge(self, obj: Event) -> str:
+        if obj.simulations.filter(status=Occurrence.Status.NEW).exists():
+            return "simulation running"
+        return ""
+
+    @button(html_attrs={"class": ButtonColor.ACTION.value}, permission="bitcaster.debug_event")  # type: ignore[arg-type]
+    def debug_event(self, request: HttpRequest, pk: str) -> HttpResponse:
+        def get_form(*args: Any, **kwargs: Any) -> EventDebugForm:
+            return EventDebugForm(*args, event=evt, **kwargs)
+
+        evt: Event = self.get_object_or_404(request, pk)
+        context = self.get_common_context(request, pk, action_title=_("Debug Event"))
+        context["original"] = evt
+        session_key = f"event_debug_context_{evt.pk}"
+        simulation: EventSimulation | None = None
+
+        if simulation_pk := request.GET.get("simulation"):
+            try:
+                simulation = EventSimulation.objects.get(pk=simulation_pk)
+                if simulation.event_id != evt.pk:
+                    raise Http404
+            except EventSimulation.DoesNotExist:
+                simulation = None
+                context["stale_simulation"] = True
+
+        if simulation:
+            if simulation.status == Occurrence.Status.NEW and simulation.timestamp < timezone.now() - timedelta(
+                minutes=config.EVENT_SIMULATION_TIMEOUT
+            ):
+                EventSimulation.objects.filter(pk=simulation.pk, status=Occurrence.Status.NEW).update(
+                    status=Occurrence.Status.FAILED, data={"errors": ["simulation timed out"]}
+                )
+                simulation.refresh_from_db()
+            context["simulation"] = simulation
+            context["mode"] = simulation.mode
+            if "environs" in simulation.options or "filters" in simulation.options:
+                context["lossy_options"] = True
+            if simulation.data:
+                context.update(simulation_results_context(simulation, simulation_page(simulation, request)))
+
+        if request.method == "POST":
+            config_form = get_form(request.POST)
+            if config_form.is_valid():
+                ctx: dict[str, Any] = config_form.cleaned_data.get("context") or {}
+                opts = config_form.get_options()
+                mode = config_form.cleaned_data["mode"]
+                request.session[session_key] = ctx
+                EventSimulation.objects.filter(event=evt).delete()
+                simulation = EventSimulation.objects.create(
+                    event=evt, created_by=request.user, context=ctx, options=opts, mode=mode
+                )
+                if config_form.cleaned_data["execution"] == "background":
+                    run_event_simulation.send(simulation.pk)
+                    return HttpResponseRedirect(f"{request.path}?simulation={simulation.pk}")
+                try:
+                    limit = config.DEBUG_PREVIEW_RENDER_LIMIT if mode == "partial" else None
+                    occurrence = Occurrence(event=evt, context=ctx, options=opts)
+                    _success, data = occurrence.preview(mode, limit)
+                    simulation.save_deliveries(data)
+                except Exception as e:
+                    logger.exception(e)
+                    EventSimulation.objects.filter(pk=simulation.pk, status=Occurrence.Status.NEW).update(
+                        data={"errors": [f"{e.__class__.__name__}: {str(e)}"]}, status=Occurrence.Status.FAILED
+                    )
+                return HttpResponseRedirect(f"{request.path}?simulation={simulation.pk}")
+        else:
+            initial: dict[str, Any] = {}
+            if simulation:
+                initial = {
+                    "context": simulation.context,
+                    "mode": simulation.mode,
+                    "limit_to": ", ".join(str(e) for e in simulation.options.get("limit_to", [])),
+                    "channels": [int(pk) for pk in simulation.options.get("channels", [])],
+                    "execution": "background",
+                }
+            else:
+                initial["context"] = request.session.get(session_key, {})
+            config_form = get_form(initial=initial)
+        context["form"] = config_form
+        fs = (("", {"fields": list(EventDebugForm.base_fields.keys())}),)
+        context["admin_form"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)
+        return TemplateResponse(request, "bitcaster/admin/event/debug_event.html", context)
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def notifications(self, button: StandardButton) -> None:

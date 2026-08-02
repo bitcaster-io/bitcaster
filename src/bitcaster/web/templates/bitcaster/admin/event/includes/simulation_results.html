@@ -1,0 +1,148 @@
+{% load i18n json %}
+<div class="border border-default rounded p-3 mb-3">
+    {% with errors=simulation.data.errors %}
+        {% if errors %}
+            <div class="bg-red-100 border border-red-400 text-red-800 p-3 rounded mb-3">
+                <div class="font-bold">
+                    {% translate "Simulation failed" %}
+                </div>
+                <ul class="list-disc ml-4">
+                    {% for error in errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="grid grid-cols-3 gap-2 p-2">
+        <div class="font-bold">
+            {% translate "Recipients" %}
+        </div>
+        <div class="font-bold">
+            {% translate "Notifications" %}
+        </div>
+        <div class="font-bold">
+            {% translate "Channels" %}
+        </div>
+        <div>
+            {{ simulation.data.recipients_count }}
+        </div>
+        <div>
+            {{ simulation.data.notifications|length }}
+        </div>
+        <div>
+            {{ simulation.data.channels|length }}
+        </div>
+    </div>
+    {% if missing_deliveries %}
+        <div class="bg-amber-100 border border-amber-400 text-amber-800 p-3 rounded mb-3">
+            {% translate "Recipients without a message template were skipped:" %}
+            <ul class="list-disc ml-4">
+                {% for d in missing_deliveries %}
+                    <li>
+                        {{ d.assignment.address.value }} - {{ d.assignment.channel.name }} ({{ d.notification.name }})
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if page_obj.object_list %}
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-default">
+                    <th class="p-2 text-left">
+                        {% translate "Address" %}
+                    </th>
+                    <th class="p-2 text-left">
+                        {% translate "User" %}
+                    </th>
+                    <th class="p-2 text-left">
+                        {% translate "Channel" %}
+                    </th>
+                    <th class="p-2 text-left">
+                        {% translate "Notification" %}
+                    </th>
+                    <th class="p-2 text-left">
+                        {% translate "Message template" %}
+                    </th>
+                    {% if mode == "full" or mode == "partial" %}
+                        <th class="p-2 text-left">
+                            {% translate "Preview" %}
+                        </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in page_obj.object_list %}
+                    <tr class="border-b border-default">
+                        <td class="p-2">
+                            {{ d.assignment.address.value }}
+                        </td>
+                        <td class="p-2">
+                            {{ d.assignment.address.user.username }}
+                        </td>
+                        <td class="p-2">
+                            {{ d.assignment.channel.name }}
+                        </td>
+                        <td class="p-2">
+                            <a href="{% url "admin:bitcaster_notification_change" d.notification_id %}">{{ d.notification.name }}</a>
+                        </td>
+                        <td class="p-2">
+                            {% if d.message_template_id %}
+                                <a href="{% url "admin:bitcaster_messagetemplate_change" d.message_template_id %}">{{ d.message_template.name }}</a>
+                            {% else %}
+                                <span class="text-orange-300">{% translate "missing" %}</span>
+                            {% endif %}
+                        </td>
+                        {% if mode == "full" or mode == "partial" %}
+                            <td class="p-2">
+                                {% if d.rendered %}
+                                    <a href="#" onclick="openPreview('{{ d.id }}'); return false;">{% translate "view" %}</a>
+                                    <div id="preview-{{ d.id }}" class="hidden">
+                                        <div>
+                                            <b>{% translate "Subject" %}</b>: {{ d.rendered.subject }}
+                                        </div>
+                                        <div>
+                                            <b>{% translate "Message" %}</b>:
+                                            <br />
+                                            <pre>{{ d.rendered.message }}</pre>
+                                        </div>
+                                        <div>
+                                            <b>{% translate "HTML" %}</b>:
+                                            <br />
+                                            {{ d.rendered.html_message|safe }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if partial_more %}
+            <div class="bg-amber-100 border border-amber-400 text-amber-800 p-3 rounded mt-3">
+                {% blocktranslate %}{{ partial_more }} more recipients are not rendered{% endblocktranslate %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="p-3 text-center text-gray-500">
+            {% translate "No recipients found. Check the payload filter, policy or filters configuration." %}
+        </div>
+    {% endif %}
+</div>
+<script type="text/javascript">
+    function openPreview(id) {
+        var content = document.getElementById(id);
+        if (!content) {
+            return;
+        }
+        var w = window.open("", "preview", "width=700,height=500");
+        w.document.write(content.innerHTML);
+        w.document.close();
+    }
+</script>

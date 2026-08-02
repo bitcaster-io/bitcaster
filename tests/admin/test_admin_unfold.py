@@ -43,6 +43,8 @@ ALL_MENU_ITEMS = [
     ("API Keys", "bitcaster.view_apikey"),
     ("System Log", "admin.view_logentry"),
     ("SSO Providers", "social.view_socialprovider"),
+    ("Event Simulations", "bitcaster.view_eventsimulation"),
+    ("Delivery Simulations", "bitcaster.view_deliverysimulation"),
 ]
 
 
