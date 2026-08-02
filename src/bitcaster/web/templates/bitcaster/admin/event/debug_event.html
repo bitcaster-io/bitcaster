@@ -13,9 +13,9 @@
         <form method="post" id="debug-form" class="mb-3">
             {% csrf_token %}
             {{ admin_form.form.non_field_errors }}
-            {% for fieldset in admin_form %}
-                {% include "admin/includes/fieldset.html" %}
-            {% endfor %}
+            {% with adminform=admin_form %}
+                {% include "unfold/helpers/fieldsets_tabs.html" %}
+            {% endwith %}
             <div class="form-submit-row">
                 <input type="submit" class="button button-primary" value="{% translate 'Run' %}" />
             </div>
@@ -27,11 +27,6 @@
         {% endif %}
         {% if simulation %}
             <div class="mb-3">
-                {% if lossy_options %}
-                    <div class="bg-amber-100 border border-amber-400 text-amber-800 p-3 rounded mb-3">
-                        {% translate "Warning: this simulation was run with extra options (environs/filters) that cannot be edited via this form. Re-submitting will run the simulation without them." %}
-                    </div>
-                {% endif %}
                 {% if simulation.status == "NEW" %}
                     <div class="bg-blue-100 border border-blue-400 text-blue-800 p-3 rounded">
                         {% translate "Simulation running..." %} ({{ simulation.mode }})

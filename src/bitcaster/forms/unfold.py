@@ -59,6 +59,13 @@ class UnfoldForm(forms.Form):
 
             for field_class, widget in WIDGETS_OVERRIDES.items():
                 if isinstance(field, field_class):
+                    if isinstance(field.widget, forms.SelectMultiple):
+                        if not isinstance(
+                            field.widget,
+                            widgets.UnfoldAdminSelect2MultipleWidget | widgets.UnfoldAdminSelectMultipleWidget,
+                        ):
+                            field.widget = widgets.UnfoldAdminSelectMultipleWidget()
+                        break
                     if isinstance(field.widget, forms.Textarea):
                         field.widget = widgets.UnfoldAdminTextareaWidget()
                     elif hasattr(field, "choices"):

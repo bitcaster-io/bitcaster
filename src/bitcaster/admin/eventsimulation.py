@@ -3,7 +3,8 @@ from typing import cast
 import logging
 
 from admin_extra_buttons.api import confirm_action
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.buttons import StandardButton
+from admin_extra_buttons.decorators import button, link
 from constance import config
 from unfold.decorators import display
 
@@ -28,12 +29,68 @@ logger = logging.getLogger(__name__)
 class EventSimulationAdmin(BaseAdmin[EventSimulation]):
     list_display = ("pk", "timestamp", "event", "status_badge", "deliveries_link")
     ordering = ("-timestamp",)
+    change_form_template = "bitcaster/admin/eventsimulation/change_form.html"
+    fieldsets = (
+        (_("General"), {"classes": ["tab"], "fields": ["timestamp", "event", "created_by"]}),
+        (
+            _("Trigger"),
+            {"classes": ["tab"], "fields": ["payload", "mode", "status"]},
+        ),
+        (_("Result"), {"classes": ["tab"], "fields": ["data"]}),
+    )
+    readonly_fields = ["payload"]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[EventSimulation]:
         return super().get_queryset(request).select_related("event").annotate(deliveries_count=Count("deliveries"))
 
+    @display(  # type: ignore[untyped-decorator]
+        description=_("How the simulation was triggered"),
+    )
+    def payload(self, obj: EventSimulation) -> str:
+        import json
+
+        payload = {"payload_context": obj.context, "options": obj.options}
+        return format_html("<pre>{}</pre>", json.dumps(payload, indent=2, default=str))
+
+    @display(  # type: ignore[untyped-decorator]
+        description=_("Invoke the same call with curl"),
+    )
+    def curl_command(self, obj: EventSimulation) -> str:
+        import json
+
+        url = reverse(
+            "api:event-trigger",
+            args=[
+                obj.event.application.project.organization.slug,
+                obj.event.application.project.slug,
+                obj.event.application.slug,
+                obj.event.slug,
+            ],
+        )
+        payload = json.dumps({"payload_context": obj.context, "options": obj.options})
+        command = (
+            "curl -X POST \\\n"
+            f'  -H "Authorization: Key <API_KEY>" \\\n'
+            f'  -H "Content-Type: application/json" \\\n'
+            f"  -d '{payload}' \\\n"
+            f"  https://<HOST>{url}"
+        )
+        return format_html("<pre>{}</pre>", command)
+
     def get_list_display(self, request: HttpRequest) -> list[str]:  # type: ignore[override]
         return cast("list[str]", super().get_list_display(request))
+
+    def changeform_view(  # type: ignore[override]
+        self,
+        request: HttpRequest,
+        object_id: str | None = None,
+        form_url: str = "",
+        extra_context: dict[str, object] | None = None,
+    ) -> HttpResponse:
+        extra_context = extra_context or {}
+        if object_id and (obj := self.get_object(request, object_id)):
+            extra_context["curl_command"] = self.curl_command(obj)
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     @display(  # type: ignore[untyped-decorator]
         ordering="status",
@@ -45,6 +102,15 @@ class EventSimulationAdmin(BaseAdmin[EventSimulation]):
     )
     def status_badge(self, obj: EventSimulation) -> str:
         return str(obj.status)
+
+    @link(change_form=True, change_list=False, label=_("Delivery simulations"))  # type: ignore[arg-type]
+    def view_deliveries(self, button: StandardButton) -> None:
+        url = reverse("admin:bitcaster_deliverysimulation_changelist")
+        simulation: EventSimulation = button.context["original"]
+        if simulation:
+            button.href = f"{url}?simulation__exact={simulation.pk}"
+        else:
+            button.visible = False
 
     def deliveries_link(self, obj: EventSimulation) -> str:
         url = reverse("admin:bitcaster_eventsimulation_deliveries", args=[obj.pk])

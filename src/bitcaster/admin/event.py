@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.constants import bitcaster
-from bitcaster.forms.event import EventChangeForm, EventDebugForm
+from bitcaster.forms.event import API_PAYLOAD_SKELETON, EventChangeForm, EventDebugForm
 from bitcaster.forms.unfold import UnfoldAdminForm
 from bitcaster.models import Assignment, Event, EventSimulation, Occurrence
 from bitcaster.runner.tasks import run_event_simulation
@@ -187,23 +187,28 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             return "simulation running"
         return ""
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value}, permission="bitcaster.debug_event")  # type: ignore[arg-type]
+    @button(  # type: ignore[arg-type]
+        label=_("Simulate"),
+        html_attrs={"class": ButtonColor.ACTION.value},
+        permission="bitcaster.debug_event",
+    )
     def debug_event(self, request: HttpRequest, pk: str) -> HttpResponse:
         def get_form(*args: Any, **kwargs: Any) -> EventDebugForm:
             return EventDebugForm(*args, event=evt, **kwargs)
 
         evt: Event = self.get_object_or_404(request, pk)
-        context = self.get_common_context(request, pk, action_title=_("Debug Event"))
+        context = self.get_common_context(request, pk, action_title=_("Simulate"))
         context["original"] = evt
         session_key = f"event_debug_context_{evt.pk}"
         simulation: EventSimulation | None = None
 
         if simulation_pk := request.GET.get("simulation"):
             try:
+                simulation_pk = int(simulation_pk)
                 simulation = EventSimulation.objects.get(pk=simulation_pk)
                 if simulation.event_id != evt.pk:
                     raise Http404
-            except EventSimulation.DoesNotExist:
+            except (EventSimulation.DoesNotExist, ValueError):
                 simulation = None
                 context["stale_simulation"] = True
 
@@ -217,8 +222,6 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
                 simulation.refresh_from_db()
             context["simulation"] = simulation
             context["mode"] = simulation.mode
-            if "environs" in simulation.options or "filters" in simulation.options:
-                context["lossy_options"] = True
             if simulation.data:
                 context.update(simulation_results_context(simulation, simulation_page(simulation, request)))
 
@@ -233,7 +236,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
                 simulation = EventSimulation.objects.create(
                     event=evt, created_by=request.user, context=ctx, options=opts, mode=mode
                 )
-                if config_form.cleaned_data["execution"] == "background":
+                if mode != "fast":
                     run_event_simulation.send(simulation.pk)
                     return HttpResponseRedirect(f"{request.path}?simulation={simulation.pk}")
                 try:
@@ -254,14 +257,24 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
                     "context": simulation.context,
                     "mode": simulation.mode,
                     "limit_to": ", ".join(str(e) for e in simulation.options.get("limit_to", [])),
-                    "channels": [int(pk) for pk in simulation.options.get("channels", [])],
-                    "execution": "background",
+                    "channels": [int(pk) for pk in simulation.options.get("channels", []) if str(pk).isdigit()],
+                    "api_payload": {"payload_context": simulation.context, "options": simulation.options},
                 }
             else:
                 initial["context"] = request.session.get(session_key, {})
+                initial["channels"] = [
+                    channel.pk for channel in evt.channels.filter(active=True, locked=False, paused=False)
+                ]
+                initial["api_payload"] = API_PAYLOAD_SKELETON
             config_form = get_form(initial=initial)
         context["form"] = config_form
-        fs = (("", {"fields": list(EventDebugForm.base_fields.keys())}),)
+        fs = (
+            (
+                _("General"),
+                {"classes": ["tab"], "fields": ["mode", "context", "limit_to", "channels"]},
+            ),
+            (_("Emulate API call"), {"classes": ["tab"], "fields": ["api_payload"]}),
+        )
         context["admin_form"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)
         return TemplateResponse(request, "bitcaster/admin/event/debug_event.html", context)
 

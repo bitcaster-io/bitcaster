@@ -52,6 +52,86 @@ def test_no_change_permission_on_post(app: DjangoTestApp, context: "Context") ->
     assert res.status_code == 403
 
 
+def test_detail_shows_trigger_payload(app: DjangoTestApp, context: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    sim = context["simulation"]
+    sim.context = {"foo": "bar"}
+    sim.options = {"limit_to": ["a@example.com"]}
+    sim.status = Occurrence.Status.PROCESSED.value
+    sim.save()
+
+    url = reverse("admin:bitcaster_eventsimulation_change", args=[sim.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    assert "How the simulation was triggered" in res.text
+    payload = res.pyquery("pre").text()
+    assert "payload_context" in payload
+    assert '"foo": "bar"' in payload
+    assert "a@example.com" in payload
+
+
+def test_detail_shows_curl_command(app: DjangoTestApp, context: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    sim = context["simulation"]
+    sim.context = {"foo": "bar"}
+    sim.options = {"limit_to": ["a@example.com"]}
+    sim.status = Occurrence.Status.PROCESSED.value
+    sim.save()
+    event = sim.event
+
+    url = reverse("admin:bitcaster_eventsimulation_change", args=[sim.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    assert "Invoke the same call with curl" in res.text
+    trigger_tab = res.pyquery(".fieldset-trigger")
+    assert len(trigger_tab) == 1
+    assert "dark:bg-base-900" in trigger_tab.eq(0).attr("class") or "dark:bg-base-900" in trigger_tab.html()
+    assert "dark:border-base-800" in trigger_tab.html()
+    curl = trigger_tab.find("pre").eq(1).text()
+    assert "curl -X POST" in curl
+    result_tab = res.pyquery(".fieldset-result")
+    assert len(result_tab) == 1
+    assert "curl -X POST" not in result_tab.text()
+    trigger_url = reverse(
+        "api:event-trigger",
+        args=[
+            event.application.project.organization.slug,
+            event.application.project.slug,
+            event.application.slug,
+            event.slug,
+        ],
+    )
+    assert f"https://<HOST>{trigger_url}" in curl
+    assert "Authorization: Key <API_KEY>" in curl
+    assert "curl -X POST" in curl
+    assert "payload_context" in curl
+    assert "limit_to" in curl
+
+
+def test_detail_links_to_delivery_simulations(app: DjangoTestApp, context: "Context") -> None:
+    url = reverse("admin:bitcaster_eventsimulation_change", args=[context["simulation"].pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    changelist = reverse("admin:bitcaster_deliverysimulation_changelist")
+    assert f'href="{changelist}?simulation__exact={context["simulation"].pk}"' in res.text
+    assert "Delivery simulations" in res.text
+
+
+def test_view_deliveries_hidden_without_original() -> None:
+    from unittest.mock import Mock
+
+    from bitcaster.admin.eventsimulation import EventSimulationAdmin
+
+    admin = EventSimulationAdmin(EventSimulation, Mock())
+    button = Mock()
+    button.context = {"original": None}
+    admin.view_deliveries.func(admin, button)
+    button.href = None
+    assert button.visible is False
+
+
 def test_delete_allowed(app: DjangoTestApp, context: "Context") -> None:
     url = reverse("admin:bitcaster_eventsimulation_delete", args=[context["simulation"].pk])
     res = app.get(url)

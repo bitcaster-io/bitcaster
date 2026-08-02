@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any
 
 import logging
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
@@ -41,6 +42,8 @@ class Organization(SlugMixin, BitcasterBaseModel):
 
     objects = OrganizationManager()
 
+    _enforce_org_limit = True
+
     class Meta:
         verbose_name = _("Organization")
         verbose_name_plural = _("Organizations")
@@ -49,6 +52,11 @@ class Organization(SlugMixin, BitcasterBaseModel):
             models.UniqueConstraint(fields=("slug",), name="org_slug_unique"),
             models.UniqueConstraint(fields=("slug", "owner"), name="owner_slug_unique"),
         ]
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if self._enforce_org_limit and not self.pk and Organization.objects.count() >= 2:
+            raise ValidationError(_("Maximum number of organizations (2) reached: OS4D plus one local organization"))
+        super().save(*args, **kwargs)
 
     def enroll_users(self, queryset: "QuerySet[User]", group: "Group | None" = None) -> "list[UserRole]":
         from bitcaster.models import UserRole
