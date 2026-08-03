@@ -10,6 +10,7 @@ from constance import config
 
 from django.contrib.auth.models import Group
 from django.core.cache import cache
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -43,12 +44,9 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
             key=key,
         )
 
-    def get_app(self, request: HttpRequest, provider: str | int, client_id: str | None = None) -> SocialApp:
-        if (
-            db_provider := SocialProvider.objects.filter(pk=provider, enabled=True).first()
-            if isinstance(provider, int) or provider.isdigit()
-            else SocialProvider.objects.filter(provider=provider, enabled=True).first()
-        ):
+    def get_app(self, request, provider, client_id=None):
+        db_provider = SocialProvider.objects.filter(Q(pk=provider) | Q(provider=provider), enabled=True).first()
+        if db_provider:
             return self._build_social_app(db_provider)
         return None
 
