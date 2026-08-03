@@ -88,6 +88,25 @@ def test_debug_form_emulates_api_payload_with_context_alias() -> None:
     assert form.get_options() == {}
 
 
+def test_debug_form_emulates_api_payload_without_channels() -> None:
+    event: "Event" = EventFactory(channels=[AssignmentFactory().channel])
+    form = EventDebugForm(
+        event=event,
+        data={"mode": "fast", "api_payload": '{"options": {"limit_to": ["a@example.com"]}}'},
+    )
+    assert form.is_valid()
+    options = form.get_options()
+    assert options["limit_to"] == ["a@example.com"]
+    assert "channels" not in options
+
+
+def test_debug_form_get_options_whitespace_only_limit_to() -> None:
+    form = EventDebugForm(data={"mode": "fast"})
+    assert form.is_valid()
+    form.cleaned_data["limit_to"] = "   "
+    assert form.get_options() == {}
+
+
 def test_debug_form_emulation_rejects_unknown_option() -> None:
     event: "Event" = EventFactory(channels=[AssignmentFactory().channel])
     form = EventDebugForm(

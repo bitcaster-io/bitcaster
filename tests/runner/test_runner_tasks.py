@@ -179,6 +179,14 @@ def test_purge_event_simulations_empty():
         purge_event_simulations(max_batches=1)
 
 
+def test_purge_event_simulations_stops_at_max_batches():
+    with patch.object(EventSimulation.objects, "purgeable") as mock_purgeable:
+        mock_query = MagicMock()
+        mock_purgeable.return_value = mock_query
+        mock_query.order_by.return_value.values_list.return_value.__getitem__.return_value = [1]
+        purge_event_simulations(max_batches=1)
+
+
 def test_purge_event_simulations_exception():
     with patch.object(EventSimulation.objects, "purgeable", side_effect=Exception("Purge error")):
         res = purge_event_simulations()
