@@ -1,5 +1,11 @@
 # Add Application
 
+An **Application** is the container of a single product or service in
+Bitcaster: every <glossary:Event>, <glossary:Notification>, channel binding,
+attachment and API key belongs to an Application. Grouping by application lets
+you scope routing, monitoring and keys to one product instead of sharing them
+across everything.
+
 Now that your Organization and Project have been configured, you can start adding all the Applications
 that you want to be served by Bitcaster.
 

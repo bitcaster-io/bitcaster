@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     "anymail",
     "bitcaster.apps.Config",
     "bitcaster.console.apps.Config",
+    "bitcaster.help.apps.Config",
     "bitcaster.pwa.apps.Config",
     "tailwind",
     "issues",
@@ -263,6 +264,7 @@ from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
 from .fragments.dramatiq import *  # noqa
 from .fragments.flags import *  # noqa
+from .fragments.help import *  # noqa
 from .fragments.logging import *  # noqa
 from .fragments.pwa import *  # noqa
 from .fragments.rest_framework import *  # noqa

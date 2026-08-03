@@ -7,7 +7,7 @@ from markdown import Markdown
 from markdown.extensions import Extension
 from markdown.inlinepatterns import InlineProcessor
 
-from bitcaster.config import env
+from django.conf import settings
 
 
 def build_url(base: str, path: str) -> str:
@@ -37,7 +37,7 @@ class LinksInlineProcessor(InlineProcessor):
 class BitcasterDocSiteExtension(Extension):
     def __init__(self, **kwargs: Any):
         self.config = {
-            "base_url": [env("BITCASTER_DOCUMENTATION_SITE_URL"), ""],
+            "base_url": [settings.BITCASTER_DOCUMENTATION_SITE_URL, ""],
         }
         super().__init__(**kwargs)
 

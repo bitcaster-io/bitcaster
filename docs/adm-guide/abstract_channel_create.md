@@ -1,5 +1,12 @@
 # Create Abstract Channel
 
+A <glossary:Channel> is the delivery medium of Bitcaster: email, SMS, push,
+chat and so on. An **Abstract Channel** is a reusable template of a channel —
+the provider and its configuration (e.g. the SMTP server, the Slack token) —
+defined once at the organization level and later enabled for as many projects
+as needed. This way the provider settings live in a single place and projects
+just pick the channel they want to use.
+
 !!! note
 
     This is an optional step you can can create standard project channels later.

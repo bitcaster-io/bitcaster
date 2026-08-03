@@ -1,5 +1,11 @@
 # User Management and Integration
 
+A **User** is a person that can log into Bitcaster and/or receive
+notifications. Users are global to the installation: being member of an
+organization (see [Manage Members](member.md)) gives them a role there and
+lets them hold the <glossary:Address>es — email, phone, ... — through which
+they can be reached by notifications.
+
 Managing users in Bitcaster can be done manually, via bulk imports, or through continuous integration with external systems (like HRIS, CRM, or Custom Apps) using the API.
 
 ---

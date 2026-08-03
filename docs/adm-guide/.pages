@@ -11,6 +11,16 @@ nav:
   - Notification Policies: notification_policies.md
   - Filtering Guide: filtering.md
   - Create Message: message.md
+  - Manage Addresses: address.md
+  - Manage Attachments: attachment.md
+  - Manage Media Files: media.md
+  - Manage Subscriptions: subscription.md
+  - Manage Members: member.md
+  - Work with Occurrences: occurrence.md
+  - Schedule Tasks: tasks.md
+  - Stream: stream.md
+  - Process Log: process_log.md
+  - System Log: system_log.md
   - Command line interface: cli.md
   - Trigger Event: trigger.md
   - Configure Monitors: monitor.md
