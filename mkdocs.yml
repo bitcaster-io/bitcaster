@@ -23,31 +23,10 @@ exclude_docs: |
 
 
 markdown_extensions:
-#  - abbr
   - admonition
   - attr_list
   - def_list
-#  - footnotes
   - md_in_html
-#  - mdx_gh_links:
-#      user: bitcaster
-#      repo: bitcaster
-#  - mkdocs-click
-#  - pymdownx.details
-#  - pymdownx.critic
-#  - pymdownx.caret
-#  - pymdownx.keys
-#  - pymdownx.mark
-#  - pymdownx.tilde
-#  - pymdownx.inlinehilite
-#  - pymdownx.emoji:
-#      emoji_index: !!python/name:material.extensions.emoji.twemoji
-#      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-#  - pymdownx.highlight:
-#      use_pygments: true
-#      anchor_linenums: true
-#      line_spans: __span
-#      pygments_lang_class: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -56,8 +35,6 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: '.'
       check_paths: true
-#  - pymdownx.tabbed:
-#  - smarty
   - tables
   - toc:
       permalink: #
@@ -86,18 +63,9 @@ theme:
   custom_dir: docs/_theme/overrides
   favicon: _theme/img/favicon.ico
   logo: _theme/img/logo.png
-#  highlightjs: true
-#  hljs_languages:
-#    - yaml
-#    - django
   user_color_mode_toggle: true
   features:
-#    - content.action.edit
-#    - content.code.annotate
     - content.code.copy
-#    - content.tooltips
-#    - header.autohide
-#    - navigation.footer
     - navigation.indexes
     - navigation.instant
     - navigation.instant.prefetch
@@ -128,23 +96,8 @@ plugins:
       inline_refs: short
       list_definitions: true
       list_references: true
-#  - ezlinks:
-#      wikilinks: true
   - link-marker
-#  - mkdocstrings
   - macros
-#      module_name: source_code
-#  - minify:
-#      minify_html: true
-#      minify_js: true
-#      minify_css: true
-#      htmlmin_opts:
-#        remove_comments: true
-#      cache_safe: true
-#      js_files:
-#        - _theme/js/address.js
-#      css_files:
-#        - _theme/css/style.css
   - redirects:
       redirect_maps:
         'help/channel.md': 'glossary/terms/channel.md'
@@ -158,23 +111,15 @@ plugins:
       rewrite_relative_urls: true
       heading_offset: 0
       recursive: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
   - privacy
+  - redirects:
+      redirect_maps: {}
   - search
   - social
-#  - autolinks
-#  - blog:
-#      blog_dir: howto
-#      blog_toc: true
-#      post_dir: "{blog}/posts"
-#      post_date_format: ""
-#      post_url_max_categories: 1
-##      post_excerpt: optional
-#      post_readtime: false
-#      archive: false
-#      categories: false
-#      authors: false
-#      pagination: false
-#      draft: false
   - tags:
       tags_file: tags.md
 

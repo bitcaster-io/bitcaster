@@ -1,0 +1,46 @@
+{% extends "admin_extra_buttons/change_form.html" %}
+{% load unfold i18n %}
+{% block field_sets %}
+    {% with has_conditional_display=adminform.model_admin.conditional_fields %}
+        {% for fieldset in adminform %}
+            {% if "tab" not in fieldset.classes %}
+                {% include 'admin/includes/fieldset.html' %}
+            {% endif %}
+        {% endfor %}
+        {% with tabs=adminform|tabs %}
+            {% if tabs %}
+                {% with active_tab=tabs|tabs_active %}
+                    <div class="{% fieldset_rows_classes %}" x-data="{ activeFieldsetTab: '{{ active_tab }}'}" x-show="activeTab == 'general'">
+                        <div class="border-b border-base-200 dark:border-base-800">
+                            <nav class="flex flex-row items-center *:border-x *:border-transparent *:font-medium *:text-important *:first:border-l-0 *:cursor-pointer *:relative *:py-2 *:px-3.5 *:hover:text-primary-600 dark:*:hover:text-primary-500 dark:*:border-transparent [&>.active]:bg-white dark:[&>.active]:bg-base-900 [&>.active]:border-base-200 dark:[&>.active]:border-base-800 [&>.active]:text-primary-600 dark:[&>.active]:text-primary-500 [&>.active]:after:absolute [&>.active]:after:content-[''] [&>.active]:after:-bottom-px [&>.active]:after:left-0 [&>.active]:after:right-0 [&>.active]:after:h-px [&>.active]:after:bg-white dark:[&>.active]:after:bg-base-900">
+                                {% for fieldset in tabs %}
+                                    <a x-on:click="activeFieldsetTab = '{{ fieldset.name|unicoded_slugify }}'"
+                                       x-bind:class="activeFieldsetTab == '{{ fieldset.name|unicoded_slugify }}' && 'active'">
+                                        {{ fieldset.name }}
+                                        {% with error_count=fieldset|tabs_errors_count %}
+                                            {% if error_count > 0 %}
+                                                <span data-testid="error-count"
+                                                      class="bg-red-500 inline-flex font-semibold items-center justify-center leading-none rounded-full w-4 h-4 text-white relative text-center text-[11px] whitespace-nowrap uppercase">
+                                                    {{ error_count }}
+                                                </span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </a>
+                                {% endfor %}
+                            </nav>
+                        </div>
+                        {% for fieldset in tabs %}
+                            <div class="tab-wrapper{% if fieldset.name %} fieldset-{{ fieldset.name|unicoded_slugify }}{% endif %}"
+                                 x-show="activeFieldsetTab == '{{ fieldset.name|unicoded_slugify }}'">
+                                {% include 'admin/includes/fieldset.html' with fieldset_tab=1 %}
+                                {% if fieldset.name|unicoded_slugify == 'trigger' %}
+                                    {% include "bitcaster/admin/eventsimulation/curl_command.html" %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endwith %}
+            {% endif %}
+        {% endwith %}
+    {% endwith %}
+{% endblock %}

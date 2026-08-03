@@ -1,0 +1,4 @@
+{% load unfold i18n %}
+{% component "unfold/components/card.html" with title=_("Invoke the same call with curl") class="mb-6" %}
+{{ curl_command }}
+{% endcomponent %}

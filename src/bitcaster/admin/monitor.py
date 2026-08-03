@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import logging
 
-from admin_extra_buttons.buttons import ButtonWidget
+from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from reversion.admin import VersionAdmin
@@ -65,7 +65,7 @@ class MonitorAdmin(BaseAdmin[Monitor], TwoStepCreateMixin[Monitor], VersionAdmin
         return super().get_queryset(request).select_related("event", "event__application__project")
 
     @link(change_form=True, change_list=False)
-    def events(self, button: ButtonWidget) -> None:
+    def events(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
         if ch:

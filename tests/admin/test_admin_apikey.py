@@ -115,6 +115,26 @@ def test_add_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None
     assert res.status_code == 302, res.context["adminform"].form.errors
 
 
+def test_edit_apikey_without_project(app: DjangoTestApp, db: Any) -> None:
+    from testutils.factories import ApiKeyFactory
+
+    api_key: "ApiKey" = ApiKeyFactory(project=None)
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("change")), args=[api_key.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+
+
+def test_edit_apikey_with_project_no_environments(app: DjangoTestApp, db: Any) -> None:
+    from testutils.factories import ApiKeyFactory, ProjectFactory
+
+    api_key: "ApiKey" = ApiKeyFactory(project=ProjectFactory(environments=None))
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("change")), args=[api_key.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+
+
 @pytest.mark.parametrize("flt", ["development", ""])
 def test_add_channel_filter_by_type(app: DjangoTestApp, api_key: "ApiKey", flt: str) -> None:
     url = reverse("admin:bitcaster_apikey_changelist")

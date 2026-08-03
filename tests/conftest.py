@@ -177,6 +177,15 @@ def clear_state(db):
         del state.app
 
 
+@pytest.fixture(autouse=True)
+def allow_multiple_organizations():
+    from bitcaster.models import Organization
+
+    Organization._enforce_org_limit = False
+    yield
+    Organization._enforce_org_limit = True
+
+
 @pytest.fixture
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:

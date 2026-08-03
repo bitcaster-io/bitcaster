@@ -28,9 +28,10 @@ logger = logging.getLogger(__name__)
 
 class NotificationAdmin(BaseAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event", "application", "distribution", "active")
+    list_display = ("name", "event", "application", "policy", "active")
     list_filter = (
         "active",
+        "policy",
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -54,7 +55,8 @@ class NotificationAdmin(BaseAdmin["Notification"]):
                 "classes": ["tab"],
                 "description": _(
                     "Defines who should receive the notification. You can use a static distribution list, "
-                    "dynamic rules based on user attributes, or external filters passed via API."
+                    "direct user subscriptions, dynamic rules based on user attributes, or external filters "
+                    "passed via API."
                 ),
                 "fields": [
                     "active",

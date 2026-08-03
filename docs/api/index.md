@@ -10,5 +10,6 @@ Welcome to the Bitcaster API documentation. This section provides a detailed ove
 - [Applications](applications.md)
 - [Channels](channels.md)
 - [Distribution Lists](distribution_lists.md)
+- [Subscriptions](subscriptions.md)
 - [Users](users.md)
 - [Events](events.md)

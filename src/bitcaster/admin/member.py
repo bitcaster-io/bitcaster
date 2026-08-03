@@ -26,7 +26,7 @@ from bitcaster.forms import unfold as uwidgets
 from bitcaster.forms.assignment import AssignmentInlineForm
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
 from bitcaster.importing.members import import_members_csv
-from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
+from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, Subscription, User
 from bitcaster.utils.json import process_dict
 
 from .base import BaseAdmin
@@ -55,10 +55,11 @@ class ReadOnlyInline:
 
 class AddressInline(TabularInline):  # NonrelatedStackedInline is available as well
     model = Address
-    fields = ["name", "type"]  # Ignore property to display all fields
+    fields = ["name", "value", "type"]  # Ignore property to display all fields
     extra = 0
     tab = True
-    verbose_name = _("Addresses")
+    verbose_name = _("Address")
+    verbose_name_plural = _("Addresses")
     collapsible = True
 
     def get_form_queryset(self, obj: Member) -> QuerySet[Address]:
@@ -103,18 +104,124 @@ class AssignmentInline(NonrelatedTabularInline):  # NonrelatedStackedInline is a
         return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
 
 
-class ListsFormSet(NonrelatedInlineModelFormSet):
+class SubscriptionFormSet(NonrelatedInlineModelFormSet):
     def get_form_kwargs(self, index: int) -> dict[str, Any]:
         ret = cast("dict[str, Any]", super().get_form_kwargs(index))
         ret["user"] = self.instance
         return ret
 
 
+class SubscriptionForm(forms.ModelForm["Subscription"]):
+    assignment = forms.ModelChoiceField(
+        label=_("Assignment"),
+        queryset=Assignment.objects.none(),
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if self.user is not None and self.user.pk:
+            assignments = Assignment.objects.filter(address__user=self.user)
+            self.fields["assignment"].queryset = assignments
+            self.fields["assignment"].widget.queryset = assignments
+
+    class Meta:
+        model = Subscription
+        fields = ("notification", "assignment", "active")
+
+
+class SubscriptionInline(NonrelatedTabularInline):
+    model = Subscription
+    tab = True
+    extra = 0
+    form = SubscriptionForm
+    formset = SubscriptionFormSet
+    autocomplete_fields = ["notification"]
+
+    def get_form_queryset(self, obj: Member) -> QuerySet[Subscription]:
+        return Subscription.objects.filter(assignment__address__user=obj)
+
+    def save_new_instance(self, parent: Member, instance: Subscription) -> None:
+        instance.full_clean()
+        instance.save()
+
+    def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
+        return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
+
+
+class ListsForm(forms.ModelForm):
+    dl = forms.ModelChoiceField(
+        label=_("Distribution List"),
+        queryset=DistributionList.objects.all(),
+        required=True,
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+    assignment = forms.ModelChoiceField(
+        label=_("Assignment"),
+        queryset=Assignment.objects.none(),
+        required=True,
+        widget=uwidgets.UnfoldAdminSelectWidget,
+    )
+
+    class Meta:
+        model = DistributionList
+        fields = ["dl", "assignment"]
+
+    def __init__(
+        self,
+        *args: Any,
+        user: Member | None = None,
+        dl_initial: DistributionList | None = None,
+        assignment_initial: Assignment | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.user = user
+        user_id = user.pk if user else None
+        self.fields["assignment"].queryset = Assignment.objects.filter(address__user_id=user_id)
+        if dl_initial is not None:
+            self.fields["dl"].initial = dl_initial
+            self.fields["dl"].disabled = True
+            if assignment_initial is not None:
+                self.fields["assignment"].initial = assignment_initial
+                self.fields["assignment"].disabled = True
+        else:
+            self.fields["dl"].queryset = DistributionList.objects.exclude(
+                recipients__address__user_id=user_id
+            ).distinct()
+
+
+class ListsFormSet(NonrelatedInlineModelFormSet):
+    def get_form_kwargs(self, index: int | None) -> dict[str, Any]:
+        ret = cast("dict[str, Any]", super().get_form_kwargs(index))
+        ret["user"] = self.instance
+        if index is not None and index < self.initial_form_count():
+            dl = self.queryset.all()[index]
+            ret["dl_initial"] = dl
+            ret["assignment_initial"] = dl.recipients.filter(
+                address__user_id=self.instance.pk if self.instance else None
+            ).first()
+        return ret
+
+    def save_new(self, form: forms.ModelForm, commit: bool = True) -> DistributionList:
+        dl = form.cleaned_data["dl"]
+        asm = form.cleaned_data["assignment"]
+        if dl is not None and asm is not None:
+            dl.recipients.add(asm)
+        return cast("DistributionList", dl)
+
+
 class ListsInline(NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
     model = DistributionList
     tab = True
-    fields = ["name", "project"]  # Ignore property to display all fields
-    extra = 0
+    fields = ["dl", "assignment"]
+    extra = 1
+    form = ListsForm
+    formset = ListsFormSet
+
+    def get_readonly_fields(self, request: HttpRequest, obj: Member | None = None) -> list[str]:
+        return []
 
     def get_form_queryset(self, obj: Member) -> QuerySet[DistributionList]:
         return obj.get_distribution_lists()
@@ -186,7 +293,7 @@ class MemberAdmin(BaseAdmin[Member]):
         ("custom_fields", JsonFieldFilter.factory(options=False)),
         UserDistributionListFilter,
     )
-    inlines = [AddressInline, AssignmentInline, ListsInline]
+    inlines = [AddressInline, AssignmentInline, SubscriptionInline, ListsInline]
 
     def changelist_view(self, request: HttpRequest, extra_context: dict[str, Any] | None = None) -> TemplateResponse:
         extra_context = extra_context or {}

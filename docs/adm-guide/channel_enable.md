@@ -1,5 +1,11 @@
 # Enable Project Channel
 
+A **Project Channel** binds an abstract channel to a concrete sender for one
+project: the email address the messages are sent from, the Slack workspace,
+the phone number for SMS. It is what makes the project actually able to
+deliver: notifications only reach recipients on channels that are enabled for
+the project.
+
 
 From the [Project page](https://SERVER_ADDRESS/admin/bitcaster/project/current/){:target=_bc}  click on
 `Add Channel`{ .bc-tool-button .action }

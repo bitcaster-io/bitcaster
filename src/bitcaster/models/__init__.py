@@ -5,8 +5,10 @@ from .application import Application
 from .assignment import Assignment
 from .attachment import Attachment
 from .channel import Channel
+from .deliverysimulation import DeliverySimulation
 from .distribution import DistributionList
 from .event import Event
+from .eventsimulation import EventSimulation
 from .group import Group
 from .internal import LogMessage
 from .key import ApiKey
@@ -19,6 +21,7 @@ from .occurrence import Occurrence
 from .organization import Organization
 from .process_log import ProcessLogEntry
 from .project import Project
+from .subscription import Subscription
 from .task import Task
 from .user import Member, User
 from .user_message import UserMessage
@@ -32,7 +35,9 @@ __all__ = [
     "Attachment",
     "Channel",
     "DistributionList",
+    "DeliverySimulation",
     "Event",
+    "EventSimulation",
     "Group",
     "LogEntry",
     "LogMessage",
@@ -47,6 +52,7 @@ __all__ = [
     "ProcessLogEntry",
     "Project",
     "SocialProvider",
+    "Subscription",
     "Task",
     "User",
     "UserMessage",

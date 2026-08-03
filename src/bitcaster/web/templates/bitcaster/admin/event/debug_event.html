@@ -1,0 +1,52 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    {% if simulation and simulation.status == "NEW" %}
+        <meta http-equiv="refresh" content="3" />
+    {% endif %}
+{% endblock extrahead %}
+{% block content %}
+    {{ form.media }}
+    {{ admin_form.media }}
+    <div class="p-3">
+        <form method="post" id="debug-form" class="mb-3">
+            {% csrf_token %}
+            {{ admin_form.form.non_field_errors }}
+            {% with adminform=admin_form %}
+                {% include "unfold/helpers/fieldsets_tabs.html" %}
+            {% endwith %}
+            <div class="form-submit-row">
+                <input type="submit" class="button button-primary" value="{% translate 'Run' %}" />
+            </div>
+        </form>
+        {% if stale_simulation %}
+            <div class="bg-amber-100 border border-amber-400 text-amber-800 p-3 rounded mb-3">
+                {% translate "This simulation was superseded by a newer run." %}
+            </div>
+        {% endif %}
+        {% if simulation %}
+            <div class="mb-3">
+                {% if simulation.status == "NEW" %}
+                    <div class="bg-blue-100 border border-blue-400 text-blue-800 p-3 rounded">
+                        {% translate "Simulation running..." %} ({{ simulation.mode }})
+                    </div>
+                {% elif simulation.status == "FAILED" %}
+                    <div class="bg-red-100 border border-red-400 text-red-800 p-3 rounded">
+                        <span class="font-bold">{% translate "Simulation failed" %}</span>
+                        {% for error in simulation.data.errors %}
+                            <div>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-green-100 border border-green-400 text-green-800 p-3 rounded mb-3">
+                        {% translate "Simulation completed" %} ({{ simulation.mode }})
+                    </div>
+                    {% include "bitcaster/admin/event/includes/simulation_results.html" %}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

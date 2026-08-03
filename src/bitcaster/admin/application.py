@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import logging
 
-from admin_extra_buttons.buttons import ButtonWidget
+from admin_extra_buttons.buttons import StandardButton
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 
@@ -64,6 +64,15 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
 
         return cast("bool", super().has_add_permission(request) and Project.objects.local().count() > 0)
 
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet[Application], search_term: str
+    ) -> tuple[QuerySet[Application], bool]:
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        project_id = request.GET.get("project_id")
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        return queryset, use_distinct
+
     def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
 
@@ -91,7 +100,7 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
         return initial
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def events(self, button: ButtonWidget) -> None:
+    def events(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
         # application__project__exact=4&application__exact=5
@@ -103,7 +112,7 @@ class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
             button.visible = False
 
     @link(change_form=True, change_list=False)  # type: ignore[arg-type]
-    def notifications(self, button: ButtonWidget) -> None:
+    def notifications(self, button: StandardButton) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         application: Application = button.context["original"]
         if application:

@@ -39,7 +39,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
     "BITCASTER_DOCUMENTATION_SITE_URL": (
         str,
-        "https://bitcaster-io.github.io/bitcaster",
+        "https://docs.bitcaster.io",
         "Bitcaster documentation site. (no trailing slash)",
     ),
     "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
