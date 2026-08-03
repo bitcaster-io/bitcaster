@@ -1,5 +1,5 @@
 {% extends "bitcaster/base.html" %}
-{% load feature_flags i18n static user %}
+{% load feature_flags help i18n static user %}
 {% block bodyclass %}
     pwa
 {% endblock %}
@@ -37,6 +37,7 @@
                     <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">light_mode</span>
                     <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">dark_mode</span>
                 </button>
+                {% help %}
             </div>
         </div>
     {% endblock %}

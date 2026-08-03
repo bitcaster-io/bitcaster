@@ -1,8 +1,9 @@
-{% load i18n static %}
+{% load i18n static help %}
 <div class="flex items-center ml-auto">
     <div class="flex flex-row group items-center leading-none relative">
         <div class="flex gap-4 items-center mr-4">
             {% include "bitcaster/unfold/consoles.html" %}
+            {% help %}
             {% if environment %}
                 {% include "unfold/helpers/label.html" with text=environment.0 type=environment.1 %}
             {% endif %}
