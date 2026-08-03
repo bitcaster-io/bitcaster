@@ -62,6 +62,37 @@ def check_for_new_user_messages() -> None:
             set_user_latest_notify_time(uid)
 
 
+@dramatiq.actor(actor_class=SmartActor, max_retries=0, logging=True)
+def process_deliveries_page(page: int = 0) -> int:
+    from constance import config
+
+    from django.db import transaction
+    from django.utils import timezone
+
+    from bitcaster.models import Delivery
+
+    due = Q(status__in=(Delivery.Status.PENDING, Delivery.Status.ERROR)) & (
+        Q(next_attempt_at__isnull=True) | Q(next_attempt_at__lte=timezone.now())
+    )
+    page_size = config.DELIVERY_PAGE_SIZE
+    processed = 0
+    with transaction.atomic():
+        deliveries = list(
+            Delivery.objects.select_for_update(skip_locked=True)
+            .filter(due)
+            .select_related("occurrence__event", "assignment__address__user", "channel")
+            .order_by("pk")[page * page_size : (page + 1) * page_size]
+        )
+        for delivery in deliveries:
+            try:
+                delivery.send()
+            except Exception as e:
+                logger.exception(e)
+                delivery.mark_error()
+            processed += 1
+    return processed
+
+
 @dramatiq.actor(actor_class=SmartActor, logging=True)
 def scan_occurrences() -> list[int]:
     from bitcaster.models import Occurrence

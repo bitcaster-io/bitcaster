@@ -6,6 +6,7 @@ from .assignment import AssignmentFactory
 from .attachment import AttachmentFactory
 from .browser import BrowserFactory
 from .channel import ChannelFactory
+from .delivery import DeliveryFactory
 from .deliverysimulation import DeliverySimulationFactory
 from .distribution import DistributionListFactory
 from .django_auth import GroupFactory, PermissionFactory
@@ -38,6 +39,7 @@ __all__ = [
     "BrowserFactory",
     "BrowserFactory",
     "ChannelFactory",
+    "DeliveryFactory",
     "DeliverySimulationFactory",
     "DistributionListFactory",
     "EventFactory",

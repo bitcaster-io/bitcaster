@@ -233,6 +233,19 @@ def test_button_add_notification(
     assert res
 
 
+def test_view_deliveries_link(app_for_admin: DjangoTestApp, occurrence: "Context") -> None:
+    from bitcaster.models import Delivery
+
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+    assert "View deliveries (0)" in res.text
+    res = res.click("View deliveries")
+    assert res.status_code == 200
+    assert res.request.path == reverse("admin:bitcaster_delivery_changelist")
+    assert f"occurrence__exact={occurrence.pk}" in res.request.query_string
+    assert Delivery.objects.count() == 0
+
+
 def test_recipients_occurrence(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
     url = reverse("admin:bitcaster_occurrence_recipients_occurrence", args=[occurrence.pk])
     res = app_for_admin.get(url)

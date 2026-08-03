@@ -159,6 +159,12 @@ UNFOLD = {
                         "permission": has_model_permission(model_name="occurrence"),
                     },
                     {
+                        "title": _("Deliveries"),
+                        "icon": "task_alt",
+                        "link": reverse_lazy("admin:bitcaster_delivery_changelist"),
+                        "permission": has_model_permission(model_name="delivery"),
+                    },
+                    {
                         "title": _("Members"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),

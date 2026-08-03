@@ -14,6 +14,12 @@ SCHEDULER = {
         "trigger": "interval",
         "minutes": 1,
     },
+    "process_deliveries": {
+        "func": "bitcaster.runner.tasks.process_deliveries_page",
+        "replace_existing": True,
+        "trigger": "interval",
+        "minutes": 1,
+    },
     "purge_occurrences": {
         "func": "bitcaster.runner.tasks.purge_occurrences",
         "replace_existing": True,

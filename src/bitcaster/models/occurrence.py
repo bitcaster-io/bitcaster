@@ -51,7 +51,7 @@ if TYPE_CHECKING:
     class OccurrenceData(TypedDict):
         delivered: list[str | int]
         recipients: list[
-            tuple[str, str, int, int, int | None, int | None]
+            tuple[str, str, int, int, int, int | None]
         ]  # assignment.address.value, channel.name, assignment.pk, channel.pk, notification.pk, message_template_pk
         errors: list[str]
         notifications: list[int]
@@ -195,12 +195,11 @@ class Occurrence(BitcasterBaseModel):
                     o.save()
                     if o.status == Occurrence.Status.NEW:
                         success, ret = o._process()
-                        delivered = len(ret["delivered"])
                         o.data = ret
                         if success:
                             o.status = Occurrence.Status.PROCESSED
-                        o.recipients = delivered
-                        if delivered == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
+                        o.recipients = o.deliveries.count()
+                        if o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
                             bitcaster.trigger_event(
                                 SystemEvent.OCCURRENCE_SILENCE,
                                 o.context,
@@ -270,62 +269,57 @@ class Occurrence(BitcasterBaseModel):
                                 message_template,
                             )
                         )
+                        if message_template is not None:
+                            data["messages"].add(message_template)
         except ObjectDoesNotExist as e:
             logger.exception(e)
             data["errors"].append(str(e))
         return data
 
     def _process(self) -> "tuple[bool, OccurrenceData]":
-        assignment: "Assignment"
-        notification: "Notification"
-        recipients = self.data.get("recipients", [])
-        notifications = set(self.data.get("notifications", []))
-        channels = set(self.data.get("channels", []))
-        messages = set(self.data.get("messages", []))
-
-        recipients_data: "RecipientsData" = self.collect_recipients()
-        delivered = self.data.get("delivered", [])
-        errors = self.data.get("errors", [])
-        success = True
-        data: "OccurrenceData" = {
-            "delivered": delivered,
-            "recipients": [],
-            "errors": errors,
-            "notifications": [],
-            "channels": [],
-            "messages": [],
-        }
-        try:
-            for assignment, channel, notification, message_template in recipients_data["recipients"]:
-                notifications.add(notification.pk)
-                channels.add(channel.pk)
-                if assignment.pk not in delivered:
-                    context = notification.get_context(self.get_context())
-                    notification.notify_to_channel(channel, assignment, context)
-                    if message_template is not None:
-                        messages.add(message_template.pk)
-                    delivered.append(assignment.id)
-                    recipients.append(
-                        (
-                            assignment.address.value,
-                            channel.name,
-                            assignment.pk,
-                            channel.pk,
-                            notification.pk,
-                            message_template.pk if message_template else None,
-                        )
-                    )
-        except Exception as e:
-            logger.exception(e)
-            errors.append(f"{e.__class__.__name__}: {str(e)}")
-            success = False
-        finally:
-            data["delivered"] = delivered
-            data["recipients"] = recipients
-            data["notifications"] = list(set(notifications))
-            data["messages"] = list(set(messages))
-            data["channels"] = list(set(channels))
+        success, data = self.preview("full")
+        if success:
+            self._create_deliveries(data)
+            data["delivered"] = []
         return success, data
+
+    def _create_deliveries(self, data: "OccurrenceData") -> None:
+        from .delivery import Delivery
+
+        rendered = {(r["assignment_pk"], r["notification_pk"], r["channel_pk"]): r for r in data.get("rendered", [])}
+        missing = {
+            (m["assignment_pk"], m["notification_pk"], m["channel_pk"]) for m in data.get("missing_template", [])
+        }
+        for _address, _channel_name, assignment_pk, channel_pk, notification_pk, template_pk in data.get(
+            "recipients", []
+        ):
+            key = (assignment_pk, notification_pk, channel_pk)
+            defaults: dict[str, Any] = {
+                "message_template_id": template_pk,
+                "status": Delivery.Status.PENDING,
+                "data": {},
+            }
+            if entry := rendered.get(key):
+                defaults["data"] = {
+                    "rendered": {
+                        "subject": entry["subject"],
+                        "message": entry["message"],
+                        "html_message": entry["html_message"],
+                    }
+                }
+            elif key in missing:
+                defaults["status"] = Delivery.Status.FAILURE
+                defaults["data"] = {"missing_template": True}
+            else:
+                defaults["status"] = Delivery.Status.FAILURE
+                defaults["data"] = {"render_error": True}
+            Delivery.objects.get_or_create(
+                occurrence=self,
+                assignment_id=assignment_pk,
+                notification_id=notification_pk,
+                channel_id=channel_pk,
+                defaults=defaults,
+            )
 
     def preview(self, mode: str, limit: int | None = None) -> "tuple[bool, OccurrenceData]":
         """Dry-run of the recipient pipeline with zero side effects.

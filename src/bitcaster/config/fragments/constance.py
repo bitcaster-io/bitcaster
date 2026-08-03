@@ -2,7 +2,10 @@ from bitcaster.auth.constants import (
     DEFAULT_GROUP_NAME,
 )
 from bitcaster.constants import (
+    DEFAULT_DELIVERY_PAGE_SIZE,
+    DEFAULT_DELIVERY_RETRY_DELAY,
     DEFAULT_EVENT_SIMULATION_RETENTION,
+    DEFAULT_MAX_DELIVERY_RETRIES,
     DEFAULT_OCCURRENCE_DEFAULT_RETENTION,
     DEFAULT_OCCURRENCE_MAX_RETENTION,
 )
@@ -57,6 +60,21 @@ CONSTANCE_CONFIG = {
     "EVENT_SIMULATION_PAGE_SIZE": (
         100,
         "Number of delivery rows shown per page in an EventSimulation",
+        int,
+    ),
+    "MAX_DELIVERY_RETRIES": (
+        DEFAULT_MAX_DELIVERY_RETRIES,
+        "Maximum number of sending attempts for a Delivery before it is marked as failed",
+        int,
+    ),
+    "DELIVERY_RETRY_DELAY": (
+        DEFAULT_DELIVERY_RETRY_DELAY,
+        "Minutes to wait before retrying a failed Delivery",
+        int,
+    ),
+    "DELIVERY_PAGE_SIZE": (
+        DEFAULT_DELIVERY_PAGE_SIZE,
+        "Number of Delivery rows processed per page",
         int,
     ),
     "SECRET_KEY_SALT": ("", "Salt to use to generate secret keys", str),

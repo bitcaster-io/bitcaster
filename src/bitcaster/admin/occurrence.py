@@ -3,18 +3,19 @@ from typing import TYPE_CHECKING, Any, cast
 import logging
 
 from admin_extra_buttons.api import confirm_action
-from admin_extra_buttons.buttons import ChoiceButton
-from admin_extra_buttons.decorators import button, choice, view
+from admin_extra_buttons.buttons import ChoiceButton, StandardButton
+from admin_extra_buttons.decorators import button, choice, link, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from unfold.decorators import display
 
 from django.contrib import messages
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.cache.manager import CacheManager
@@ -43,13 +44,18 @@ class OccurrenceAdmin(BaseAdmin[Occurrence]):
         (_("General"), {"classes": ["tab"], "fields": ["timestamp", "event", "newsletter"]}),
         (_("Process"), {"classes": ["tab"], "fields": ["attempts", "status"]}),
         (_("Input"), {"classes": ["tab"], "fields": ["correlation_id", "context", "options"]}),
-        (_("Delivery"), {"classes": ["tab"], "fields": ["recipients", "data"]}),
+        (_("Delivery"), {"classes": ["tab"], "fields": ["recipients", "data", "deliveries_link"]}),
     )
-    readonly_fields = ["correlation_id"]
+    readonly_fields = ["correlation_id", "deliveries_link"]
     ordering = ("-timestamp",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Occurrence]:
-        return super().get_queryset(request).select_related("event__application")
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("event__application")
+            .annotate(deliveries_count=Count("deliveries"))
+        )
 
     @display(boolean=True)  # type: ignore[untyped-decorator]
     def paused(self, obj: Occurrence) -> bool:
@@ -81,6 +87,23 @@ class OccurrenceAdmin(BaseAdmin[Occurrence]):
             self.recipients_occurrence,
             # self.recipients_notification
         ]
+
+    @link(change_form=True, change_list=False, label=_("Deliveries"))  # type: ignore[arg-type]
+    def view_deliveries(self, button: StandardButton) -> None:
+        occurrence: Occurrence = cast("Occurrence", button.context["original"])
+        button.href = f"{reverse('admin:bitcaster_delivery_changelist')}?occurrence__exact={occurrence.pk}"
+
+    def deliveries_link(self, obj: Occurrence) -> str:
+        url = reverse("admin:bitcaster_delivery_changelist")
+        return format_html(
+            '<a href="{url}?occurrence__exact={pk}">{label} ({count})</a>',
+            url=url,
+            pk=obj.pk,
+            label=_("View deliveries"),
+            count=obj.deliveries_count,
+        )
+
+    deliveries_link.short_description = _("Deliveries")  # type: ignore[attr-defined]
 
     @view()  # type: ignore[arg-type]
     def recipients_occurrence(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:  # noqa

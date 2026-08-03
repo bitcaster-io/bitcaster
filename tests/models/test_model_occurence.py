@@ -39,6 +39,8 @@ def context(occurrence: "Occurrence", user: "User") -> "Context":
 def test_model_occurrence_filter(
     payload: dict[str, str], notified_count: int, context: "Context", monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    from bitcaster.models import Delivery
+
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel", mock := Mock(return_value=(None, 999))
     )
@@ -48,7 +50,7 @@ def test_model_occurrence_filter(
     msg = n.get_message(asm.channel)
     occurrence.process()
 
-    assert mock.call_count == notified_count
+    assert mock.call_count == 0  # Phase 1 never dispatches
     occurrence.refresh_from_db()
 
     if notified_count == 1:
@@ -56,12 +58,107 @@ def test_model_occurrence_filter(
             "channels": [asm.channel.pk],
             "messages": [msg.pk],
             "notifications": [context["notification"].pk],
-            "delivered": [asm.id],
+            "delivered": [],
             "recipients": [
                 [asm.address.value, asm.channel.name, asm.pk, asm.channel.pk, context["notification"].pk, msg.pk]
             ],
             "errors": [],
+            "rendered": [
+                {
+                    "assignment_pk": asm.pk,
+                    "notification_pk": context["notification"].pk,
+                    "notification_name": context["notification"].name,
+                    "channel_pk": asm.channel.pk,
+                    "channel_name": asm.channel.name,
+                    "address": asm.address.value,
+                    "subject": "",
+                    "message": f"Message for {occurrence.event.name} on channel {asm.channel.name}",
+                    "html_message": "",
+                }
+            ],
+            "missing_template": [],
         }
+        assert occurrence.recipients == 1
+        assert occurrence.deliveries.count() == 1
+        (delivery,) = occurrence.deliveries.all()
+        assert delivery.status == Delivery.Status.PENDING
+        assert delivery.message_template == msg
+    else:
+        assert occurrence.recipients == 0
+        assert occurrence.deliveries.count() == 0
+
+
+@pytest.mark.django_db(transaction=True)
+def test_process_creates_delivery_with_rendered_snapshot(context: "Context") -> None:
+    asm = context["assignment"]
+    occurrence: Occurrence = context["notification"].event.trigger(context={"foo": "bar"})
+    occurrence.process()
+    occurrence.refresh_from_db()
+
+    (delivery,) = occurrence.deliveries.all()
+    assert delivery.rendered == {
+        "subject": "",
+        "message": f"Message for {occurrence.event.name} on channel {asm.channel.name}",
+        "html_message": "",
+    }
+    assert delivery.assignment == asm
+    assert delivery.channel == asm.channel
+    assert delivery.notification == context["notification"]
+
+
+@pytest.mark.django_db(transaction=True)
+def test_process_missing_template_delivery(context: "Context") -> None:
+    from bitcaster.models import Delivery, MessageTemplate, Occurrence
+
+    MessageTemplate.objects.all().delete()
+    occurrence: Occurrence = context["notification"].event.trigger(context={"foo": "bar"})
+    occurrence.process()
+    occurrence.refresh_from_db()
+
+    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.recipients == 1
+    (delivery,) = occurrence.deliveries.all()
+    assert delivery.message_template is None
+    assert delivery.missing_template
+    assert delivery.status == Delivery.Status.FAILURE
+    assert delivery.data["missing_template"] is True
+
+
+@pytest.mark.django_db(transaction=True)
+def test_process_renders_content_snapshot(context: "Context") -> None:
+    from testutils.factories import MessageTemplateFactory
+
+    asm = context["assignment"]
+    MessageTemplateFactory(
+        channel=asm.channel,
+        event=context["notification"].event,
+        notification=context["notification"],
+        content="Hello {{ foo }}",
+    )
+    occurrence: Occurrence = context["notification"].event.trigger(context={"foo": "bar"})
+    occurrence.process()
+    occurrence.refresh_from_db()
+
+    (delivery,) = occurrence.deliveries.all()
+    assert delivery.rendered["message"] == "Hello bar"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_process_reprocessing_does_not_duplicate_deliveries(context: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    occurrence: Occurrence = context["notification"].event.trigger(context={"foo": "bar"})
+    occurrence.process()
+    occurrence.refresh_from_db()
+    first_count = occurrence.deliveries.count()
+    assert first_count == 1
+
+    occurrence.status = Occurrence.Status.NEW
+    occurrence.save()
+    occurrence.process()
+    occurrence.refresh_from_db()
+    assert occurrence.deliveries.count() == first_count
+    assert occurrence.recipients == first_count
 
 
 def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch: pytest.MonkeyPatch) -> None:
