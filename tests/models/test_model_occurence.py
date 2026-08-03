@@ -112,3 +112,159 @@ def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
     }
 
     assert occurrence.get_context() == expected
+
+
+def test_preview_fast_no_side_effects(user: "User") -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
+    msg = MessageTemplateFactory(channel=assignment.channel, event=notification.event)
+    notification.distribution.recipients.add(assignment)
+
+    occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
+    success, data = occurrence.preview("fast")
+
+    assert success is True
+    assert data["delivered"] == []
+    assert data["recipients"] == [
+        (
+            assignment.address.value,
+            assignment.channel.name,
+            assignment.pk,
+            assignment.channel.pk,
+            notification.pk,
+            msg.pk,
+        )
+    ]
+    assert "rendered" not in data
+    assert "missing_template" not in data
+    assert Occurrence.objects.count() == 0  # no rows created
+
+
+def test_preview_full_renders_all(user: "User") -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
+    MessageTemplateFactory(channel=assignment.channel, event=notification.event, content="Hello {{ event.name }}")
+    notification.distribution.recipients.add(assignment)
+
+    occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
+    success, data = occurrence.preview("full")
+
+    assert success is True
+    assert data["delivered"] == []
+    rendered = data["rendered"]
+    assert len(rendered) == 1
+    entry = rendered[0]
+    assert entry["assignment_pk"] == assignment.pk
+    assert entry["notification_pk"] == notification.pk
+    assert entry["notification_name"] == notification.name
+    assert entry["channel_pk"] == assignment.channel.pk
+    assert entry["channel_name"] == assignment.channel.name
+    assert entry["address"] == assignment.address.value
+    assert entry["subject"] == ""
+    assert entry["message"] == f"Hello {notification.event.name}"
+    assert "html_message" in entry
+
+
+def test_preview_partial_caps_rendering(user: "User") -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    channel = notification.event.channels.first()
+    MessageTemplateFactory(channel=channel, event=notification.event)
+    for i in range(5):
+        asm: "Assignment" = AssignmentFactory.create(channel=channel, address__value=f"user{i}@example.com")
+        notification.distribution.recipients.add(asm)
+
+    occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
+    success, data = occurrence.preview("partial", limit=2)
+
+    assert success is True
+    assert len(data["recipients"]) == 5  # all recipients collected
+    assert len(data["rendered"]) == 2  # rendering capped
+
+
+def test_preview_missing_template(user: "User") -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
+    notification.distribution.recipients.add(assignment)
+
+    occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
+    success, data = occurrence.preview("full")
+
+    assert success is True
+    assert data["recipients"][0][5] is None  # template_pk is None
+    assert data["rendered"] == []
+    assert data["missing_template"] == [
+        {
+            "address": assignment.address.value,
+            "channel_name": assignment.channel.name,
+            "assignment_pk": assignment.pk,
+            "channel_pk": assignment.channel.pk,
+            "notification_pk": notification.pk,
+            "notification_name": notification.name,
+        }
+    ]
+
+
+def test_preview_render_error_does_not_abort(user: "User", monkeypatch: pytest.MonkeyPatch) -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    channel = notification.event.channels.first()
+    MessageTemplateFactory(channel=channel, event=notification.event)
+    asm1: "Assignment" = AssignmentFactory.create(channel=channel, address__value="a@example.com")
+    asm2: "Assignment" = AssignmentFactory.create(channel=channel, address__value="b@example.com")
+    notification.distribution.recipients.add(asm1)
+    notification.distribution.recipients.add(asm2)
+
+    monkeypatch.setattr(
+        "bitcaster.models.messagetemplate.MessageTemplate.render",
+        Mock(side_effect=[Exception("boom"), ("s", "m", "h")]),
+    )
+
+    occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
+    success, data = occurrence.preview("full")
+
+    assert success is True
+    assert len(data["rendered"]) == 1  # second recipient still rendered
+    assert data["rendered"][0]["assignment_pk"] == asm2.pk
+    assert any("boom" in error for error in data["errors"])
+
+
+def test_process_missing_template_does_not_crash(user: "User", monkeypatch: pytest.MonkeyPatch) -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    notification: "Notification" = NotificationFactory.create(event__channels=[ChannelFactory()])
+    assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
+    notification.distribution.recipients.add(assignment)
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel",
+        Mock(return_value=(None, None)),
+    )
+    monkeypatch.setattr("bitcaster.constants.bitcaster.trigger_event", Mock())
+
+    occurrence: Occurrence = notification.event.trigger(context={})
+    occurrence.process()
+
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.data["recipients"][0][5] is None  # template_pk None, no crash
+    assert occurrence.data["messages"] == []

@@ -228,6 +228,25 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("Simulation"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Event Simulations"),
+                        "icon": "science",
+                        "link": reverse_lazy("admin:bitcaster_eventsimulation_changelist"),
+                        "permission": has_model_permission(model_name="eventsimulation"),
+                    },
+                    {
+                        "title": _("Delivery Simulations"),
+                        "icon": "task_alt",
+                        "link": reverse_lazy("admin:bitcaster_deliverysimulation_changelist"),
+                        "permission": has_model_permission(model_name="deliverysimulation"),
+                    },
+                ],
+            },
+            {
                 "title": _("System"),
                 "separator": True,  # Top border
                 "collapsible": False,  # Collapsible group of links

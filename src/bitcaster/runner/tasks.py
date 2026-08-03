@@ -112,6 +112,55 @@ def purge_occurrences(max_batches: int = 100) -> None | Exception:
         return e
 
 
+@dramatiq.actor(actor_class=SmartActor, max_retries=0)
+def run_event_simulation(simulation_pk: int) -> None:
+    from constance import config
+
+    from bitcaster.models import EventSimulation, Occurrence
+
+    try:
+        simulation: EventSimulation = EventSimulation.objects.select_related("event").get(pk=simulation_pk)
+    except EventSimulation.DoesNotExist:
+        logger.warning("EventSimulation %s does not exist", simulation_pk)
+        return
+    try:
+        limit = config.DEBUG_PREVIEW_RENDER_LIMIT if simulation.mode == EventSimulation.Mode.PARTIAL else None
+        occurrence = Occurrence(event=simulation.event, context=simulation.context, options=simulation.options)
+        _, data = occurrence.preview(simulation.mode, limit)
+        simulation.save_deliveries(data)
+    except Exception as e:
+        logger.exception(e)
+        EventSimulation.objects.filter(pk=simulation.pk, status=Occurrence.Status.NEW).update(
+            data={"errors": [f"{e.__class__.__name__}: {str(e)}"]}, status=Occurrence.Status.FAILED
+        )
+
+
+@dramatiq.actor(actor_class=SmartActor, logging=True)
+def purge_event_simulations(max_batches: int = 100) -> None | Exception:
+    from django.db import transaction
+
+    from bitcaster.models import EventSimulation
+
+    logger.info("Starting event simulations purge")
+    try:
+        batch_size = 10000
+        iteration = 0
+        while iteration < max_batches:
+            with transaction.atomic():
+                # Order by PK for deterministic batching
+                ids = list(EventSimulation.objects.purgeable().order_by("pk").values_list("pk", flat=True)[:batch_size])
+
+                if not ids:
+                    break
+
+                EventSimulation.objects.filter(pk__in=ids).delete()
+                iteration += 1
+                logger.debug(f"Deleted batch {iteration}")
+    except Exception as e:
+        logger.exception("Failed to purge event simulations")
+        return e
+
+
 @dramatiq.actor(actor_class=SmartActor, logging=True)
 def monitor_run() -> None:
     for monitor in Monitor.objects.filter(active=True):

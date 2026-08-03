@@ -57,6 +57,35 @@ def test_protected_org(app: "DjangoTestApp") -> None:
     assert not res.pyquery("a.deletelink")
 
 
+def test_max_organizations_guard(db: Any) -> None:
+    from testutils.factories import UserFactory
+
+    from django.core.exceptions import ValidationError
+
+    from bitcaster.models import Organization
+
+    Organization._enforce_org_limit = True
+    Organization.objects.all().delete()
+    owner = UserFactory()
+    try:
+        Organization.objects.create(name="OS4D", owner=owner)
+        Organization.objects.create(name="Local", owner=owner)
+        with pytest.raises(ValidationError):
+            Organization.objects.create(name="Third", owner=owner)
+    finally:
+        Organization._enforce_org_limit = False
+
+
+def test_has_add_permission_blocked_when_two_orgs(app: "DjangoTestApp", admin_user: Any) -> None:
+    from testutils.factories import OrganizationFactory
+
+    OrganizationFactory(name=bitcaster.ORGANIZATION)
+    OrganizationFactory(name="Local")
+    url = reverse("admin:bitcaster_organization_add")
+    res = app.get(url, user=admin_user, status=403)
+    assert res.status_code == 403
+
+
 def test_current(app: "DjangoTestApp", organization: "Organization") -> None:
     url = reverse("admin:bitcaster_organization_current")
     res = app.get(url)

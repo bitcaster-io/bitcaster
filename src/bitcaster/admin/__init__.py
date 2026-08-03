@@ -7,6 +7,7 @@ from .channel import ChannelAdmin
 from .constance import CustomConstanceAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
+from .eventsimulation import EventSimulationAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
 from .media import MediaFileAdmin
@@ -34,6 +35,7 @@ __all__ = [
     "CustomConstanceAdmin",
     "DistributionListAdmin",
     "EventAdmin",
+    "EventSimulationAdmin",
     "GroupAdmin",
     "LogEntryAdmin",
     "LogMessageAdmin",

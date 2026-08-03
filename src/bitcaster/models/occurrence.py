@@ -29,6 +29,25 @@ if TYPE_CHECKING:
     from .notification import Notification
     from ..types.filtering import QuerysetFilter
 
+    class RenderedData(TypedDict):
+        assignment_pk: int
+        notification_pk: int
+        notification_name: str
+        channel_pk: int
+        channel_name: str
+        address: str
+        subject: str
+        message: str
+        html_message: str
+
+    class MissingTemplateData(TypedDict):
+        address: str
+        channel_name: str
+        assignment_pk: int
+        channel_pk: int
+        notification_pk: int
+        notification_name: str
+
     class OccurrenceData(TypedDict):
         delivered: list[str | int]
         recipients: list[
@@ -38,6 +57,8 @@ if TYPE_CHECKING:
         notifications: list[int]
         channels: list[int]
         messages: list[int]
+        rendered: NotRequired[list[RenderedData]]
+        missing_template: NotRequired[list[MissingTemplateData]]
 
     class RecipientsData(TypedDict):
         recipients: list[tuple[Assignment, Channel, Notification, MessageTemplate | None]]
@@ -48,7 +69,7 @@ if TYPE_CHECKING:
 
     class OccurrenceOptions(TypedDict):
         limit_to: NotRequired[list[str]]
-        channels: NotRequired[list[str]]
+        channels: NotRequired[list[str | int]]
         environs: NotRequired[list[str]]
         filters: NotRequired[QuerysetFilter]
 
@@ -281,7 +302,8 @@ class Occurrence(BitcasterBaseModel):
                 if assignment.pk not in delivered:
                     context = notification.get_context(self.get_context())
                     notification.notify_to_channel(channel, assignment, context)
-                    messages.add(message_template.pk)
+                    if message_template is not None:
+                        messages.add(message_template.pk)
                     delivered.append(assignment.id)
                     recipients.append(
                         (
@@ -290,7 +312,7 @@ class Occurrence(BitcasterBaseModel):
                             assignment.pk,
                             channel.pk,
                             notification.pk,
-                            message_template.pk,
+                            message_template.pk if message_template else None,
                         )
                     )
         except Exception as e:
@@ -304,3 +326,74 @@ class Occurrence(BitcasterBaseModel):
             data["messages"] = list(set(messages))
             data["channels"] = list(set(channels))
         return success, data
+
+    def preview(self, mode: str, limit: int | None = None) -> "tuple[bool, OccurrenceData]":
+        """Dry-run of the recipient pipeline with zero side effects.
+
+        Runs `collect_recipients` and, for `full`/`partial` modes, renders the
+        message templates without dispatching anything. No Occurrence row is
+        saved: the instance timestamp is set explicitly because `auto_now_add`
+        only fires on `save()`.
+        """
+        self.timestamp = timezone.now()
+        recipients_data: "RecipientsData" = self.collect_recipients()
+        errors = list(recipients_data["errors"])
+        data: "OccurrenceData" = {
+            "delivered": [],
+            "recipients": [
+                (
+                    assignment.address.value,
+                    channel.name,
+                    assignment.pk,
+                    channel.pk,
+                    notification.pk,
+                    message_template.pk if message_template else None,
+                )
+                for assignment, channel, notification, message_template in recipients_data["recipients"]
+            ],
+            "errors": errors,
+            "notifications": [n.pk for n in recipients_data["notifications"]],
+            "channels": [c.pk for c in recipients_data["channels"]],
+            "messages": [m.pk for m in recipients_data["messages"]],
+        }
+        rendered: "list[RenderedData]" = []
+        missing_template: "list[MissingTemplateData]" = []
+        if mode in ("full", "partial"):
+            for idx, (assignment, channel, notification, message_template) in enumerate(recipients_data["recipients"]):
+                if message_template is None:
+                    missing_template.append(
+                        {
+                            "address": assignment.address.value,
+                            "channel_name": channel.name,
+                            "assignment_pk": assignment.pk,
+                            "channel_pk": channel.pk,
+                            "notification_pk": notification.pk,
+                            "notification_name": notification.name,
+                        }
+                    )
+                    continue
+                if mode == "partial" and limit is not None and idx >= limit:
+                    break
+                try:
+                    context = dict(notification.get_context(self.get_context()))
+                    context.update({"channel": channel, "address": assignment.address.value, "assignment": assignment})
+                    subject, message, html_message = message_template.render(context)
+                    rendered.append(
+                        {
+                            "assignment_pk": assignment.pk,
+                            "notification_pk": notification.pk,
+                            "notification_name": notification.name,
+                            "channel_pk": channel.pk,
+                            "channel_name": channel.name,
+                            "address": assignment.address.value,
+                            "subject": subject,
+                            "message": message,
+                            "html_message": html_message,
+                        }
+                    )
+                except Exception as e:
+                    logger.exception(e)
+                    errors.append(f"{e.__class__.__name__}: {str(e)}")
+            data["rendered"] = rendered
+            data["missing_template"] = missing_template
+        return True, data

@@ -11,8 +11,10 @@ from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
 from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
+from .deliverysimulation import DeliverySimulationAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
+from .eventsimulation import EventSimulationAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
 from .media import MediaFileAdmin
@@ -51,7 +53,9 @@ admin.site.register(models.Assignment, AssignmentAdmin)
 admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
+admin.site.register(models.DeliverySimulation, DeliverySimulationAdmin)
 admin.site.register(models.Event, EventAdmin)
+admin.site.register(models.EventSimulation, EventSimulationAdmin)
 admin.site.register(models.LogMessage, LogMessageAdmin)
 admin.site.register(models.MediaFile, MediaFileAdmin)
 admin.site.register(models.MessageTemplate, MessageTemplateAdmin)
