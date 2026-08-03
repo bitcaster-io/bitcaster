@@ -22,7 +22,7 @@ from .notification import NotificationFactory
 from .occurrence import OccurrenceFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 from .processlog import ProcessLogEntryFactory
-from .social import SocialProviderFactory
+from .social import SocialAccountFactory, SocialProviderFactory
 from .subscription import SubscriptionFactory
 from .task import TaskFactory
 from .user import SuperUserFactory, UserFactory
@@ -57,6 +57,7 @@ __all__ = [
     "ProjectFactory",
     "ProjectFactory",
     "ProcessLogEntryFactory",
+    "SocialAccountFactory",
     "SocialProviderFactory",
     "SubscriptionFactory",
     "SuperUserFactory",

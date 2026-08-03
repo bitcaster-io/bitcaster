@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from jsoneditor.forms import JSONEditor
@@ -13,6 +13,10 @@ from django.utils.translation import gettext as _
 from bitcaster.admin.base import BitcasterModelAdmin
 from bitcaster.models import SocialProvider
 from bitcaster.social.forms import SocialProviderForm
+from bitcaster.social.utils import is_own_login_provider
+
+if TYPE_CHECKING:
+    from django import forms
 
 
 @admin.register(SocialProvider)
@@ -38,3 +42,15 @@ class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]
         if SocialProvider.objects.count() >= 1:
             return False
         return super().has_add_permission(request)
+
+    def has_delete_permission(self, request: HttpRequest, obj: SocialProvider | None = None) -> bool:
+        if obj is not None and is_own_login_provider(request, obj):
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def get_form(
+        self, request: HttpRequest, obj: SocialProvider | None = None, change: bool = False, **kwargs: Any
+    ) -> "type[forms.ModelForm[SocialProvider]]":
+        form_class = super().get_form(request, obj, change=change, **kwargs)
+        form_class.request = request
+        return form_class

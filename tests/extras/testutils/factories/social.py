@@ -1,9 +1,11 @@
 import factory
+from allauth.socialaccount.models import SocialAccount
 from factory import fuzzy
 
 from bitcaster.social.models import SocialProvider
 
 from .base import AutoRegisterModelFactory
+from .user import UserFactory
 
 PROVIDER_LABELS = {
     "facebook": "Facebook",
@@ -25,3 +27,14 @@ class SocialProviderFactory(AutoRegisterModelFactory[SocialProvider]):
     class Meta:
         model = SocialProvider
         django_get_or_create = ("provider",)
+
+
+class SocialAccountFactory(AutoRegisterModelFactory[SocialAccount]):
+    user = factory.SubFactory(UserFactory)
+    # SocialApp instances are built with provider_id=str(SocialProvider.pk),
+    # so allauth stores the SocialProvider pk here.
+    provider = "0"
+    uid = factory.Sequence(lambda n: f"uid-{n}")
+
+    class Meta:
+        model = SocialAccount
