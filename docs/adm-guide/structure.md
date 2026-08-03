@@ -1,3 +1,12 @@
+# Create the Initial Structure
+
+Bitcaster organises everything in a three-level hierarchy: an
+<glossary:Organization> is the top-level tenant (usually the company), a
+<glossary:Project> groups the applications of a business unit, product line or
+team, and an <glossary:Application> (see [Add Application](app.md)) hosts the
+events, notifications and channels of one product. Organization-wide settings
+and abstract channels live at the top, while projects scope their own
+channels, distribution lists and members.
 
 Before we can start triggering events in Bitcaster we need to create the initial structure
 

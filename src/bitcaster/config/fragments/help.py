@@ -1,0 +1,3 @@
+from bitcaster.config import env
+
+BITCASTER_DOCUMENTATION_SITE_URL = env("BITCASTER_DOCUMENTATION_SITE_URL")
