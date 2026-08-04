@@ -1,5 +1,6 @@
 from typing import Any, cast
 
+import contextlib
 import logging
 
 from allauth.account.adapter import DefaultAccountAdapter
@@ -44,8 +45,12 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
             key=key,
         )
 
-    def get_app(self, request, provider, client_id=None):
-        db_provider = SocialProvider.objects.filter(Q(pk=provider) | Q(provider=provider), enabled=True).first()
+    def get_app(self, request: HttpRequest, provider: str | int, client_id: str | None = None) -> SocialApp | None:
+        lookup = Q(provider=provider)
+        # non-numeric slugs match on the provider field only
+        with contextlib.suppress(TypeError, ValueError):
+            lookup |= Q(pk=int(provider))
+        db_provider = SocialProvider.objects.filter(lookup, enabled=True).first()
         if db_provider:
             return self._build_social_app(db_provider)
         return None

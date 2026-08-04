@@ -237,6 +237,16 @@ def test_get_app_not_found(social_adapter, request_mock):
     assert social_adapter.get_app(request_mock, "-1") is None
 
 
+def test_get_app_by_provider_slug(social_adapter, request_mock, google_provider):
+    app = social_adapter.get_app(request_mock, "google")
+    assert app.client_id == "test-client-id"
+    assert app.provider == "google"
+
+
+def test_get_app_unknown_slug(social_adapter, request_mock, google_provider):
+    assert social_adapter.get_app(request_mock, "unknown-provider") is None
+
+
 def test_get_allowed_emails_caching(social_adapter, request_mock):
     from django.core.cache import cache
 
