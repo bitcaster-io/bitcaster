@@ -77,6 +77,10 @@ def test_model_occurrence_filter(
                 }
             ],
             "missing_template": [],
+            "processing": {
+                "phase1_at": occurrence.data["processing"]["phase1_at"],
+                "phase2_attempts": [],
+            },
         }
         assert occurrence.recipients == 1
         assert occurrence.deliveries.count() == 1
@@ -115,7 +119,7 @@ def test_process_missing_template_delivery(context: "Context") -> None:
     occurrence.process()
     occurrence.refresh_from_db()
 
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.recipients == 1
     (delivery,) = occurrence.deliveries.all()
     assert delivery.message_template is None
@@ -362,6 +366,6 @@ def test_process_missing_template_does_not_crash(user: "User", monkeypatch: pyte
     occurrence.process()
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.data["recipients"][0][5] is None  # template_pk None, no crash
     assert occurrence.data["messages"] == []

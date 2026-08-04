@@ -12,7 +12,7 @@ def importer():
 @importer.command(name="users")
 @click.argument("csv_file", type=click.File("rb"))
 @click.option("--org", help="Organization slug (defaults to first local organization)")
-@click.option("--group", help="Optional Group name to add users to")
+@click.option("--group", help="Group name to assign imported users to")
 def import_users(csv_file, org, group):
     """Import users from a CSV file into a specific Organization."""
     try:

@@ -1,10 +1,9 @@
-from typing import TYPE_CHECKING
-
 import datetime
 import logging
 import os
 
 import click
+from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED, JobExecutionEvent
 from sentry_sdk.utils import epoch
 
 import django
@@ -13,9 +12,6 @@ from django.utils.module_loading import import_string
 from .utils import configure_logging
 from ..models import Task
 from ..runner.manager import BackgroundManager, init_scheduler, scheduler
-
-if TYPE_CHECKING:  # pragma: no cover
-    from apscheduler.job import Job
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +35,20 @@ def healthcheck() -> bool:
     logger.warning("Healthcheck")
     BackgroundManager().scheduler_ping()
     return True
+
+
+def job_listener(event: JobExecutionEvent) -> None:
+    if event.exception:
+        logger.error(f"Job {event.job_id} failed: {event.exception}")
+    else:
+        logger.info(f"Job {event.job_id} executed (returned {event.retval!r})")
+
+
+def dump_schedule() -> None:
+    click.echo("Current scheduling:")
+    for job in scheduler.get_jobs():
+        next_run = getattr(job, "next_run_time", None)
+        click.echo(f"  - {job.id:<25} {job.trigger}  next: {next_run}")
 
 
 def inspect_jobs() -> bool:
@@ -83,8 +93,6 @@ def run_scheduler(verbose: int, debug: bool) -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
     django.setup()
 
-    job: Job
-
     if debug:
         log_level = logging.DEBUG
     elif verbose > 0:
@@ -117,11 +125,11 @@ def run_scheduler(verbose: int, debug: bool) -> None:
     healthcheck()
     init_scheduler()
 
+    scheduler.add_listener(job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+
     try:
-        if log_level < logging.WARN:
-            for job in scheduler.get_jobs():
-                logger.warning(f"{job.name}")
         inspect_jobs()
+        dump_schedule()
         scheduler.start()
     except KeyboardInterrupt:
         click.echo("Scheduler stopping...")
@@ -130,11 +138,11 @@ def run_scheduler(verbose: int, debug: bool) -> None:
 
 
 @click.command(name="scheduler")
-@click.option("-d", "--debug", is_flag=True, help="")
-@click.option("-v", "--verbose", count=True, default=2)
+@click.option("-d", "--debug", is_flag=True, help="Enable debug logging")
+@click.option("-v", "--verbose", count=True, default=3, help="Increase verbosity (use -vv for more detail)")
 @click.option("--autoreload", is_flag=True, help="Reload on code changes")
 def cron(verbose: int, debug: bool, autoreload: bool) -> None:
-    click.echo("Scheduler started... Press Ctrl+C to exit")
+    """Run the task scheduler."""
     if autoreload:
         from django.utils import autoreload as django_autoreload
 

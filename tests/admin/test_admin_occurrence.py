@@ -98,7 +98,7 @@ def new_occurrence_data(app) -> "Context":
 def occurrence_data(app) -> "Context":
     from bitcaster.models import Occurrence
 
-    return _build_occurrence(status=Occurrence.Status.PROCESSED)
+    return _build_occurrence(status=Occurrence.Status.PROCESSING)
 
 
 @pytest.fixture

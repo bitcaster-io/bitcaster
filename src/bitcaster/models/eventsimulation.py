@@ -93,7 +93,7 @@ class EventSimulation(BitcasterBaseModel):
         Consumes the `OccurrenceData` returned by `Occurrence.preview`, stores one
         `DeliverySimulation` row per (assignment, notification) and trims `self.data`
         down to the aggregate summary. The row writing and the state transition to
-        PROCESSED are atomic and guarded by the current status so a concurrent
+        PROCESSING are atomic and guarded by the current status so a concurrent
         completion is never overwritten.
         """
         from .deliverysimulation import DeliverySimulation
@@ -105,7 +105,7 @@ class EventSimulation(BitcasterBaseModel):
             updated = bool(
                 type(self)
                 .objects.filter(pk=self.pk, status=Occurrence.Status.NEW)
-                .update(data=summary, status=Occurrence.Status.PROCESSED)
+                .update(data=summary, status=Occurrence.Status.PROCESSING)
             )
             if updated:
                 self.deliveries.all().delete()
@@ -139,7 +139,7 @@ class EventSimulation(BitcasterBaseModel):
                     assignment=assignments[assignment_pk],
                     notification=notifications[notification_pk],
                     message_template=templates.get(template_pk),
-                    status=Occurrence.Status.PROCESSED,
+                    status=Occurrence.Status.PROCESSING,
                     data=row,
                 )
             )

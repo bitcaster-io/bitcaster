@@ -35,7 +35,7 @@ def test_save_deliveries_full(simulation: "tuple") -> None:
     sim.save_deliveries(data)
 
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data["recipients_count"] == 1
     assert sim.data["rendered_count"] == 1
     assert sim.data["notifications"] == [notification.pk]
@@ -48,7 +48,7 @@ def test_save_deliveries_full(simulation: "tuple") -> None:
     assert delivery.notification == notification
     assert delivery.message_template is not None
     assert delivery.rendered == {"subject": "", "message": "Hello bar", "html_message": ""}
-    assert delivery.status == Occurrence.Status.PROCESSED.value
+    assert delivery.status == Occurrence.Status.PROCESSING.value
     assert not delivery.missing_template
 
 
@@ -98,10 +98,10 @@ def test_save_deliveries_idempotent(simulation: "tuple") -> None:
 
 
 def test_save_deliveries_does_not_overwrite_processed() -> None:
-    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSED.value, data={"errors": ["previous"]})
+    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSING.value, data={"errors": ["previous"]})
     sim.save_deliveries({"delivered": [], "recipients": []})
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data == {"errors": ["previous"]}
     assert sim.deliveries.count() == 0
 

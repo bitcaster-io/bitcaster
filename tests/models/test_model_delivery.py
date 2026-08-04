@@ -47,11 +47,12 @@ def test_error_increment(setup: "tuple") -> None:
     occurrence, *_ = setup
     occurrence.process()
     (delivery,) = occurrence.deliveries.all()
-    delivery.mark_error()
+    delivery.mark_error("boom")
     delivery.refresh_from_db()
     assert delivery.errors == 1
     assert delivery.status == Delivery.Status.ERROR
     assert delivery.next_attempt_at is not None
+    assert delivery.data["errors"] == ["boom"]
 
 
 def test_retry_scheduling(setup: "tuple") -> None:
@@ -61,7 +62,7 @@ def test_retry_scheduling(setup: "tuple") -> None:
     occurrence.process()
     (delivery,) = occurrence.deliveries.all()
     with freeze_time("2001-01-02T01:02:33Z"):
-        delivery.mark_error()
+        delivery.mark_error("boom")
     delivery.refresh_from_db()
     assert delivery.next_attempt_at == delivery.next_attempt_at
 
@@ -74,7 +75,7 @@ def test_max_retries_sets_failure(setup: "tuple") -> None:
     (delivery,) = occurrence.deliveries.all()
     with override_config(MAX_DELIVERY_RETRIES=3):
         for _ in range(3):
-            delivery.mark_error()
+            delivery.mark_error("boom")
     delivery.refresh_from_db()
     assert delivery.status == Delivery.Status.FAILURE
     assert delivery.next_attempt_at is None
@@ -87,8 +88,8 @@ def test_error_below_max_keeps_retrying(setup: "tuple") -> None:
     occurrence.process()
     (delivery,) = occurrence.deliveries.all()
     with override_config(MAX_DELIVERY_RETRIES=3):
-        delivery.mark_error()
-        delivery.mark_error()
+        delivery.mark_error("boom")
+        delivery.mark_error("boom")
     delivery.refresh_from_db()
     assert delivery.status == Delivery.Status.ERROR
     assert delivery.next_attempt_at is not None

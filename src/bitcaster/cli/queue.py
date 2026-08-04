@@ -4,7 +4,7 @@ import click
 @click.group()
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 def queue(loglevel: str, scheduler_name: str | None = None) -> None:
-    pass
+    """Manage task queues."""
 
 
 @queue.command(name="list", help="List all queues content")

@@ -12,7 +12,7 @@ def configure_logging(level1, level2):
     stream.setLevel(level1)
     formatter = ColoredFormatter(LOGFORMAT)
     stream.setFormatter(formatter)
-    for logger_name in ["apscheduler", "dramatiq"]:
+    for logger_name in ["apscheduler", "dramatiq", "bitcaster.cli.scheduler"]:
         lg = logging.getLogger(logger_name)
         lg.setLevel(level1)
         lg.addHandler(stream)

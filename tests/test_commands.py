@@ -15,7 +15,7 @@ from django.core.management import CommandError, call_command
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
 
-    from bitcaster.models import User
+    from bitcaster.models import Application, Organization, User
 
 pytestmark = pytest.mark.django_db
 
@@ -167,3 +167,45 @@ def test_env_raise(mocked_responses: RequestsMock) -> None:
     with mock.patch.dict(os.environ, environ, clear=True):
         with pytest.raises(CommandError):
             call_command("env", ignore_errors=False, check=True)
+
+
+def test_develop_quickstart(bitcaster: "Application") -> None:
+    from bitcaster.models import (
+        Address,
+        Assignment,
+        Channel,
+        MessageTemplate,
+        Notification,
+        Organization,
+        Project,
+        Subscription,
+    )
+    from bitcaster.models.choices import FILTERING_SUBSCRIPTION
+
+    out = StringIO()
+    structure = "user@example.com;Org;Project1;Application1"
+    with mock.patch.dict(os.environ, {"TEST_ORG_STRUCTURE": structure, "TEST_API_KEY": "test-key"}, clear=False):
+        call_command("develop", stdout=out, verbosity=1)
+
+    assert Organization.objects.filter(name="Org").exists()
+    assert Project.objects.filter(name="Project1").exists()
+    assert Channel.objects.filter(project__name="Project1").exists()
+    assert Notification.objects.filter(event__name="Test Event", policy=FILTERING_SUBSCRIPTION, active=True).exists()
+    assert MessageTemplate.objects.filter(notification__name="Default").exists()
+    assert Address.objects.filter(user__username="user@example.com").exists()
+    assert Assignment.objects.filter(validated=True, active=True).exists()
+    assert Subscription.objects.filter(notification__name="Default", active=True).exists()
+    assert "Created/Updated Subscription" in out.getvalue()
+
+
+def test_develop_quickstart_reuse_local_org(bitcaster: "Application", organization: "Organization") -> None:
+    from bitcaster.models import Organization, Project
+
+    out = StringIO()
+    structure = "user@example.com;Org;Project1;Application1"
+    with mock.patch.dict(os.environ, {"TEST_ORG_STRUCTURE": structure}, clear=False):
+        call_command("develop", stdout=out, verbosity=1)
+
+    assert Organization.objects.count() <= 2
+    assert Project.objects.filter(name="Project1").exists()
+    assert "Created/Updated Subscription" in out.getvalue()

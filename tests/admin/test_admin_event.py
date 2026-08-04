@@ -206,7 +206,7 @@ def test_debug_event_sync_fast(app: "DjangoTestApp", debug_context: "Context") -
     assert 'id="preview-' not in res.text  # no rendered content in fast mode
     assert Occurrence.objects.count() == 0  # no occurrence rows created
     simulation = EventSimulation.objects.get()
-    assert simulation.status == Occurrence.Status.PROCESSED.value
+    assert simulation.status == Occurrence.Status.PROCESSING.value
     assert simulation.mode == "fast"
     assert simulation.context == {"foo": "bar"}
 
@@ -255,7 +255,7 @@ def test_debug_event_payload_filter(app: "DjangoTestApp", debug_context: "Contex
     res = app.post(url, {"context": '{"foo": "dummy"}', "mode": "fast"}).follow()
     assert res.status_code == 200
     assert "No recipients found" in res.text
-    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSED.value
+    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSING.value
 
 
 def test_debug_event_sync_failure(app: "DjangoTestApp", debug_context: "Context") -> None:
@@ -288,7 +288,7 @@ def test_debug_event_missing_template_ui(app: "DjangoTestApp", context: "Context
         event=event,
         created_by=app._user,
         mode="full",
-        status=Occurrence.Status.PROCESSED,
+        status=Occurrence.Status.PROCESSING,
         data={
             "delivered": [],
             "errors": [],
@@ -305,7 +305,7 @@ def test_debug_event_missing_template_ui(app: "DjangoTestApp", context: "Context
         assignment=context["assignment"],
         notification=notification,
         message_template=None,
-        status=Occurrence.Status.PROCESSED,
+        status=Occurrence.Status.PROCESSING,
     )
     opts: "Options[Event]" = event._meta
     url = reverse(admin_urlname(opts, "debug_event"), args=[event.pk])  # type: ignore[arg-type]
@@ -314,7 +314,7 @@ def test_debug_event_missing_template_ui(app: "DjangoTestApp", context: "Context
     assert "Recipients without a message template were skipped" in res.text
     assert "missing" in res.text
     assert Occurrence.objects.count() == 0
-    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSED.value
+    assert EventSimulation.objects.get().status == Occurrence.Status.PROCESSING.value
 
 
 def test_debug_event_session_persists(app: "DjangoTestApp", debug_context: "Context") -> None:
@@ -398,7 +398,7 @@ def test_debug_event_background_processed(app: "DjangoTestApp", debug_context: "
         "missing_template": [],
     }
     sim: EventSimulation = EventSimulationFactory(
-        event=event, created_by=app._user, mode="full", status=Occurrence.Status.PROCESSED, data=data
+        event=event, created_by=app._user, mode="full", status=Occurrence.Status.PROCESSING, data=data
     )
     from testutils.factories import DeliverySimulationFactory
 
@@ -408,7 +408,7 @@ def test_debug_event_background_processed(app: "DjangoTestApp", debug_context: "
         assignment=debug_context["assignment"],
         notification=notification,
         message_template=notification.get_message(debug_context["channel"]),
-        status=Occurrence.Status.PROCESSED,
+        status=Occurrence.Status.PROCESSING,
         data={"rendered": {"subject": "", "message": "Hello bar", "html_message": ""}},
     )
     opts: "Options[Event]" = event._meta
@@ -566,7 +566,7 @@ def test_debug_event_post_with_channels(app: "DjangoTestApp", debug_context: "Co
     assert "Enter a list of values." not in res.text
     simulation = EventSimulation.objects.get()
     assert simulation.options["channels"] == [channel.pk]
-    assert simulation.status == Occurrence.Status.PROCESSED.value
+    assert simulation.status == Occurrence.Status.PROCESSING.value
 
 
 def test_debug_event_emulates_api_call(app: "DjangoTestApp", debug_context: "Context") -> None:
@@ -582,7 +582,7 @@ def test_debug_event_emulates_api_call(app: "DjangoTestApp", debug_context: "Con
     simulation = EventSimulation.objects.get()
     assert simulation.context == {"foo": "bar"}
     assert simulation.options["channels"] == [channel.pk]
-    assert simulation.status == Occurrence.Status.PROCESSED.value
+    assert simulation.status == Occurrence.Status.PROCESSING.value
 
 
 def test_debug_event_emulate_api_rejects_disabled_channel(app: "DjangoTestApp", debug_context: "Context") -> None:
@@ -628,6 +628,6 @@ def test_debug_event_changelist_badge(app: "DjangoTestApp", debug_context: "Cont
     EventSimulationFactory(event=event, created_by=app._user, mode="full")
     res = app.get(url)
     assert "simulation running" in res.text
-    EventSimulation.objects.update(status=Occurrence.Status.PROCESSED)
+    EventSimulation.objects.update(status=Occurrence.Status.PROCESSING)
     res = app.get(url)
     assert "simulation running" not in res.text

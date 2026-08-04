@@ -48,6 +48,11 @@ if TYPE_CHECKING:
         notification_pk: int
         notification_name: str
 
+    class ProcessingData(TypedDict):
+        phase1_at: int
+        phase2_attempts: list[dict[str, str | int]]
+        finished_at: str
+
     class OccurrenceData(TypedDict):
         delivered: list[str | int]
         recipients: list[
@@ -59,6 +64,9 @@ if TYPE_CHECKING:
         messages: list[int]
         rendered: NotRequired[list[RenderedData]]
         missing_template: NotRequired[list[MissingTemplateData]]
+        phase1_at: NotRequired[str]
+        phase2_attempts: NotRequired[list[str]]
+        processing: NotRequired[ProcessingData | dict[str, Any]]
 
     class RecipientsData(TypedDict):
         recipients: list[tuple[Assignment, Channel, Notification, MessageTemplate | None]]
@@ -102,9 +110,10 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
 
 class Occurrence(BitcasterBaseModel):
     class Status(models.TextChoices):
-        PROCESSED = "PROCESSED", _("Processed")
-        FAILED = "FAILED", _("Failed")
         NEW = "NEW", _("New")
+        PROCESSING = "PROCESSED", _("Processing")
+        COMPLETED = "COMPLETED", _("Completed")
+        FAILED = "FAILED", _("Failed")
 
     timestamp = models.DateTimeField(
         verbose_name=_("date"), auto_now_add=True, help_text=_("Timestamp when occurrence has been created.")
@@ -196,8 +205,12 @@ class Occurrence(BitcasterBaseModel):
                     if o.status == Occurrence.Status.NEW:
                         success, ret = o._process()
                         o.data = ret
+                        o.data["processing"] = {
+                            "phase1_at": timezone.now().isoformat(),
+                            "phase2_attempts": [],
+                        }
                         if success:
-                            o.status = Occurrence.Status.PROCESSED
+                            o.status = Occurrence.Status.PROCESSING
                         o.recipients = o.deliveries.count()
                         if o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
                             bitcaster.trigger_event(
@@ -277,11 +290,10 @@ class Occurrence(BitcasterBaseModel):
         return data
 
     def _process(self) -> "tuple[bool, OccurrenceData]":
-        success, data = self.preview("full")
-        if success:
-            self._create_deliveries(data)
-            data["delivered"] = []
-        return success, data
+        _, data = self.preview("full")
+        self._create_deliveries(data)
+        data["delivered"] = []
+        return True, data
 
     def _create_deliveries(self, data: "OccurrenceData") -> None:
         from .delivery import Delivery
@@ -334,6 +346,9 @@ class Occurrence(BitcasterBaseModel):
         errors = list(recipients_data["errors"])
         data: "OccurrenceData" = {
             "delivered": [],
+            "phase1_at": "",
+            "phase2_attempts": [],
+            "processing": {},
             "recipients": [
                 (
                     assignment.address.value,

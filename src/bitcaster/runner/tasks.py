@@ -16,7 +16,7 @@ from ..dispatchers import UserMessageDispatcher
 from ..models import Monitor
 
 if TYPE_CHECKING:
-    from ..models.occurrence import OccurrenceOptions
+    from ..models.occurrence import OccurrenceOptions, ProcessingData
 
 logger = logging.getLogger(__name__)
 
@@ -69,13 +69,15 @@ def process_deliveries_page(page: int = 0) -> int:
     from django.db import transaction
     from django.utils import timezone
 
-    from bitcaster.models import Delivery
+    from bitcaster.models import Delivery, Occurrence
 
     due = Q(status__in=(Delivery.Status.PENDING, Delivery.Status.ERROR)) & (
         Q(next_attempt_at__isnull=True) | Q(next_attempt_at__lte=timezone.now())
     )
     page_size = config.DELIVERY_PAGE_SIZE
     processed = 0
+    occurrences: dict[int, Occurrence] = {}
+    counts: dict[int, int] = {}
     with transaction.atomic():
         deliveries = list(
             Delivery.objects.select_for_update(skip_locked=True)
@@ -88,14 +90,28 @@ def process_deliveries_page(page: int = 0) -> int:
                 delivery.send()
             except Exception as e:
                 logger.exception(e)
-                delivery.mark_error()
+                delivery.mark_error(e)
+            occurrences.setdefault(delivery.occurrence_id, delivery.occurrence)
+            counts[delivery.occurrence_id] = counts.get(delivery.occurrence_id, 0) + 1
             processed += 1
+        if occurrences:
+            pending = (Delivery.Status.PENDING, Delivery.Status.ERROR)
+            for oid, occurrence in occurrences.items():
+                processing = cast("ProcessingData", occurrence.data.setdefault("processing", {"phase2_attempts": []}))
+                attempts = processing.setdefault("phase2_attempts", [])
+                attempts.append({"at": timezone.now().isoformat(), "processed": counts[oid]})
+                if not Delivery.objects.filter(occurrence_id=oid, status__in=pending).exists():
+                    processing["finished_at"] = timezone.now().isoformat()
+                    occurrence.status = Occurrence.Status.COMPLETED
+                occurrence.save(update_fields=["data", "status", "last_updated"])
     return processed
 
 
 @dramatiq.actor(actor_class=SmartActor, logging=True)
 def scan_occurrences() -> list[int]:
-    from bitcaster.models import Occurrence
+    from django.utils import timezone
+
+    from bitcaster.models import Delivery, Occurrence
 
     logger.debug("Scan new occurrences")
     o: Occurrence
@@ -107,6 +123,19 @@ def scan_occurrences() -> list[int]:
     ):
         process_occurrence.send(o.id)
         ret.append(o.id)
+
+    pending = Delivery.objects.exclude(status__in=(Delivery.Status.DELIVERED, Delivery.Status.FAILURE)).values(
+        "occurrence_id"
+    )
+    updated = 0
+    for o in Occurrence.objects.filter(status=Occurrence.Status.PROCESSING).exclude(pk__in=pending):
+        processing = o.data.setdefault("processing", {"phase2_attempts": []})
+        processing["finished_at"] = timezone.now().isoformat()
+        o.status = Occurrence.Status.COMPLETED
+        o.save(update_fields=["data", "status", "last_updated"])
+        updated += 1
+    if updated:
+        logger.info(f"Marked {updated} occurrences as COMPLETED")
     return ret
 
 

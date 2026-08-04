@@ -85,6 +85,7 @@ class Delivery(BitcasterBaseModel):
         verbose_name = _("Delivery")
         verbose_name_plural = _("Deliveries")
         ordering = ("id",)
+        permissions = (("read_data", "Can read delivery data"),)
         constraints = [
             models.UniqueConstraint(
                 fields=("occurrence", "assignment", "notification", "channel"),
@@ -109,9 +110,10 @@ class Delivery(BitcasterBaseModel):
     def missing_template(self) -> bool:
         return self.message_template_id is None
 
-    def mark_error(self) -> None:
+    def mark_error(self, error: Exception | str) -> None:
         from constance import config
 
+        self.data.setdefault("errors", []).append(str(error))
         self.errors = self.errors + 1
         if self.errors >= config.MAX_DELIVERY_RETRIES:
             self.status = self.Status.FAILURE
@@ -119,7 +121,7 @@ class Delivery(BitcasterBaseModel):
         else:
             self.status = self.Status.ERROR
             self.next_attempt_at = timezone.now() + timedelta(minutes=config.DELIVERY_RETRY_DELAY)
-        self.save(update_fields=["errors", "status", "next_attempt_at", "last_updated"])
+        self.save(update_fields=["data", "errors", "status", "next_attempt_at", "last_updated"])
 
     def send(self) -> bool:
         from bitcaster.dispatchers.base import Payload

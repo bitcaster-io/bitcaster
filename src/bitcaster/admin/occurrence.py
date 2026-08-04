@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, cast
 
 import logging
+from datetime import datetime
 
 from admin_extra_buttons.api import confirm_action
 from admin_extra_buttons.buttons import ChoiceButton, StandardButton
@@ -13,19 +14,24 @@ from django.contrib import messages
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import Context
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Assignment, Channel, MessageTemplate, Notification, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
+from bitcaster.state import state
 from bitcaster.web.templatetags.bitcaster import recipients
 
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
+    from bitcaster.models import User
+
     from ..models.occurrence import OccurrenceData
 
 logger = logging.getLogger(__name__)
@@ -44,9 +50,12 @@ class OccurrenceAdmin(BaseAdmin[Occurrence]):
         (_("General"), {"classes": ["tab"], "fields": ["timestamp", "event", "newsletter"]}),
         (_("Process"), {"classes": ["tab"], "fields": ["attempts", "status"]}),
         (_("Input"), {"classes": ["tab"], "fields": ["correlation_id", "context", "options"]}),
-        (_("Delivery"), {"classes": ["tab"], "fields": ["recipients", "data", "deliveries_link"]}),
+        (
+            _("Delivery"),
+            {"classes": ["tab"], "fields": ["recipients", "delivery_info", "deliveries_link"]},
+        ),
     )
-    readonly_fields = ["correlation_id", "deliveries_link"]
+    readonly_fields = ["correlation_id", "delivery_info", "deliveries_link"]
     ordering = ("-timestamp",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Occurrence]:
@@ -61,16 +70,47 @@ class OccurrenceAdmin(BaseAdmin[Occurrence]):
     def paused(self, obj: Occurrence) -> bool:
         return bool(obj.event.paused or obj.event.application.paused)
 
+    @display(description=_("Delivery Info"))
+    def delivery_info(self, obj: Occurrence) -> str:
+        data = obj.data or {}
+        user = getattr(state.request, "user", None) if state.request else None
+        processing = dict(data.get("processing") or {})
+        for key in ("phase1_at", "phase1_failed_at", "finished_at"):
+            if ts := processing.get(key):
+                processing[key] = self._fmt_ts(ts, user)
+        attempts = []
+        for attempt in processing.get("phase2_attempts", []):
+            entry = dict(attempt)
+            if at := entry.get("at"):
+                entry["at"] = self._fmt_ts(at, user)
+            attempts.append(entry)
+        processing["phase2_attempts"] = attempts
+        return render_to_string(
+            "bitcaster/admin/occurrence/delivery_info.html",
+            {"data": data | {"processing": processing}},
+        )
+
+    @staticmethod
+    def _fmt_ts(ts: str, user: "User | None") -> str:
+        try:
+            dt = datetime.fromisoformat(ts)
+        except (TypeError, ValueError):
+            return ts
+        if user and user.is_authenticated:
+            return user.format_datetime(timezone.localtime(dt, user.timezone))
+        return timezone.localtime(dt).strftime("%Y-%m-%d %H:%M:%S")
+
     @display(  # type: ignore[untyped-decorator]
         ordering="status",
         label={
-            Occurrence.Status.PROCESSED: "success",  # green
-            Occurrence.Status.FAILED: "danger",  # green
-            Occurrence.Status.NEW: "info",  # green
+            Occurrence.Status.NEW.label: "info",
+            Occurrence.Status.PROCESSING.label: "warning",
+            Occurrence.Status.COMPLETED.label: "success",
+            Occurrence.Status.FAILED.label: "danger",
         },
     )
     def status_badge(self, obj: Occurrence) -> str:
-        return str(obj.status)
+        return obj.get_status_display()
 
     def get_list_display(self, request: HttpRequest) -> list[str]:  # type: ignore[override]
         return cast("list[str]", super().get_list_display(request))

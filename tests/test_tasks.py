@@ -114,7 +114,7 @@ def test_process_event_single(setup: "Context") -> None:
     process_occurrence(occurrence.pk)
     assert ch.dispatcher._messages() == []
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.recipients == 2
     assert occurrence.deliveries.count() == 2
     assert occurrence.data == {
@@ -170,7 +170,7 @@ def test_process_incomplete_event(setup: "Context") -> None:
     assert ch.dispatcher._messages() == []
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.recipients == 2
     assert occurrence.deliveries.count() == 2
     assert occurrence.data["delivered"] == []
@@ -194,7 +194,7 @@ def test_process_event_partially(setup: "Context", monkeypatch: pytest.MonkeyPat
     process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert mocked_render.call_count == 2
     assert occurrence.data["errors"] == ["Exception: This is raised after first call"]
     assert occurrence.data["delivered"] == []
@@ -231,7 +231,7 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.recipients == 2
     assert occurrence.deliveries.count() == 2
     assert occurrence.deliveries.filter(assignment=v1, status=Delivery.Status.DELIVERED).exists()
@@ -252,7 +252,7 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
     process_occurrence(o.pk)
 
     o.refresh_from_db()
-    assert o.status == Occurrence.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSING
     assert o.data == {
         "delivered": [],
         "recipients": [],
@@ -271,12 +271,12 @@ def test_attempts(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     o: Occurrence = setup["occurrence"]
-    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
-        assert o.status == Occurrence.Status.PROCESSED
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSING):
+        assert o.status == Occurrence.Status.PROCESSING
         process_occurrence(o.pk)
 
         o.refresh_from_db()
-        assert o.status == Occurrence.Status.PROCESSED
+        assert o.status == Occurrence.Status.PROCESSING
         assert o.data == {}
 
 
@@ -314,7 +314,7 @@ def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_obj
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence._process", mocked_notify := Mock())
 
     o: Occurrence = setup["occurrence"]
-    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSING):
         process_occurrence(o.pk)
         assert mocked_notify.call_count == 0
 
@@ -340,7 +340,7 @@ def test_scan_occurrences(run_tasks_sync, setup: "Context", monkeypatch: pytest.
     o: Occurrence = setup["occurrence"]
     o.refresh_from_db()
     assert o.recipients == 2
-    assert o.status == Occurrence.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSING
 
 
 @pytest.mark.django_db(transaction=True)

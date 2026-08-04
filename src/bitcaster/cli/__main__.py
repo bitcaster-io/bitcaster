@@ -23,10 +23,10 @@ except Exception as e:
 
 @click.group()
 @click.version_option(__version__)
-@click.option("--debug", default=False, is_flag=True, envvar="BITCASTER_DEBUG")
+@click.option("--debug", default=False, is_flag=True, envvar="BITCASTER_DEBUG", help="Enable debug mode")
 @click.pass_context
 def cli(ctx: "Context", debug: bool) -> None:
-    """Provide a command line interface for Bitcaster."""
+    """Bitcaster notification platform CLI."""
     ctx.obj = {"debug": debug}
 
 

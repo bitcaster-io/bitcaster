@@ -1,0 +1,93 @@
+{% load i18n %}
+<div class="grid grid-cols-1 gap-4 p-2">
+    {% if data.errors %}
+        <div>
+            <div class="font-bold text-red-700 mb-2">
+                {% trans "Errors" %}
+            </div>
+            <ul class="list-disc ml-6">
+                {% for error in data.errors %}
+                    <li class="text-red-700">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if data.processing %}
+        <div>
+            <div class="font-bold mb-2">
+                {% trans "Processing timeline" %}
+            </div>
+            <table class="table-auto w-full border">
+                <thead>
+                    <tr>
+                        <th class="border p-2 text-left">
+                            {% trans "Phase" %}
+                        </th>
+                        <th class="border p-2 text-left">
+                            {% trans "Details" %}
+                        </th>
+                        <th class="border p-2 text-left">
+                            {% trans "When" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data.processing.phase1_at %}
+                        <tr>
+                            <td class="border p-2">
+                                {% trans "Phase 1 - deliveries created" %}
+                            </td>
+                            <td class="border p-2">
+                                -
+                            </td>
+                            <td class="border p-2">
+                                {{ data.processing.phase1_at }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% if data.processing.phase1_failed_at %}
+                        <tr>
+                            <td class="border p-2 text-red-700">
+                                {% trans "Phase 1 - failed" %}
+                            </td>
+                            <td class="border p-2 text-red-700">
+                                -
+                            </td>
+                            <td class="border p-2">
+                                {{ data.processing.phase1_failed_at }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% for attempt in data.processing.phase2_attempts %}
+                        <tr>
+                            <td class="border p-2">
+                                {% blocktrans with n=forloop.counter %}Delivery attempt {{ n }}{% endblocktrans %}
+                            </td>
+                            <td class="border p-2">
+                                {{ attempt.processed }} {% trans "processed" %}
+                            </td>
+                            <td class="border p-2">
+                                {{ attempt.at }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if data.processing.finished_at %}
+                        <tr>
+                            <td class="border p-2 font-bold">
+                                {% trans "Completed" %}
+                            </td>
+                            <td class="border p-2">
+                                -
+                            </td>
+                            <td class="border p-2">
+                                {{ data.processing.finished_at }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

@@ -117,7 +117,7 @@ def test_run_event_simulation_success():
         ) as mock_preview:
             run_event_simulation(sim.pk)
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data["recipients_count"] == 0
     assert sim.data["delivered"] == []
     mock_preview.assert_called_once()
@@ -150,11 +150,11 @@ def test_run_event_simulation_not_found():
 def test_run_event_simulation_does_not_overwrite_processed():
     """Atomic status guard: a concurrent completion is not overwritten by the task."""
 
-    sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSED.value, data={"errors": []})
+    sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSING.value, data={"errors": []})
     with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": [1]})):
         run_event_simulation(sim.pk)
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data == {"errors": []}
 
 
@@ -368,3 +368,37 @@ def test_process_deliveries_page_uses_page_size(delivery_setup):
         with patch.object(Delivery, "send") as mock_send:
             process_deliveries_page()
     assert mock_send.call_count == 1
+
+
+def test_process_records_phase1_timestamp(delivery_setup):
+    occurrence, *_ = delivery_setup
+    occurrence.refresh_from_db()
+    assert occurrence.data["processing"]["phase1_at"]
+    assert occurrence.data["processing"]["phase2_attempts"] == []
+
+
+def test_process_deliveries_page_records_phase2_attempts(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(side_effect=Exception("boom"))):
+        process_deliveries_page()
+    occurrence.refresh_from_db()
+    attempts = occurrence.data["processing"]["phase2_attempts"]
+    assert len(attempts) == 1
+    assert attempts[0]["processed"] == 1
+    assert attempts[0]["at"]
+
+
+def test_process_deliveries_page_records_finished_at(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(return_value=True)):
+        process_deliveries_page()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.COMPLETED
+    assert occurrence.data["processing"]["finished_at"]
+    assert len(occurrence.data["processing"]["phase2_attempts"]) == 1

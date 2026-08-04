@@ -53,9 +53,9 @@ def test_get_context_data_with_cache_miss_and_occurrences(component, mock_cache_
 
     # Mock Occurrence objects
     occurrence_mock_data = [
-        {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.PROCESSED.value, "count": 5},
+        {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.PROCESSING.value, "count": 5},
         {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.FAILED.value, "count": 2},
-        {"hour": datetime(2023, 1, 31, 12, 0), "status": Occurrence.Status.PROCESSED.value, "count": 3},
+        {"hour": datetime(2023, 1, 31, 12, 0), "status": Occurrence.Status.PROCESSING.value, "count": 3},
     ]
 
     with mock.patch("bitcaster.models.Occurrence.objects") as mock_occurrence_objects:
