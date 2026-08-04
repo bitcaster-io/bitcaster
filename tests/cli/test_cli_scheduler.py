@@ -175,3 +175,49 @@ def test_cron_command_interrupt(scheduler: "BlockingScheduler", monkeypatch, sta
             with mock.patch.object(scheduler, "start", side_effect=KeyboardInterrupt):
                 with mock.patch.object(scheduler, "state", state):
                     run_scheduler(0, 0)
+
+
+def test_job_listener_with_exception(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Lines 41-42: job_listener logs error on exception."""
+    import logging
+    from datetime import datetime, timezone
+
+    from apscheduler.events import EVENT_JOB_EXECUTED, JobExecutionEvent
+
+    from bitcaster.cli.scheduler import job_listener
+
+    logger = logging.getLogger("bitcaster.cli.scheduler")
+    with mock.patch.object(logger, "error") as mock_error:
+        event = JobExecutionEvent(
+            EVENT_JOB_EXECUTED,
+            job_id="test-job",
+            jobstore="default",
+            scheduled_run_time=datetime.now(timezone.utc),
+            exception=ValueError("test error"),
+            retval=None,
+        )
+        job_listener(event)
+        mock_error.assert_called_once()
+
+
+def test_job_listener_without_exception(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Lines 44: job_listener logs info on success."""
+    import logging
+    from datetime import datetime, timezone
+
+    from apscheduler.events import EVENT_JOB_EXECUTED, JobExecutionEvent
+
+    from bitcaster.cli.scheduler import job_listener
+
+    logger = logging.getLogger("bitcaster.cli.scheduler")
+    with mock.patch.object(logger, "info") as mock_info:
+        event = JobExecutionEvent(
+            EVENT_JOB_EXECUTED,
+            job_id="test-job",
+            jobstore="default",
+            scheduled_run_time=datetime.now(timezone.utc),
+            exception=None,
+            retval=42,
+        )
+        job_listener(event)
+        mock_info.assert_called_once()

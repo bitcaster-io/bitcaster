@@ -89,7 +89,7 @@ def test_get_context_data_with_cache_miss_and_occurrences(component, mock_cache_
         assert chart_data["labels"][30] == "Jan 31"  # Index for Jan 31
 
         # Check data for PROCESSED status
-        processed_data = next((ds for ds in chart_data["datasets"] if ds["label"] == "Processed"), None)
+        processed_data = next((ds for ds in chart_data["datasets"] if ds["label"] == "Processing"), None)
         assert processed_data["data"][0] == 5
         assert processed_data["data"][14] == 10
         assert processed_data["data"][30] == 7

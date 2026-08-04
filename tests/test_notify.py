@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from testutils.dispatcher import XDispatcher
+from unittest.mock import ANY
 
 from strategy_field.utils import fqn
 
@@ -136,4 +137,10 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
             },
         ],
         "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }

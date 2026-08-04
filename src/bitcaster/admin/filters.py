@@ -99,6 +99,8 @@ class AddressByList(SimpleListFilter):
 
     def queryset(self, request: HttpRequest, queryset: "QuerySet[Address]") -> "QuerySet[Address]":
         if value := self.value():
+            if not value.isdigit():
+                return queryset
             return queryset.filter(assignments__distributionlist__id=value).distinct()
         return queryset
 
@@ -115,5 +117,7 @@ class AddressByNotification(SimpleListFilter):
 
     def queryset(self, request: HttpRequest, queryset: "QuerySet[Address]") -> "QuerySet[Address]":
         if value := self.value():
+            if not value.isdigit():
+                return queryset
             return queryset.filter(assignments__distributionlist__notifications__id=value).distinct()
         return queryset

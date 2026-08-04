@@ -391,6 +391,43 @@ def test_process_deliveries_page_records_phase2_attempts(delivery_setup):
     assert attempts[0]["at"]
 
 
+def test_scan_occurrences_marks_completed_when_no_pending_deliveries():
+    """Lines 132-136,138: PROCESSING occurrences with no pending deliveries marked COMPLETED."""
+
+    occurrence = OccurrenceFactory(
+        status=Occurrence.Status.PROCESSING,
+        data={"processing": {"phase2_attempts": []}},
+    )
+    with patch("bitcaster.runner.tasks.logger") as mock_logger:
+        scan_occurrences()
+        occurrence.refresh_from_db()
+        assert occurrence.status == Occurrence.Status.COMPLETED
+        assert occurrence.data["processing"]["finished_at"]
+        mock_logger.info.assert_called_once()
+
+
+def test_scan_occurrences_skips_processing_with_pending_deliveries():
+    """Lines 132: occurrences with pending deliveries stay PROCESSING."""
+    from bitcaster.models import Delivery
+
+    occurrence = OccurrenceFactory(
+        status=Occurrence.Status.PROCESSING,
+        data={"processing": {"phase2_attempts": []}},
+    )
+    DeliveryFactory(occurrence=occurrence, status=Delivery.Status.PENDING)
+    scan_occurrences()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.PROCESSING
+
+
+def test_scan_occurrences_skips_non_processing():
+    """Lines 131: only PROCESSING occurrences are checked."""
+    occurrence = OccurrenceFactory(status=Occurrence.Status.COMPLETED)
+    scan_occurrences()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.COMPLETED
+
+
 def test_process_deliveries_page_records_finished_at(delivery_setup):
     from testutils.dispatcher import XDispatcher
 

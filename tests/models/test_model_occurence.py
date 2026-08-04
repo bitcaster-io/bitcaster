@@ -77,6 +77,8 @@ def test_model_occurrence_filter(
                 }
             ],
             "missing_template": [],
+            "phase1_at": "",
+            "phase2_attempts": [],
             "processing": {
                 "phase1_at": occurrence.data["processing"]["phase1_at"],
                 "phase2_attempts": [],

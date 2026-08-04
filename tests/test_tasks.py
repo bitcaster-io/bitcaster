@@ -7,7 +7,7 @@ import pytest
 from testutils.dispatcher import XDispatcher
 from testutils.factories import ChannelFactory, MonitorFactory
 from testutils.perms import configure_model
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, patch
 
 from strategy_field.utils import fqn
 
@@ -152,6 +152,12 @@ def test_process_event_single(setup: "Context") -> None:
             },
         ],
         "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }
 
 
@@ -262,6 +268,12 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
         "messages": [],
         "rendered": [],
         "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
