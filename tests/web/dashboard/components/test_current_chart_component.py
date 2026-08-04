@@ -53,9 +53,9 @@ def test_get_context_data_with_cache_miss_and_occurrences(component, mock_cache_
 
     # Mock Occurrence objects
     occurrence_mock_data = [
-        {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.PROCESSED.value, "count": 5},
+        {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.PROCESSING.value, "count": 5},
         {"hour": datetime(2023, 1, 31, 10, 0), "status": Occurrence.Status.FAILED.value, "count": 2},
-        {"hour": datetime(2023, 1, 31, 12, 0), "status": Occurrence.Status.PROCESSED.value, "count": 3},
+        {"hour": datetime(2023, 1, 31, 12, 0), "status": Occurrence.Status.PROCESSING.value, "count": 3},
     ]
 
     with mock.patch("bitcaster.models.Occurrence.objects") as mock_occurrence_objects:
@@ -83,7 +83,7 @@ def test_get_context_data_with_cache_miss_and_occurrences(component, mock_cache_
         assert len(chart_data["datasets"]) == len(Occurrence.Status)
 
         # Check data for PROCESSED status
-        processed_data = next((ds for ds in chart_data["datasets"] if ds["label"] == "Processed"), None)
+        processed_data = next((ds for ds in chart_data["datasets"] if ds["label"] == "Processing"), None)
         assert processed_data["data"][10] == 5
         assert processed_data["data"][12] == 3
         assert processed_data["data"][11] == 0

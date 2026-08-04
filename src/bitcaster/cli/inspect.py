@@ -10,6 +10,7 @@ from ..runner.manager import BackgroundManager
 @click.command()
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 def inspect(loglevel: str, scheduler: str | None = None) -> None:
+    """Inspect registered background tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
     django.setup()
 

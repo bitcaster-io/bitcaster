@@ -293,13 +293,12 @@ class Notification(BitcasterBaseModel):
     def create_message(
         self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
     ) -> "MessageTemplate":
-        return self.messages.get_or_create(
+        return self.messages.update_or_create(
             name=name,
-            channel=channel,
             notification=self,
             event=self.event,
             application=self.event.application,
             project=self.event.application.project,
             organization=self.event.application.project.organization,
-            defaults=defaults or {},
+            defaults={"channel": channel, **(defaults or {})},
         )[0]

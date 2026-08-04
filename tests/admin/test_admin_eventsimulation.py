@@ -58,7 +58,7 @@ def test_detail_shows_trigger_payload(app: DjangoTestApp, context: "Context") ->
     sim = context["simulation"]
     sim.context = {"foo": "bar"}
     sim.options = {"limit_to": ["a@example.com"]}
-    sim.status = Occurrence.Status.PROCESSED.value
+    sim.status = Occurrence.Status.PROCESSING.value
     sim.save()
 
     url = reverse("admin:bitcaster_eventsimulation_change", args=[sim.pk])
@@ -77,7 +77,7 @@ def test_detail_shows_curl_command(app: DjangoTestApp, context: "Context") -> No
     sim = context["simulation"]
     sim.context = {"foo": "bar"}
     sim.options = {"limit_to": ["a@example.com"]}
-    sim.status = Occurrence.Status.PROCESSED.value
+    sim.status = Occurrence.Status.PROCESSING.value
     sim.save()
     event = sim.event
 
@@ -171,7 +171,7 @@ def test_deliveries_page(app: DjangoTestApp) -> None:
 
     from bitcaster.models import Occurrence
 
-    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSED.value, mode="full")
+    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSING.value, mode="full")
     channel = ChannelFactory()
     asm = AssignmentFactory(channel=channel)
     notification = NotificationFactory(event=sim.event, distribution__recipients=[asm])
@@ -183,7 +183,7 @@ def test_deliveries_page(app: DjangoTestApp) -> None:
         assignment=asm,
         notification=notification,
         message_template=msg,
-        status=Occurrence.Status.PROCESSED,
+        status=Occurrence.Status.PROCESSING,
         data={"rendered": {"subject": "Hi", "message": "Hello", "html_message": ""}},
     )
 
@@ -207,7 +207,7 @@ def test_deliveries_page_pagination(app: DjangoTestApp) -> None:
 
     from bitcaster.models import Occurrence
 
-    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSED.value, mode="partial")
+    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSING.value, mode="partial")
     channel = ChannelFactory()
     notification = NotificationFactory(event=sim.event, distribution__recipients=[])
     for i in range(3):
@@ -217,7 +217,7 @@ def test_deliveries_page_pagination(app: DjangoTestApp) -> None:
             simulation=sim,
             assignment=asm,
             notification=notification,
-            status=Occurrence.Status.PROCESSED.value,
+            status=Occurrence.Status.PROCESSING.value,
             data={"rendered": {"subject": "", "message": f"Hello {i}", "html_message": ""}},
         )
 
@@ -265,7 +265,7 @@ def test_deliverysimulation_changelist_allowed(app: DjangoTestApp) -> None:
 
     from bitcaster.models import Occurrence
 
-    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSED.value, mode="full")
+    sim = EventSimulationFactory(status=Occurrence.Status.PROCESSING.value, mode="full")
     channel = ChannelFactory()
     asm = AssignmentFactory(channel=channel)
     notification = NotificationFactory(event=sim.event, distribution__recipients=[asm])

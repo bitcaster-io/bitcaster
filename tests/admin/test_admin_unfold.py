@@ -24,6 +24,7 @@ def app(django_app_factory: "MixinWithInstanceVariables") -> "DjangoTestApp":
 
 ALL_MENU_ITEMS = [
     ("Occurrences", "bitcaster.view_occurrence"),
+    ("Deliveries", "bitcaster.view_delivery"),
     ("Members", "bitcaster.view_member"),
     ("Stream", "bitcaster.view_logmessage"),
     ("Messages", "bitcaster.view_usermessage"),

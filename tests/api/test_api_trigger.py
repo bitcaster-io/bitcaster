@@ -304,17 +304,38 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
     assert o.options == {"limit_to": [target.address.value]}
-    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, msg.pk]):
-        delivered = process_occurrence(o.pk, True)
+    delivered = process_occurrence(o.pk, True)
     assert delivered == 1
     o.refresh_from_db()
+    assert o.recipients == 1
+    assert o.deliveries.count() == 1
     assert o.data == {
-        "delivered": [target.pk],
+        "delivered": [],
         "recipients": [[target.address.value, target.channel.name, target.pk, target.channel.pk, n.pk, msg.pk]],
         "errors": [],
         "messages": [msg.pk],
         "notifications": [data["notification"].pk],
         "channels": [data["channel"].pk],
+        "rendered": [
+            {
+                "assignment_pk": target.pk,
+                "notification_pk": n.pk,
+                "notification_name": n.name,
+                "channel_pk": target.channel.pk,
+                "channel_name": target.channel.name,
+                "address": target.address.value,
+                "subject": "",
+                "message": f"Message for {event.name} on channel {target.channel.name}",
+                "html_message": "",
+            }
+        ],
+        "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": mock.ANY,
+            "phase2_attempts": [],
+        },
     }
 
 

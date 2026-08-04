@@ -2,7 +2,7 @@
 {% load json %}
 {% block content %}
     <div class="p-3 text-xl">
-        {% if original.status == "PROCESSED" %}
+        {% if original.status == "PROCESSED" or original.status == "COMPLETED" %}
             This occurrence has already been processed. Even if some notes and information reflect the current status,
             the list of recipients contains the actual addresses reached out.
         {% else %}

@@ -19,7 +19,8 @@ class ErrorTrackerComponent(BaseComponent):
             data = []
             colors = {
                 Occurrence.Status.NEW: "bg-gray-700",
-                Occurrence.Status.PROCESSED: "bg-green-700",
+                Occurrence.Status.PROCESSING: "bg-green-700",
+                Occurrence.Status.COMPLETED: "bg-blue-700",
                 Occurrence.Status.FAILED: "bg-red-700",
             }
             for c in (

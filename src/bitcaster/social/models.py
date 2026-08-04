@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from allauth.socialaccount.providers import registry
 
@@ -52,6 +52,11 @@ class SocialProvider(models.Model):
 
     def __str__(self) -> str:
         return self.label
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.label:
+            self.label = self.provider
+        super().save(*args, **kwargs)
 
     @property
     def code(self) -> str:

@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from unittest.mock import Mock
 
 from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_SUBSCRIPTION
 
@@ -179,9 +178,6 @@ def test_occurrence_subscription_policy(data: "SubscriptionData", monkeypatch: p
     from testutils.factories import AssignmentFactory, SubscriptionFactory
 
     notification = data["notification"]
-    monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel", mock := Mock(return_value=(None, 999))
-    )
     notification.distribution = data["distribution"]
     notification.save()
 
@@ -191,6 +187,7 @@ def test_occurrence_subscription_policy(data: "SubscriptionData", monkeypatch: p
     occurrence = notification.event.trigger(context={"foo": "bar"})
     occurrence.process()
 
-    assert mock.call_count == 2
     occurrence.refresh_from_db()
-    assert set(occurrence.data["delivered"]) == {data["assignment"].pk, subscribed.pk}
+    assert occurrence.recipients == 2
+    assert occurrence.deliveries.count() == 2
+    assert set(occurrence.deliveries.values_list("assignment_id", flat=True)) == {data["assignment"].pk, subscribed.pk}

@@ -203,7 +203,7 @@ def init_scheduler() -> None:
     for sid, config in SCHEDULER.items():
         job_args = {k: v for k, v in config.items() if k in ["func", "trigger", "replace_existing", "args", "kwargs"]}
         trigger_args = {k: v for k, v in config.items() if k not in job_args}
-        defaults = {"name": sid, "trigger_config": trigger_args, **job_args}
+        defaults = {"name": sid, "active": True, "trigger_config": trigger_args, **job_args}
         task, created = Task.objects.get_or_create(slug=sid, defaults=defaults)
         if not created:
             for key, value in defaults.items():

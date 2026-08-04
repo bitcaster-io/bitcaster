@@ -12,7 +12,7 @@ from strategy_field.utils import fqn
 from bitcaster.console.utils import get_user_latest_notify_time
 from bitcaster.dispatchers import UserMessageDispatcher
 from bitcaster.models.choices import FILTERING_EXTERNAL
-from bitcaster.runner.tasks import check_for_new_user_messages, scan_occurrences
+from bitcaster.runner.tasks import check_for_new_user_messages, process_deliveries_page, scan_occurrences
 
 if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Channel, Event, User, UserMessage
@@ -26,8 +26,11 @@ def stub_worker():
 
     worker = Worker(broker, worker_timeout=100)
     worker.start()
-    yield worker
-    worker.stop()
+    try:
+        yield worker
+    finally:
+        broker.join("default")
+        worker.stop()
 
 
 def create_message(**kwargs) -> "UserMessage":
@@ -105,6 +108,8 @@ def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, E
     check_for_new_user_messages()
     with stub_worker():
         scan_occurrences()
+    with stub_worker():
+        process_deliveries_page.send()
     messages = channel.dispatcher._messages()
     assert len(messages) == 1
     assert messages[0][0] == user.email
@@ -113,6 +118,8 @@ def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, E
     create_message(user=user, event=event, message="abc")
     with stub_worker():
         scan_occurrences()
+    with stub_worker():
+        process_deliveries_page.send()
 
     messages = channel.dispatcher._messages()
     assert len(messages) == 1
@@ -124,6 +131,8 @@ def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, E
     check_for_new_user_messages()
     with stub_worker():
         scan_occurrences()
+    with stub_worker():
+        process_deliveries_page.send()
 
     messages = channel.dispatcher._messages()
     assert len(messages) == 2

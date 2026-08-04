@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from testutils.dispatcher import XDispatcher
+from unittest.mock import ANY
 
 from strategy_field.utils import fqn
 
@@ -97,15 +98,12 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
     assert event.notifications.exists()
     o.process()
 
-    assert sorted(ch.dispatcher._messages()) == sorted(
-        [
-            [v1.address.value, f"Message for {event.name} on channel {ch.name}", 0],
-            [v2.address.value, f"Message for {event.name} on channel {ch.name}", 1],
-        ]
-    )
+    assert ch.dispatcher._messages() == []
     o.refresh_from_db()
+    assert o.recipients == 2
+    assert o.deliveries.count() == 2
     assert o.data == {
-        "delivered": [v1.pk, v2.pk],
+        "delivered": [],
         "recipients": [
             [v1.address.value, v1.channel.name, v1.pk, ch.pk, n.pk, msg.pk],
             [v2.address.value, v2.channel.name, v2.pk, ch.pk, n.pk, msg.pk],
@@ -114,4 +112,35 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
         "messages": [msg.pk],
         "notifications": [n.pk],
         "channels": [ch.pk],
+        "rendered": [
+            {
+                "assignment_pk": v1.pk,
+                "notification_pk": n.pk,
+                "notification_name": n.name,
+                "channel_pk": ch.pk,
+                "channel_name": ch.name,
+                "address": v1.address.value,
+                "subject": "",
+                "message": f"Message for {event.name} on channel {ch.name}",
+                "html_message": "",
+            },
+            {
+                "assignment_pk": v2.pk,
+                "notification_pk": n.pk,
+                "notification_name": n.name,
+                "channel_pk": ch.pk,
+                "channel_name": ch.name,
+                "address": v2.address.value,
+                "subject": "",
+                "message": f"Message for {event.name} on channel {ch.name}",
+                "html_message": "",
+            },
+        ],
+        "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }

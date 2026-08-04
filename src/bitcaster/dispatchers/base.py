@@ -166,7 +166,7 @@ class Dispatcher(metaclass=DispatcherMeta):
         except DispatcherError:
             raise
         except Exception as e:
-            raise DispatcherError("Error sending message") from e
+            raise DispatcherError(f"Error sending message: {e}") from e
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
         return HttpResponseRedirect(".")

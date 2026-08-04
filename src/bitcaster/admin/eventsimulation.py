@@ -95,9 +95,10 @@ class EventSimulationAdmin(BaseAdmin[EventSimulation]):
     @display(  # type: ignore[untyped-decorator]
         ordering="status",
         label={
-            Occurrence.Status.PROCESSED: "success",
-            Occurrence.Status.FAILED: "danger",
             Occurrence.Status.NEW: "info",
+            Occurrence.Status.PROCESSING: "success",
+            Occurrence.Status.COMPLETED: "success",
+            Occurrence.Status.FAILED: "danger",
         },
     )
     def status_badge(self, obj: EventSimulation) -> str:

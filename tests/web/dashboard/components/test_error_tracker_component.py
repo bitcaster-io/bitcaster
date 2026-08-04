@@ -50,7 +50,7 @@ def test_get_context_data_with_cache_miss_and_occurrences(component, mock_cache_
 
     # Mock Occurrence objects
     occurrence_mock_data = [
-        {"status": Occurrence.Status.PROCESSED.value, "count": 5},
+        {"status": Occurrence.Status.PROCESSING.value, "count": 5},
         {"status": Occurrence.Status.FAILED.value, "count": 2},
         {"status": Occurrence.Status.NEW.value, "count": 1},
     ]

@@ -98,7 +98,7 @@ def new_occurrence_data(app) -> "Context":
 def occurrence_data(app) -> "Context":
     from bitcaster.models import Occurrence
 
-    return _build_occurrence(status=Occurrence.Status.PROCESSED)
+    return _build_occurrence(status=Occurrence.Status.PROCESSING)
 
 
 @pytest.fixture
@@ -233,6 +233,19 @@ def test_button_add_notification(
     assert res
 
 
+def test_view_deliveries_link(app_for_admin: DjangoTestApp, occurrence: "Context") -> None:
+    from bitcaster.models import Delivery
+
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+    assert "View deliveries (0)" in res.text
+    res = res.click("View deliveries")
+    assert res.status_code == 200
+    assert res.request.path == reverse("admin:bitcaster_delivery_changelist")
+    assert f"occurrence__exact={occurrence.pk}" in res.request.query_string
+    assert Delivery.objects.count() == 0
+
+
 def test_recipients_occurrence(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
     url = reverse("admin:bitcaster_occurrence_recipients_occurrence", args=[occurrence.pk])
     res = app_for_admin.get(url)
@@ -260,3 +273,54 @@ def test_inspect_occurrence_error(app_for_admin: DjangoTestApp, new_occurrence: 
     while res.status_code == 302:
         res = res.follow()
     assert "Error inspecting occurrence" in res.text
+
+
+def test_delivery_info_with_processing_data(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
+    """Line 80,83-86: delivery_info renders processing timeline."""
+    occurrence.data = {
+        "processing": {
+            "phase1_at": "2026-08-04T15:18:24.332831+00:00",
+            "phase2_attempts": [
+                {"at": "2026-08-04T15:19:00+00:00", "processed": 1},
+            ],
+        },
+    }
+    occurrence.save()
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res = app_for_admin.get(url)
+    assert res.status_code == 200
+
+
+def test_delivery_info_without_processing_data(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
+    """Line 77-78: delivery_info handles missing processing data."""
+    occurrence.data = {}
+    occurrence.save()
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res = app_for_admin.get(url)
+    assert res.status_code == 200
+
+
+def test_fmt_ts_invalid_timestamp() -> None:
+    """Line 95-98: _fmt_ts handles invalid timestamps."""
+    from bitcaster.admin.occurrence import OccurrenceAdmin
+
+    result = OccurrenceAdmin._fmt_ts("not-a-timestamp", None)
+    assert result == "not-a-timestamp"
+
+
+def test_fmt_ts_authenticated_user() -> None:
+    """Line 99-100: _fmt_ts formats for authenticated user."""
+    from django.contrib.auth.models import AnonymousUser
+
+    from bitcaster.admin.occurrence import OccurrenceAdmin
+
+    result = OccurrenceAdmin._fmt_ts("2026-08-04T15:18:24.332831+00:00", AnonymousUser())
+    assert "2026" in result
+
+
+def test_fmt_ts_unauthenticated_user() -> None:
+    """Line 101: _fmt_ts formats for unauthenticated user."""
+    from bitcaster.admin.occurrence import OccurrenceAdmin
+
+    result = OccurrenceAdmin._fmt_ts("2026-08-04T15:18:24.332831+00:00", None)
+    assert "2026" in result

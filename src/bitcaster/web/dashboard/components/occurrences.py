@@ -44,9 +44,10 @@ class OccurrenceChartComponent(BaseComponent):
 
             datasets = []
             colors = {
-                Occurrence.Status.PROCESSED: "var(--color-green-500)",
-                Occurrence.Status.FAILED: "var(--color-red-500)",
                 Occurrence.Status.NEW: "var(--color-gray-500)",
+                Occurrence.Status.PROCESSING: "var(--color-green-500)",
+                Occurrence.Status.COMPLETED: "var(--color-blue-500)",
+                Occurrence.Status.FAILED: "var(--color-red-500)",
             }
             for status in Occurrence.Status:
                 data = [data_map.get((key, status.value), 0) for key in data_keys]

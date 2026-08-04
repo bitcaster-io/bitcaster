@@ -25,16 +25,17 @@ def runit(args: list[str], log_level, comp_log_level, **extra) -> None:
 
 
 @click.command()
-@click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
-@click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
-@click.option("-d", "--debug", is_flag=True, help="Set debug mode On")
-@click.option("--reset", is_flag=True, help="Clear pending tasks")
-@click.option("-v", "--verbose", count=True, default=0)
-@click.option("--pid-file", type=click.Path())
+@click.option("-p", "--processes", default=1, help="Number of worker processes")
+@click.option("-t", "--threads", default=1, help="Number of worker threads per process")
+@click.option("-d", "--debug", is_flag=True, help="Enable debug logging")
+@click.option("--reset", is_flag=True, help="Clear pending tasks from all queues")
+@click.option("-v", "--verbose", count=True, default=0, help="Increase verbosity (use -vv for more detail)")
+@click.option("--pid-file", type=click.Path(), help="Write PID to this file")
 @click.option("--autoreload", is_flag=True, default=False, help="Reload on code changes")
 def run(
     processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool, pid_file: str, reset: bool = False
 ) -> None:
+    """Run background task workers."""
     args = [
         "--path",
         ".",

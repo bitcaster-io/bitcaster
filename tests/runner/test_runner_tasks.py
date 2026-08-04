@@ -2,22 +2,24 @@ import pytest
 from testutils.agent import XAgent
 from testutils.factories import (
     ChannelFactory,
+    DeliveryFactory,
     EventFactory,
     EventSimulationFactory,
     MonitorFactory,
     OccurrenceFactory,
 )
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import UserMessageDispatcher
-from bitcaster.models import Event, EventSimulation, Occurrence, UserMessage
+from bitcaster.models import Delivery, Event, EventSimulation, Occurrence, UserMessage
 from bitcaster.runner.tasks import (
     check_for_new_user_messages,
     delete_expired_user_messages,
     monitor_check,
     monitor_run,
+    process_deliveries_page,
     process_occurrence,
     purge_event_simulations,
     purge_occurrences,
@@ -115,7 +117,7 @@ def test_run_event_simulation_success():
         ) as mock_preview:
             run_event_simulation(sim.pk)
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data["recipients_count"] == 0
     assert sim.data["delivered"] == []
     mock_preview.assert_called_once()
@@ -148,11 +150,11 @@ def test_run_event_simulation_not_found():
 def test_run_event_simulation_does_not_overwrite_processed():
     """Atomic status guard: a concurrent completion is not overwritten by the task."""
 
-    sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSED.value, data={"errors": []})
+    sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSING.value, data={"errors": []})
     with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": [1]})):
         run_event_simulation(sim.pk)
     sim.refresh_from_db()
-    assert sim.status == Occurrence.Status.PROCESSED.value
+    assert sim.status == Occurrence.Status.PROCESSING.value
     assert sim.data == {"errors": []}
 
 
@@ -263,3 +265,177 @@ def test_check_for_new_user_messages_with_users(user):
                 check_for_new_user_messages()
                 mock_trigger.assert_called_once()
                 mock_set_time.assert_called_once_with(user.pk)
+
+
+@pytest.fixture
+def delivery_setup():
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
+
+    notification = NotificationFactory.create(event__channels=[ChannelFactory()])
+    channel = notification.event.channels.first()
+    asm = AssignmentFactory(channel=channel)
+    MessageTemplateFactory(channel=channel, event=notification.event, content="Hello {{ foo }}")
+    notification.distribution.recipients.add(asm)
+    occurrence = notification.event.trigger(context={"foo": "bar"})
+    occurrence.process()
+    return occurrence, asm, notification, channel
+
+
+def _add_delivery(occurrence, notification, channel, status, next_attempt_at=None):
+    from testutils.factories import AddressFactory, AssignmentFactory
+
+    assignment = AssignmentFactory(address=AddressFactory(), channel=channel)
+    return DeliveryFactory.create(
+        occurrence=occurrence,
+        assignment=assignment,
+        notification=notification,
+        channel=channel,
+        status=status,
+        next_attempt_at=next_attempt_at,
+    )
+
+
+def test_process_deliveries_page_sends_only_due(delivery_setup):
+    from django.utils import timezone
+
+    occurrence, _asm, notification, channel = delivery_setup
+    (due_pending,) = occurrence.deliveries.all()
+
+    due_error = _add_delivery(
+        occurrence, notification, channel, Delivery.Status.ERROR, timezone.now() - timezone.timedelta(hours=1)
+    )
+    _add_delivery(
+        occurrence, notification, channel, Delivery.Status.ERROR, timezone.now() + timezone.timedelta(hours=1)
+    )
+    _add_delivery(occurrence, notification, channel, Delivery.Status.FAILURE)
+
+    with patch.object(Delivery, "send", autospec=True) as mock_send:
+        result = process_deliveries_page()
+    assert result == 2
+    sent = {call.args[0].pk for call in mock_send.call_args_list}
+    assert sent == {due_pending.pk, due_error.pk}
+
+
+def test_process_deliveries_page_delivered_on_success(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(return_value=True)):
+        process_deliveries_page()
+    delivery.refresh_from_db()
+    assert delivery.status == Delivery.Status.DELIVERED
+
+
+def test_process_deliveries_page_error_schedules_retry(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    from bitcaster.exceptions import DispatcherError
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(side_effect=DispatcherError("boom"))):
+        process_deliveries_page()
+    delivery.refresh_from_db()
+    assert delivery.status == Delivery.Status.ERROR
+    assert delivery.errors == 1
+    assert delivery.next_attempt_at is not None
+
+
+def test_process_deliveries_page_max_retries_sets_failure(delivery_setup):
+    from constance.test.pytest import override_config
+
+    from testutils.dispatcher import XDispatcher
+
+    from bitcaster.exceptions import DispatcherError
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(side_effect=DispatcherError("boom"))):
+        with override_config(MAX_DELIVERY_RETRIES=1):
+            process_deliveries_page()
+    delivery.refresh_from_db()
+    assert delivery.status == Delivery.Status.FAILURE
+    assert delivery.next_attempt_at is None
+
+
+def test_process_deliveries_page_uses_page_size(delivery_setup):
+    from constance.test.pytest import override_config
+
+    occurrence, _asm, notification, channel = delivery_setup
+    _add_delivery(occurrence, notification, channel, Delivery.Status.PENDING)
+    with override_config(DELIVERY_PAGE_SIZE=1):
+        with patch.object(Delivery, "send") as mock_send:
+            process_deliveries_page()
+    assert mock_send.call_count == 1
+
+
+def test_process_records_phase1_timestamp(delivery_setup):
+    occurrence, *_ = delivery_setup
+    occurrence.refresh_from_db()
+    assert occurrence.data["processing"]["phase1_at"]
+    assert occurrence.data["processing"]["phase2_attempts"] == []
+
+
+def test_process_deliveries_page_records_phase2_attempts(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(side_effect=Exception("boom"))):
+        process_deliveries_page()
+    occurrence.refresh_from_db()
+    attempts = occurrence.data["processing"]["phase2_attempts"]
+    assert len(attempts) == 1
+    assert attempts[0]["processed"] == 1
+    assert attempts[0]["at"]
+
+
+def test_scan_occurrences_marks_completed_when_no_pending_deliveries():
+    """Lines 132-136,138: PROCESSING occurrences with no pending deliveries marked COMPLETED."""
+
+    occurrence = OccurrenceFactory(
+        status=Occurrence.Status.PROCESSING,
+        data={"processing": {"phase2_attempts": []}},
+    )
+    with patch("bitcaster.runner.tasks.logger") as mock_logger:
+        scan_occurrences()
+        occurrence.refresh_from_db()
+        assert occurrence.status == Occurrence.Status.COMPLETED
+        assert occurrence.data["processing"]["finished_at"]
+        mock_logger.info.assert_called_once()
+
+
+def test_scan_occurrences_skips_processing_with_pending_deliveries():
+    """Lines 132: occurrences with pending deliveries stay PROCESSING."""
+    from bitcaster.models import Delivery
+
+    occurrence = OccurrenceFactory(
+        status=Occurrence.Status.PROCESSING,
+        data={"processing": {"phase2_attempts": []}},
+    )
+    DeliveryFactory(occurrence=occurrence, status=Delivery.Status.PENDING)
+    scan_occurrences()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.PROCESSING
+
+
+def test_scan_occurrences_skips_non_processing():
+    """Lines 131: only PROCESSING occurrences are checked."""
+    occurrence = OccurrenceFactory(status=Occurrence.Status.COMPLETED)
+    scan_occurrences()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.COMPLETED
+
+
+def test_process_deliveries_page_records_finished_at(delivery_setup):
+    from testutils.dispatcher import XDispatcher
+
+    occurrence, *_ = delivery_setup
+    (delivery,) = occurrence.deliveries.all()
+    with patch.object(XDispatcher, "_send", Mock(return_value=True)):
+        process_deliveries_page()
+    occurrence.refresh_from_db()
+    assert occurrence.status == Occurrence.Status.COMPLETED
+    assert occurrence.data["processing"]["finished_at"]
+    assert len(occurrence.data["processing"]["phase2_attempts"]) == 1

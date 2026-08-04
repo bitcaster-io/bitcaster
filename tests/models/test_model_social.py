@@ -25,3 +25,8 @@ def test_manager(data) -> None:
 
 def test_code(data) -> None:
     assert data[0].code
+
+
+def test_default_label(db: Any) -> None:
+    obj = SocialProvider.objects.create(provider="github")
+    assert obj.label == "github"

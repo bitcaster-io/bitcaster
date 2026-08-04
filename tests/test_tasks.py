@@ -7,7 +7,7 @@ import pytest
 from testutils.dispatcher import XDispatcher
 from testutils.factories import ChannelFactory, MonitorFactory
 from testutils.perms import configure_model
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, patch
 
 from strategy_field.utils import fqn
 
@@ -109,20 +109,16 @@ def test_process_event_single(setup: "Context") -> None:
     occurrence = setup["occurrence"]
     msg = setup["message"]
 
-    addr = setup["address"]
     event = occurrence.event
     ch = setup["channel"]
     process_occurrence(occurrence.pk)
-    assert sorted(ch.dispatcher._messages()) == sorted(
-        [
-            [addr.value, f"Message for {event.name} on channel {ch.name}", 0],
-            [v2.address.value, f"Message for {event.name} on channel {ch.name}", 1],
-        ]
-    )
+    assert ch.dispatcher._messages() == []
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSING
+    assert occurrence.recipients == 2
+    assert occurrence.deliveries.count() == 2
     assert occurrence.data == {
-        "delivered": [v1.id, v2.id],
+        "delivered": [],
         "recipients": [
             [v1.address.value, "test", v1.pk, ch.pk, setup["notification"].pk, msg.pk],
             [v2.address.value, "test", v2.pk, ch.pk, setup["notification"].pk, msg.pk],
@@ -131,6 +127,37 @@ def test_process_event_single(setup: "Context") -> None:
         "channels": [ch.pk],
         "messages": [msg.pk],
         "notifications": [setup["notification"].pk],
+        "rendered": [
+            {
+                "assignment_pk": v1.pk,
+                "notification_pk": setup["notification"].pk,
+                "notification_name": setup["notification"].name,
+                "channel_pk": ch.pk,
+                "channel_name": ch.name,
+                "address": v1.address.value,
+                "subject": "",
+                "message": f"Message for {event.name} on channel {ch.name}",
+                "html_message": "",
+            },
+            {
+                "assignment_pk": v2.pk,
+                "notification_pk": setup["notification"].pk,
+                "notification_name": setup["notification"].name,
+                "channel_pk": ch.pk,
+                "channel_name": ch.name,
+                "address": v2.address.value,
+                "subject": "",
+                "message": f"Message for {event.name} on channel {ch.name}",
+                "html_message": "",
+            },
+        ],
+        "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }
 
 
@@ -149,83 +176,74 @@ def test_process_incomplete_event(setup: "Context") -> None:
     assert ch.dispatcher._messages() == []
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
-    assert occurrence.data == {
-        "delivered": [v1.id, v2.id],
-        "recipients": [],
-        "errors": [],
-        "notifications": [setup["notification"].pk],
-        "channels": [ch.pk],
-        "messages": [],
-    }
+    assert occurrence.status == Occurrence.Status.PROCESSING
+    assert occurrence.recipients == 2
+    assert occurrence.deliveries.count() == 2
+    assert occurrence.data["delivered"] == []
+    assert occurrence.data["recipients"] != []
 
 
 @pytest.mark.django_db(transaction=True)
 def test_process_event_partially(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
-    from bitcaster.models import Occurrence
+    from bitcaster.models import Delivery, Occurrence
 
     v1: Assignment = setup["assignments"][0]
+    v2: Assignment = setup["assignments"][1]
 
-    msg: MessageTemplate = setup["message"]
-    ch: Channel = setup["channel"]
     occurrence: Occurrence = setup["occurrence"]
 
     monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel",
-        mocked_notify := Mock(side_effect=[(None, msg.pk), Exception("This is raised after first call")]),
+        "bitcaster.models.messagetemplate.MessageTemplate.render",
+        mocked_render := Mock(side_effect=[("s", "m", "h"), Exception("This is raised after first call")]),
     )
 
     process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.NEW
-    assert mocked_notify.call_count == 2
-    assert occurrence.data == {
-        "delivered": [setup["assignments"][0].id],
-        "errors": ["Exception: This is raised after first call"],
-        "recipients": [
-            [v1.address.value, "test", v1.pk, ch.pk, setup["notification"].pk, msg.pk],
-        ],
-        "channels": [ch.pk],
-        "messages": [msg.pk],
-        "notifications": [setup["notification"].pk],
-    }
+    assert occurrence.status == Occurrence.Status.PROCESSING
+    assert mocked_render.call_count == 2
+    assert occurrence.data["errors"] == ["Exception: This is raised after first call"]
+    assert occurrence.data["delivered"] == []
+    assert occurrence.deliveries.count() == 2
+    (ok_delivery,) = occurrence.deliveries.filter(assignment=v1)
+    assert ok_delivery.status == Delivery.Status.PENDING
+    assert ok_delivery.rendered == {"subject": "s", "message": "m", "html_message": "h"}
+    (failed_delivery,) = occurrence.deliveries.filter(assignment=v2)
+    assert failed_delivery.status == Delivery.Status.FAILURE
+    assert failed_delivery.data["render_error"] is True
 
 
 def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
-    from bitcaster.models import Occurrence
+    from bitcaster.models import Delivery, Occurrence
 
-    ch: Channel = setup["channel"]
     n: Notification = setup["notification"]
     v1: Assignment = setup["assignments"][0]
     v2: Assignment = setup["assignments"][1]
     msg: MessageTemplate = setup["message"]
     occurrence = setup["occurrence"]
-    # note: fake OccurrenceData. recipients does not contais a valid line
-    occurrence.data = {"delivered": [v1.id], "recipients": [(v1.address.value, "test")]}
-    occurrence.save()
+    ch = setup["channel"]
 
-    monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel",
-        mocked_notify := Mock(return_value=(None, msg.pk)),
+    Delivery.objects.create(
+        occurrence=occurrence,
+        assignment=v1,
+        notification=n,
+        channel=ch,
+        message_template=msg,
+        status=Delivery.Status.DELIVERED,
     )
+    occurrence.status = Occurrence.Status.NEW
+    occurrence.save()
 
     process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == Occurrence.Status.PROCESSED
-    assert mocked_notify.call_count == 1
-    assert occurrence.data == {
-        "delivered": [v1.id, v2.id],
-        "recipients": [
-            ["test1@example.com", "test"],
-            ["test2@example.com", v2.channel.name, v2.pk, ch.pk, n.pk, msg.pk],
-        ],
-        "channels": [ch.pk],
-        "notifications": [n.pk],
-        "messages": [msg.pk],
-        "errors": [],
-    }
+    assert occurrence.status == Occurrence.Status.PROCESSING
+    assert occurrence.recipients == 2
+    assert occurrence.deliveries.count() == 2
+    assert occurrence.deliveries.filter(assignment=v1, status=Delivery.Status.DELIVERED).exists()
+    (v2_delivery,) = occurrence.deliveries.filter(assignment=v2)
+    assert v2_delivery.status == Delivery.Status.PENDING
+    assert occurrence.data["delivered"] == []
 
 
 def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
@@ -240,7 +258,7 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
     process_occurrence(o.pk)
 
     o.refresh_from_db()
-    assert o.status == Occurrence.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSING
     assert o.data == {
         "delivered": [],
         "recipients": [],
@@ -248,6 +266,14 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
         "notifications": [],
         "channels": [],
         "messages": [],
+        "rendered": [],
+        "missing_template": [],
+        "phase1_at": "",
+        "phase2_attempts": [],
+        "processing": {
+            "phase1_at": ANY,
+            "phase2_attempts": [],
+        },
     }
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
@@ -257,12 +283,12 @@ def test_attempts(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     o: Occurrence = setup["occurrence"]
-    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
-        assert o.status == Occurrence.Status.PROCESSED
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSING):
+        assert o.status == Occurrence.Status.PROCESSING
         process_occurrence(o.pk)
 
         o.refresh_from_db()
-        assert o.status == Occurrence.Status.PROCESSED
+        assert o.status == Occurrence.Status.PROCESSING
         assert o.data == {}
 
 
@@ -270,32 +296,16 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     from bitcaster.models import Occurrence
 
     o = setup["occurrence"]
-    v1 = setup["assignments"][0]
-    ch = setup["channel"]
-    n = setup["notification"]
-    m = setup["message"]
     monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel",
-        mocked_notify := Mock(side_effect=[(None, 999), Exception("This is raised after first call")]),
+        "bitcaster.models.occurrence.Occurrence._process",
+        mocked_process := Mock(side_effect=Exception("This is raised after first call")),
     )
     for _a in range(10):
         process_occurrence(o.pk)
     o.refresh_from_db()
-    assert o.attempts == 0
-    assert o.status == Occurrence.Status.FAILED
-    assert mocked_notify.call_count == 4
-    assert o.data == {
-        "delivered": [v1.id],
-        "channels": [ch.pk],
-        "messages": [m.pk],
-        "notifications": [n.pk],
-        "recipients": [[v1.address.value, "test", v1.pk, ch.pk, n.pk, m.pk]],
-        "errors": [
-            "Exception: This is raised after first call",
-            "StopIteration: ",
-            "StopIteration: ",
-        ],
-    }
+    assert o.status == Occurrence.Status.NEW  # failure rolls back the attempt decrement
+    assert mocked_process.call_count == 10
+    assert o.data == {}
 
 
 def test_error(setup: "Context", system_objects: Any) -> None:
@@ -316,7 +326,7 @@ def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_obj
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence._process", mocked_notify := Mock())
 
     o: Occurrence = setup["occurrence"]
-    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSING):
         process_occurrence(o.pk)
         assert mocked_notify.call_count == 0
 
@@ -342,7 +352,7 @@ def test_scan_occurrences(run_tasks_sync, setup: "Context", monkeypatch: pytest.
     o: Occurrence = setup["occurrence"]
     o.refresh_from_db()
     assert o.recipients == 2
-    assert o.status == Occurrence.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSING
 
 
 @pytest.mark.django_db(transaction=True)
