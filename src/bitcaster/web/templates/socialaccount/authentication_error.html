@@ -1,14 +1,28 @@
-{% extends "socialaccount/base_entrance.html" %}
-{% load i18n %}
-{% load allauth %}
-{% block head_title %}
+{% extends "unfold/layouts/unauthenticated.html" %}
+{% load i18n static allauth %}
+{% block title %}
     {% trans "Third-Party Login Failure" %}
-{% endblock head_title %}
+{% endblock title %}
 {% block content %}
+    {% include "unfold/helpers/messages.html" %}
+    <div class="grid grid-cols-1 align-items-center justify-content-center">
+        <div class="mt-10">
+            <template x-if="adminTheme === 'dark' || (adminTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)">
+                <img class="w-40 m-auto" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
+            </template>
+            <template x-if="adminTheme !== 'dark' && (adminTheme !== 'auto' || !window.matchMedia('(prefers-color-scheme: dark)').matches)">
+                <img src="{% static "bitcaster/images/logos/name.svg" %}" />
+            </template>
+        </div>
+        <div>
+            <img class="w-30 mt-2 m-auto" src="{% static "bitcaster/images/logos/logo400.png" %}" />
+        </div>
+    </div>
     {% element h1 %}
     {% trans "Third-Party Login Failure" %}
 {% endelement %}
 {% element p %}
 {% trans "An error occurred while attempting to login via your third-party account." %}
 {% endelement %}
+{% include "bitcaster/fragments/footer.html" %}
 {% endblock content %}

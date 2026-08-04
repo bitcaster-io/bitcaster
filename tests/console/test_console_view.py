@@ -57,6 +57,37 @@ def user_messages(user: "User") -> "list[UserMessage]":
     ]
 
 
+@pytest.fixture
+def same_app_event(user: "User"):
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory(application=event1.application)
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    return event1, event2, msg1
+
+
+@pytest.fixture
+def diff_app_event(user: "User"):
+    from testutils.factories import EventFactory, UserMessageFactory
+
+    event1 = EventFactory()
+    event2 = EventFactory()
+    msg1 = UserMessageFactory(user=user, event=event1)
+    UserMessageFactory(user=user, event=event2)
+
+    return event1, event2, msg1
+
+
+@pytest.fixture
+def app():
+    from testutils.factories import ApplicationFactory
+
+    return ApplicationFactory()
+
+
 @pytest.mark.django_db
 def test_console_index(django_app, message: "UserMessage") -> None:
     url: str = reverse("console:index")

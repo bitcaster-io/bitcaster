@@ -1,12 +1,17 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from unfold.widgets import UnfoldAdminTextInputWidget
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
 
 from .models import SocialProvider
+from .utils import is_own_login_provider
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class WriteOnlyWidget(UnfoldAdminTextInputWidget):
@@ -42,6 +47,23 @@ class WriteOnlyFieldMixin(forms.ModelForm[Model]):
 
 
 class SocialProviderForm(WriteOnlyFieldMixin, forms.ModelForm["SocialProvider"]):
+    request: "HttpRequest | None" = None
+
     class Meta:
         model = SocialProvider
         fields = ["label", "provider", "enabled", "client_id", "secret", "key", "configuration"]
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean() or {}
+        instance = cast("SocialProvider", self.instance)
+        if (
+            instance.pk
+            and instance.enabled
+            and not cleaned_data.get("enabled")
+            and self.request is not None
+            and is_own_login_provider(self.request, instance)
+        ):
+            raise ValidationError(
+                {"enabled": _("You cannot disable the SSO provider used by your own account.")},
+            )
+        return cleaned_data

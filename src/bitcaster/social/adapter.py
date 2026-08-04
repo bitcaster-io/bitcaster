@@ -1,5 +1,6 @@
 from typing import Any, cast
 
+import contextlib
 import logging
 
 from allauth.account.adapter import DefaultAccountAdapter
@@ -10,7 +11,7 @@ from constance import config
 
 from django.contrib.auth.models import Group
 from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -44,12 +45,15 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
             key=key,
         )
 
-    def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
-        try:
-            if db_provider := SocialProvider.objects.get(pk=provider, enabled=True):
-                return self._build_social_app(db_provider)
-        except SocialProvider.DoesNotExist:
-            raise ImproperlyConfigured(_("SSO provider not found")) from None
+    def get_app(self, request: HttpRequest, provider: str | int, client_id: str | None = None) -> SocialApp | None:
+        lookup = Q(provider=provider)
+        # non-numeric slugs match on the provider field only
+        with contextlib.suppress(TypeError, ValueError):
+            lookup |= Q(pk=int(provider))
+        db_provider = SocialProvider.objects.filter(lookup, enabled=True).first()
+        if db_provider:
+            return self._build_social_app(db_provider)
+        return None
 
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         if not config.SOCIAL_AUTH_CREATE_USER:
