@@ -1,6 +1,6 @@
 nav:
   - Home: index.md
-  - "Quick Start": adm-guide/quickstart.md
+  - "Quick Start": adm-guide/quickstart/
   - Run:
       - Docker: run.md
       - Compose: stacks
