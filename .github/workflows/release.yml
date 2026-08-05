@@ -55,6 +55,7 @@ jobs:
       - name: Append Docker section to release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           TAG="${{ github.event.release.tag_name }}"
           BODY="$(gh release view "$TAG" --json body -q .body)"
