@@ -1,5 +1,4 @@
-# bitcaster
-
+# Bitcaster
 
 [![Test](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml)
 [![Lint](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml)
@@ -9,59 +8,53 @@
 [![License](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaster-io%2Fbitcaster%2Fdevelop%2Fpyproject.toml&query=project.license.text&label=license)](https://github.com/bitcaster-io/bitcaster?tab=License-1-ov-file)
 [![Docker](https://img.shields.io/docker/pulls/os4d/bitcaster)](https://hub.docker.com/r/os4d/bitcaster/tags)
 
+Bitcaster is a system-to-user **signal-to-message** notification system.
 
-Bitcaster is a system-to-user signal-to-message notification system.
+In a usual IT environment, every application must implement multiple protocols to deliver messages to its users (email, SMS, chat, push notifications) — a costly and hard-to-manage problem. Bitcaster moves the notification system from the application layer to the infrastructure layer: it receives signals from any of your applications and systems through a simple RESTful API and converts them into messages distributed across a plethora of channels.
 
-Bitcaster will receive signals from any of your applications/systems using a simple RESTful API and will convert them in messages to be distributed to you users via a plethora of channels.
+- **Intelligent routing** — payload filtering with JMESPath, dynamic recipient filtering, and environment-aware routing so signals reach exactly the right audience.
+- **Flexible templates** — plain text, HTML, and Markdown rendering per channel, with dynamic context injection via a Django-based template engine.
+- **Omnichannel delivery** — Email, SMS, Slack, Microsoft Teams, and WebPush through a single REST API.
+- **Multi-tenancy & governance** — hierarchical Organizations > Projects > Applications isolation, scoped API keys, SSO (Azure AD, GitHub Enterprise, Google Workspace), and full auditability of every occurrence.
+- **User empowerment** — a preference console lets recipients choose how and where they receive each type of message.
+- **Operational scalability** — scheduled monitoring agents and a cloud-native Python/Django core built for high-volume signal processing.
 
-Messages content is customised at user/receiver level using a flexible template system.
+## Available Dispatchers
 
-Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
+| Dispatcher | Channel |
+| --- | --- |
+| [EmailDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/email.py) | Email (SMTP) |
+| [GMailDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/gmail.py) | Email (Gmail) |
+| [MailgunDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/mailgun.py) | Email (Mailgun) |
+| [MailJetDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/mailjet.py) | Email (Mailjet) |
+| [SendGridDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/sendgrid.py) | Email (SendGrid) |
+| [SystemDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/sys.py) | Email (system) |
+| [TwilioSMS](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/twilio.py) | SMS |
+| [SlackDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/slack.py) | Slack |
+| [TeamsDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/teams.py) | Microsoft Teams |
+| [XDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/x.py) | X (Twitter) |
+| [RabbitMQDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/rabbitmq.py) | Message queue |
+| [UserMessageDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/user_message.py) | In-app user messages |
+| [LocalDatabaseDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/log.py) | Log (local DB, for testing) |
 
+## Getting Started
 
+- [Quick start](https://bitcaster-io.github.io/bitcaster/run/) — install and run Bitcaster
+- [Documentation](https://bitcaster-io.github.io/bitcaster/) — full user and admin guides
+- [API reference](https://bitcaster-io.github.io/bitcaster/api/) — RESTful signal API
+- [Stack samples](https://github.com/bitcaster-io/bitcaster/tree/develop/stack-samples) — ready-to-use deployment examples
+- [Docker Hub](https://hub.docker.com/r/os4d/bitcaster/tags) — container images
 
-[codecov-badge]: https://codecov.io/gh/os4d:bitcaster/bitcaster/branch/develop/graph/badge.svg
-[codecov-link]: https://app.codecov.io/gl/os4d:bitcaster/bitcaster
-
-
-# Resources
+## Resources
 
 - [Home](https://www.bitcaster.io/)
 - [Documentation](https://bitcaster-io.github.io/bitcaster/)
 - [Bug Tracker](https://github.com/bitcaster-io/bitcaster/issues)
 - [Code](https://github.com/bitcaster-io/bitcaster/)
-- [Transifex](https://explore.transifex.com/bitcaster/bitcaster/) (Translate Bitcaster\!)
+- [Transifex](https://explore.transifex.com/bitcaster/bitcaster/) (Translate Bitcaster!)
+- [License](https://github.com/bitcaster-io/bitcaster/blob/develop/LICENSE.md)
+- [Security policy](https://github.com/bitcaster-io/bitcaster/blob/develop/SECURITY.md)
 
-## Code Quality & Security
+## Contributing
 
-The project uses several tools to ensure code quality and security:
-
-- [Django](https://www.djangoproject.com/) for the web framework
-- [Semgrep](https://semgrep.dev/) for static analysis and security scanning
-- [Pytest](https://docs.pytest.org/en/stable/) for testing
-- [ESLint](https://eslint.org/) for JavaScript linting
-- [Prettier](https://prettier.io/) for code formatting
-
-### Security Rules
-
-#### Admin List_Display Sensitive Fields Detection
-A new Semgrep security rule has been added to detect sensitive fields in Django admin `list_display` configurations. This rule prevents exposure of secrets, keys, passwords, or tokens in the changelist view which poses a significant security risk.
-
-**Fields Detected:**
-- `secret`
-- `key`
-- `password`
-- `token`
-- `api_key`
-- `client_secret`
-- `private_key`
-- `access_token`
-- `refresh_token`
-- `auth_token`
-- `secret_key`
-
-**Why This Matters:**
-Exposing sensitive information like API keys, passwords, or tokens in admin changelist views allows unauthorized users to gain access to critical system resources. Even users with limited permissions might be able to see these values if they are displayed in the list view.
-
-**How It Helps Prevent Security Issues:**
-This rule automatically detects and flags any instance where sensitive fields appear in `list_display`, preventing accidental exposure of confidential data. It enforces security best practices by requiring developers to explicitly hide or mask sensitive information in Django admin interfaces.
+Please read [CONTRIBUTING.md](https://github.com/bitcaster-io/bitcaster/blob/develop/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
