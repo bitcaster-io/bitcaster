@@ -46,3 +46,21 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           attestations: true
+
+  update-release-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Append Docker section to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          BODY="$(gh release view "$TAG" --json body -q .body)"
+          if echo "$BODY" | grep -q '## Docker'; then
+            echo "Docker section already present, skipping"
+            exit 0
+          fi
+          printf '%s\n\n## Docker\n\nPull the image:\n\n```bash\ndocker pull os4d/bitcaster:%s\n```\n\n[View all tags on Docker Hub](https://hub.docker.com/r/os4d/bitcaster/tags)\n' "$BODY" "$TAG" > body.md
+          gh release edit "$TAG" --notes-file body.md
