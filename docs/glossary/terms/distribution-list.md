@@ -18,5 +18,5 @@ represent users of that specific application and the list can only be used
 by Notifications whose Event belongs to the same Application.
 
 !!! info "See also"
-    [Admin Guide: Distribution Lists](../adm-guide/dl.md) |
-    [API Reference](../api/distribution_lists.md)
+    [Admin Guide: Distribution Lists](../../adm-guide/dl.md) |
+    [API Reference](../../api/distribution_lists.md)

@@ -1,6 +1,5 @@
 title: Compose
 
 nav:
-    - Simple: simple.md
-    - Full: full.md
+    - Stable: stable.md
     - Development: develop.md

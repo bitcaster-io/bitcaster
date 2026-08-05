@@ -27,5 +27,5 @@ The API upload endpoint
 
 Recipients receive a signed, expiring download link
 (`/attachment/download/<key>/`) in the message. The key is generated with the
-`SECRET_KEY_SALT` configured in the [Configuration](configuration/) and expires
+`SECRET_KEY_SALT` configured in the [Configuration](../configuration.md) and expires
 after the configured timeout.
