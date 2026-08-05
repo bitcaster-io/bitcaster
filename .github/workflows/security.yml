@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [develop]
     types: [synchronize, opened, reopened, ready_for_review]
+  push:
+    branches: [develop]
 
 defaults:
   run:
@@ -43,7 +45,9 @@ jobs:
   pip-audit:
     needs: changes
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    if: |
+      ((github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      needs.changes.outputs.lint == 'true') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       security-events: write
@@ -56,7 +60,9 @@ jobs:
   bandit:
     needs: changes
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    if: |
+      ((github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      needs.changes.outputs.lint == 'true') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       security-events: write
@@ -67,7 +73,7 @@ jobs:
         run: pip install bandit[sarif]
 
       - name: Run Bandit and generate SARIF
-        run: bandit -r src -f sarif -o bandit-results.sarif --exit-zero
+        run: bandit -r src -f sarif -o bandit-results.sarif --exit-zero || true
 
       - name: Upload Bandit SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
@@ -78,8 +84,8 @@ jobs:
     needs: changes
     runs-on: ubuntu-latest
     if: |
-      github.event_pull_request.draft == false &&
-      (needs.changes.outputs.dependencies == 'true' || github.event_name == 'workflow_dispatch')
+      ((github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      needs.changes.outputs.lint == 'true') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       security-events: write
@@ -105,7 +111,9 @@ jobs:
   pysentry:
     needs: changes
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    if: |
+      ((github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      needs.changes.outputs.lint == 'true') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       security-events: write
