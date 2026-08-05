@@ -6,7 +6,6 @@ from unfold.views import UnfoldModelAdminViewMixin
 
 from django import forms
 from django.apps import apps
-from django.conf import settings
 from django.contrib import messages
 from django.db.models import Model, QuerySet
 from django.forms import HiddenInput
@@ -16,6 +15,7 @@ from django.views.generic import TemplateView
 from bitcaster.cache.manager import CacheManager
 from bitcaster.constants import bitcaster
 from bitcaster.forms import unfold as uwidgets
+from bitcaster.utils.widgets import SmartMedia
 
 
 class ConsoleMixin(UnfoldModelAdminViewMixin):
@@ -111,12 +111,11 @@ class MonitorView(ConsoleMixin, TemplateView):
 
     @property
     def media(self) -> forms.Media:
-        extra = "" if settings.DEBUG else ".min"
         js = [
-            "dashboards/monitor%s.js" % extra,
+            "dashboards/monitor{min}.js",
         ]
         css = {}
-        return forms.Media(js=js, css=css)
+        return SmartMedia(js=js, css=css)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         from bitcaster.runner.manager import BackgroundManager

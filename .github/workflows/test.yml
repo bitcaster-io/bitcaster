@@ -130,7 +130,7 @@ jobs:
 
     - name: Upload test results to Codecov
       uses: codecov/test-results-action@v1
-      if: always()
+      if: always() && !cancelled()
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 

@@ -30,6 +30,7 @@ from .base import BaseAdmin, ButtonColor
 from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 from .simulation import simulation_page, simulation_results_context
+from ..utils.widgets import SmartMedia
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _FieldsetSpec
@@ -304,3 +305,27 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
             button.href = f"{url}?event__exact={event.pk}"
         else:
             button.visible = False
+
+    @button(
+        label=_("Extra"),
+        html_attrs={"class": ButtonColor.ACTION.value},
+    )
+    def trigger_instructions(self, request: HttpRequest, pk: str) -> HttpResponse:
+        from bitcaster.models import ApiKey
+
+        media = SmartMedia(
+            js=["admin/js/vendor/jquery/jquery{min}.js", "admin/js/jquery.init.js", "bitcaster/js/copy{min}.js"]
+        )
+        context = self.get_common_context(request, pk, action_title=_("Trigger Instructions"), media=media)
+        event: Event = context["original"]
+
+        context["trigger_url"] = event.get_trigger_url()
+
+        can_read_apikeys = request.user.has_perm("bitcaster.view_apikey")
+        context["can_read_apikeys"] = can_read_apikeys
+        if can_read_apikeys and event.application:
+            context["api_keys"] = ApiKey.objects.filter(application=event.application).values("id", "name", "key")
+        else:
+            context["api_keys"] = []
+
+        return TemplateResponse(request, "bitcaster/admin/event/trigger_instructions.html", context)
