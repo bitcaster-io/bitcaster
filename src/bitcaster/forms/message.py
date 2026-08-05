@@ -3,7 +3,6 @@ from typing import Any
 from tinymce.widgets import TinyMCE
 
 from django import forms
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_ace import AceWidget
@@ -12,6 +11,7 @@ from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from bitcaster.models import Channel, Event, MessageTemplate, Notification, Organization
 
 from . import unfold
+from ..utils.widgets import SmartMedia
 
 # from .unfold import UnfoldForm, UnfoldAdminSelect2Widget, UnfoldAdminTextInputWidget,
 
@@ -41,11 +41,10 @@ class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
     @property
     def media(self) -> forms.Media:
         orig = super().media
-        extra = "" if settings.DEBUG else ".min"
         js = [
-            "admin/js/vendor/jquery/jquery%s.js" % extra,
+            "admin/js/vendor/jquery/jquery{min}.js",
             "admin/js/jquery.init.js",
-            "bitcaster/js/editor%s.js" % extra,
+            "bitcaster/js/editor{min}.js",
         ]
         css = {
             "screen": [
@@ -53,7 +52,7 @@ class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
                 "css/message_editor.css",
             ]
         }
-        return orig + forms.Media(js=js, css=css)  # type: ignore
+        return SmartMedia.combine(orig, js=js, css=css)
 
     class Meta:
         model = MessageTemplate

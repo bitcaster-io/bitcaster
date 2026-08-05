@@ -1,73 +1,108 @@
 @import "tailwindcss";
 
-  #inspect-page {
-    .status-processed {
-      @apply text-green-500 ;
+pre.code {
+  background: #272822;
+  color: #f8f8f2;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.clipboard{
+  position: relative;
+  cursor: pointer;
+}
+.copied-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
 
+.bc-tabs {
+  li {
+    @apply border-b-transparent border-b-2;
+    &.active {
+      @apply text-red-500 border-b-red-500;
     }
+  }
+}
 
-    .status-new {
-      @apply dark:text-white ;
-    }
+#inspect-page {
+  .status-processed {
+    @apply text-green-500 ;
 
-    .status-failed {
-      @apply text-red-500 ;
-    }
+  }
 
-    li {
-      &.active {
-        @apply text-red-500 border-b-red-500 border-b-2;
-      }
-    }
+  .status-new {
+    @apply dark:text-white ;
+  }
 
-    a {
-      color: #ef4434;
-    }
+  .status-failed {
+    @apply text-red-500 ;
+  }
 
-    div.grid {
-
-    }
-
-    .tab-content {
-
+  li {
+    &.active {
+      @apply text-red-500 border-b-red-500 border-b-2;
     }
   }
 
-  div.jsoneditor {
-    @apply !border-gray-900 text-black bg-gray-500;
-    @apply dark:!border-gray-500 rounded dark:text-white;
-    .jsoneditor-poweredBy {
-      @apply hidden;
-    }
+  a {
+    color: #ef4434;
+  }
 
-    .ace-jsoneditor .ace_marker-layer .ace_active-line {
-      @apply !bg-transparent;
-    }
+  div.grid {
 
-    div.jsoneditor-menu {
-      @apply !bg-gray-500 !border-gray-900 !border-b-gray-900 text-black ml-1 px-1;
-      @apply dark:bg-gray-900 dark:border-b-gray-500;
-    }
+  }
 
-    .ace_gutter-active-line {
-      @apply !bg-red-500 !border-none;
-    }
+  .tab-content {
 
-    div.jsoneditor-outer {
-      .ace_scroller, .ace_gutter {
-        @apply !border-gray-100 !bg-gray-100 text-black;
-        @apply dark:!bg-gray-600  dark:!text-white;
-        .ace_line_group {
-          * {
-            @apply !border-gray-100 text-black;
-            @apply dark:!bg-gray-600  dark:!text-white;
-          }
+  }
+}
+
+div.jsoneditor {
+  @apply !border-gray-900 text-black bg-gray-500;
+  @apply dark:!border-gray-500 rounded dark:text-white;
+  .jsoneditor-poweredBy {
+    @apply hidden;
+  }
+
+  .ace-jsoneditor .ace_marker-layer .ace_active-line {
+    @apply !bg-transparent;
+  }
+
+  div.jsoneditor-menu {
+    @apply !bg-gray-500 !border-gray-900 !border-b-gray-900 text-black ml-1 px-1;
+    @apply dark:bg-gray-900 dark:border-b-gray-500;
+  }
+
+  .ace_gutter-active-line {
+    @apply !bg-red-500 !border-none;
+  }
+
+  div.jsoneditor-outer {
+    .ace_scroller, .ace_gutter {
+      @apply !border-gray-100 !bg-gray-100 text-black;
+      @apply dark:!bg-gray-600  dark:!text-white;
+      .ace_line_group {
+        * {
+          @apply !border-gray-100 text-black;
+          @apply dark:!bg-gray-600  dark:!text-white;
         }
       }
-
     }
 
-    .jsoneditor-statusbar {
-      @apply mx-1 bg-gray-500 text-white;
-    }
   }
+
+  .jsoneditor-statusbar {
+    @apply mx-1 bg-gray-500 text-white;
+  }
+}

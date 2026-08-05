@@ -2,7 +2,7 @@
 {% load json %}
 {% block content %}
     <div class="p-3 text-xl">
-        {% if original.status == "PROCESSED" or original.status == "COMPLETED" %}
+        {% if original.status == "PROCESSED" %}
             This occurrence has already been processed. Even if some notes and information reflect the current status,
             the list of recipients contains the actual addresses reached out.
         {% else %}
@@ -24,25 +24,25 @@
         <div x-data="{activeTab:'aboutT', tabs: {aboutT:true, notifT: false, rcptT: false, payloadT: false, msgT:false}, select(el){ for (k in this.tabs) { this.tabs[k] = false }; this.tabs[el] = true;}}">
             <div class="border-b-1 border-default mb-3">
                 <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
-                    <li class="me-2 " x-bind:class="(tabs.aboutT && 'active') || 'border-none'">
+                    <li class="me-2 " x-bind:class="(tabs.aboutT && 'active') || ''">
                         <a @click="select('aboutT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">
                             Info
                         </a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.notifT && 'active') || 'border-none'">
+                    <li class="me-2" x-bind:class="(tabs.notifT && 'active') || ''">
                         <a @click="select('notifT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Notifications</a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.rcptT && 'active') || 'border-none'">
+                    <li class="me-2" x-bind:class="(tabs.rcptT && 'active') || ''">
                         <a @click="select('rcptT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Recipients</a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.payloadT && 'active') || 'border-none'">
+                    <li class="me-2" x-bind:class="(tabs.payloadT && 'active') || ''">
                         <a @click="select('payloadT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Payload</a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.msgT && 'active') || 'border-none'">
+                    <li class="me-2" x-bind:class="(tabs.msgT && 'active') || ''">
                         <a @click="select('msgT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Messages</a>
                     </li>

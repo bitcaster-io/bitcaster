@@ -631,3 +631,42 @@ def test_debug_event_changelist_badge(app: "DjangoTestApp", debug_context: "Cont
     EventSimulation.objects.update(status=Occurrence.Status.PROCESSING)
     res = app.get(url)
     assert "simulation running" not in res.text
+
+
+def test_trigger_instructions(app: "DjangoTestApp", event: "Event") -> None:
+    from testutils.factories import ApiKeyFactory
+
+    ApiKeyFactory(
+        application=event.application,
+        project=event.application.project,
+        organization=event.application.project.organization,
+        name="Test Api Key",
+    )
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "trigger_instructions"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url)
+    assert res.status_code == 200
+    assert event.get_trigger_url() in res.text
+    assert "Available API Keys" in res.text
+    assert "Test Api Key" in res.text
+
+
+def test_trigger_instructions_no_apikey_permission(app: "DjangoTestApp", event: "Event") -> None:
+    from testutils.factories import ApiKeyFactory
+    from testutils.perms import user_grant_permissions
+
+    ApiKeyFactory(
+        application=event.application,
+        project=event.application.project,
+        organization=event.application.project.organization,
+        name="Test Api Key",
+    )
+    app._user.is_superuser = False
+    app._user.save()
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "trigger_instructions"), args=[event.pk])  # type: ignore[arg-type]
+    with user_grant_permissions(app._user, permissions=["bitcaster.view_event"]):
+        res = app.get(url)
+    assert res.status_code == 200
+    assert "Available API Keys" not in res.text
+    assert "Test Api Key" not in res.text

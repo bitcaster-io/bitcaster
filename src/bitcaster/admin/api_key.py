@@ -9,7 +9,6 @@ from flags.state import flag_enabled
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -24,6 +23,7 @@ from bitcaster.utils.security import is_root
 
 from .base import BaseAdmin
 from .filters import EnvironmentFilter
+from ..utils.widgets import SmartMedia
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _ListOrTuple
@@ -106,7 +106,13 @@ class ApiKeyAdmin(BaseAdmin[ApiKey]):
         else:
             expires = obj.created + timedelta(seconds=10)
             expired = timezone.now() > expires
-        media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
+        media = SmartMedia(
+            js=[
+                "admin/js/vendor/jquery/jquery{min}.js",
+                "admin/js/jquery.init{min}.js",
+                "bitcaster/js/copy{min}.js",
+            ]
+        )
         ctx = self.get_common_context(
             request, pk, bae=obj.get_bae(), media=media, expires=expires, expired=expired, action_title=_("Info")
         )

@@ -5,7 +5,6 @@ import logging
 
 from django import forms
 from django.conf import settings
-from django.forms import Media
 from django.http import (
     Http404,
     HttpRequest,
@@ -22,6 +21,7 @@ import bitcaster
 from bitcaster.models import Application, Assignment, Channel
 
 from .utils import unsign
+from ..utils.widgets import SmartMedia
 
 if TYPE_CHECKING:
     from bitcaster.webpush.utils import SignatureT
@@ -85,15 +85,14 @@ class ConfirmView(SecretMixin, TemplateView):
 
     @property
     def media(self) -> forms.Media:
-        extra = "" if settings.DEBUG else ".min"
         js = [
-            "webpush/axios%s.js" % extra,
-            "webpush/jquery-3.7.1%s.js" % extra,
-            "webpush/js.cookie%s.js" % extra,
-            "webpush/webpush-client%s.js" % extra,
-            "webpush/knockout-3.5.1%s.js" % extra,
+            "webpush/axios{min}.js",
+            "webpush/jquery-3.7.1{min}.js",
+            "webpush/js.cookie{min}.js",
+            "webpush/webpush-client{min}.js",
+            "webpush/knockout-3.5.1{min}.js",
         ]
-        return Media(js=js)
+        return SmartMedia(js=js)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         secret = self.kwargs["secret"]

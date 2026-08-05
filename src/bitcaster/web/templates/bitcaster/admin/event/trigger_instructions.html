@@ -1,0 +1,359 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n %}
+{% block content %}
+    <div class="trigger-instructions">
+        <h2>
+            {% translate "Trigger URL" %}
+        </h2>
+        <pre class="p-2 mb-5">{{ trigger_url }}</pre>
+        <p>
+            {% translate "Authenticate using your API key (available in Application settings)." %}
+        </p>
+        {% if can_read_apikeys and api_keys %}
+            <div class="mb-3">
+                <label for="api-key-select" class="block font-semibold mb-2 text-font-important-light text-sm dark:text-font-important-dark">
+                    {% translate "Available API Keys" %}
+                </label>
+                <select id="api-key-select"
+                        class="appearance-none border border-base-200 bg-white dark:bg-base-900 dark:border-base-700 dark:scheme-dark dark:text-font-default-dark font-medium min-w-20 px-3 py-2 pr-8! rounded-default shadow-xs text-ellipsis text-font-default-light text-sm w-full max-w-2xl focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600"
+                        onchange="updateApiKey(this.value)">
+                    <option value="">
+                        {% translate "-- Select an API key --" %}
+                    </option>
+                    {% for ak in api_keys %}
+                        <option value="{{ ak.key }}">
+                            {{ ak.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="button"
+                        class="ml-2 text-xs text-primary-600 dark:text-primary-500 cursor-pointer"
+                        onclick="document.getElementById('api-key-select').value=''; updateApiKey('');"
+                        style="display:inline">
+                    {% translate "Clear" %}
+                </button>
+            </div>
+            <script nonce="{{ request.nonce }}">
+            var _orig = null;
+            function ensureOrig() {
+                if (_orig === null) {
+                    _orig = {};
+                    document.querySelectorAll('pre.code').forEach(function(pre, i) {
+                        _orig[i] = pre.textContent;
+                    });
+                }
+            }
+            function updateApiKey(key) {
+                ensureOrig();
+                document.querySelectorAll('pre.code').forEach(function(pre, i) {
+                    var text = _orig[i];
+                    if (key) {
+//                        text = text.replace(/Key YOUR_API_KEY/g, 'Key ' + key);
+                        text = text.replace(/YOUR_API_KEY/g, key);
+                    }
+                    pre.textContent = text;
+                });
+            }
+            </script>
+        {% endif %}
+        <div class="bc-tabs">
+            <div x-data="{activeTab:'curlT', tabs: {curlT:true, wgetT:false, httpieT:false, cliT:false, sdkT:false, requestsT:false, httpxT:false, jsWebT:false, jsNodeT:false, dotnetT:false, phpT:false, rubyT:false, cppT:false}, select(el){ for (k in this.tabs) { this.tabs[k] = false }; this.tabs[el] = true;}}">
+                <div class="border-default mb-3">
+                    <ul class="flex flex-wrap text-sm font-medium text-center text-body -mb-px">
+                        <li class="me-2" x-bind:class="(tabs.curlT && 'active') || ''">
+                            <a @click="select('curlT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">curl</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.wgetT && 'active') || ''">
+                            <a @click="select('wgetT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">wget</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.httpieT && 'active') || ''">
+                            <a @click="select('httpieT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">httpie</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.cliT && 'active') || ''">
+                            <a @click="select('cliT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">bitcaster-sdk
+                            CLI</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.sdkT && 'active') || ''">
+                            <a @click="select('sdkT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">bitcaster-sdk
+                            Client</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.requestsT && 'active') || ''">
+                            <a @click="select('requestsT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">python
+                            requests</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.httpxT && 'active') || ''">
+                            <a @click="select('httpxT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">python
+                            httpx</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.jsWebT && 'active') || ''">
+                            <a @click="select('jsWebT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">javascript
+                            (web)</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.jsNodeT && 'active') || ''">
+                            <a @click="select('jsNodeT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">javascript
+                            (node)</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.dotnetT && 'active') || ''">
+                            <a @click="select('dotnetT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">.NET</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.phpT && 'active') || ''">
+                            <a @click="select('phpT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">PHP</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.rubyT && 'active') || ''">
+                            <a @click="select('rubyT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Ruby</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabs.cppT && 'active') || ''">
+                            <a @click="select('cppT')"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">C++</a>
+                        </li>
+                    </ul>
+                </div>
+                <div x-show="tabs.curlT" class="tab-content">
+                    <pre class="code clipboard">curl -X POST {{ trigger_url }} \
+  -H "Authorization: Key YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"context": {}, "options": {}}'</pre>
+                </div>
+                <div x-show="tabs.wgetT" class="tab-content">
+                    <pre class="code clipboard">wget --no-check-certificate \
+  --method POST \
+  --header "Authorization: Key YOUR_API_KEY" \
+  --header "Content-Type: application/json" \
+  --body-data '{"context": {}, "options": {}}' \
+                    {{ trigger_url }}</pre>
+                </div>
+                <div x-show="tabs.httpieT" class="tab-content">
+                    <pre class="code clipboard">http POST {{ trigger_url }} \
+  Authorization:"Key YOUR_API_KEY" \
+  Content-Type:"application/json" \
+  context:={} \
+  options:={}</pre>
+                </div>
+                <div x-show="tabs.cliT" class="tab-content">
+                    <pre class="code clipboard">bitcaster trigger \
+  --organization {{ original.application.project.organization.slug }} \
+  --project {{ original.application.project.slug }} \
+  --application {{ original.application.slug }} \
+  --event {{ original.slug }} \
+  --api-key YOUR_API_KEY</pre>
+                </div>
+                <div x-show="tabs.sdkT" class="tab-content">
+                    <h4>
+                        {% translate "Client (sync)" %}
+                    </h4>
+                    <pre class="code clipboard">from bitcaster_sdk import Client
+client = Client(base_url="https://example.com", api_key="YOUR_API_KEY")
+client.event.trigger(
+    organization="{{ original.application.project.organization.slug }}",
+    project="{{ original.application.project.slug }}",
+    application="{{ original.application.slug }}",
+    event="{{ original.slug }}",
+    context={"key": "value"},
+)</pre>
+                    <h4>
+                        {% translate "AsyncClient" %}
+                    </h4>
+                    <pre class="code clipboard">from bitcaster_sdk import AsyncClient
+client = AsyncClient(base_url="https://example.com", api_key="YOUR_API_KEY")
+await client.event.trigger(
+    organization="{{ original.application.project.organization.slug }}",
+    project="{{ original.application.project.slug }}",
+    application="{{ original.application.slug }}",
+    event="{{ original.slug }}",
+    context={"key": "value"},
+)</pre>
+                </div>
+                <div x-show="tabs.requestsT" class="tab-content">
+                    <pre class="code clipboard">import requests
+response = requests.post(
+    "{{ trigger_url }}",
+    headers={
+        "Authorization": "Key YOUR_API_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"context": {}, "options": {}},
+)</pre>
+                </div>
+                <div x-show="tabs.httpxT" class="tab-content">
+                    <pre class="code clipboard">import httpx
+with httpx.Client() as client:
+    response = client.post(
+        "{{ trigger_url }}",
+        headers={"Authorization": "Key YOUR_API_KEY"},
+        json={"context": {}, "options": {}},
+    )</pre>
+                </div>
+                <div x-show="tabs.jsWebT" class="tab-content">
+                    <pre class="code clipboard">// Using fetch (browser)
+fetch("{{ trigger_url }}", {
+    method: "POST",
+    headers: {
+        "Authorization": "Key YOUR_API_KEY",
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ context: {}, options: {} }),
+});</pre>
+                </div>
+                <div x-show="tabs.jsNodeT" class="tab-content">
+                    <pre class="code clipboard">// Using axios
+const axios = require("axios");
+
+await axios.post("{{ trigger_url }}",
+    { context: {}, options: {} },
+    {
+        headers: {
+            Authorization: "Key YOUR_API_KEY",
+            "Content-Type": "application/json",
+        },
+    },
+);
+
+// Using fetch (node 18+)
+const response = await fetch("{{ trigger_url }}", {
+    method: "POST",
+    headers: {
+        "Authorization": "Key YOUR_API_KEY",
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ context: {}, options: {} }),
+});</pre>
+                </div>
+                <div x-show="tabs.dotnetT" class="tab-content">
+                    <pre class="code clipboard">using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+var client = new HttpClient();
+client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Key", "YOUR_API_KEY");
+
+var payload = JsonSerializer.Serialize(new {
+    context = new { },
+    options = new { }
+});
+
+var response = await client.PostAsync(
+    "{{ trigger_url }}",
+    new StringContent(payload, Encoding.UTF8, "application/json")
+);</pre>
+                </div>
+                <div x-show="tabs.phpT" class="tab-content">
+                    <h4>
+                        {% translate "Guzzle" %}
+                    </h4>
+                    <pre class="code clipboard">$client = new GuzzleHttp\Client();
+$response = $client->post('{{ trigger_url }}', [
+    'headers' => [
+        'Authorization' => 'Key YOUR_API_KEY',
+        'Content-Type' => 'application/json',
+    ],
+    'json' => [
+        'context' => [],
+        'options' => [],
+    ],
+]);</pre>
+                    <h4>
+                        {% translate "cURL" %}
+                    </h4>
+                    <pre class="code clipboard">$ch = curl_init('{{ trigger_url }}');
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Key YOUR_API_KEY',
+    'Content-Type: application/json',
+]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'context' => [],
+    'options' => [],
+]));
+$response = curl_exec($ch);</pre>
+                </div>
+                <div x-show="tabs.rubyT" class="tab-content">
+                    <pre class="code clipboard">require 'net/http'
+require 'uri'
+
+uri = URI.parse("{{ trigger_url }}")
+http = Net::HTTP.new(uri.host, uri.port)
+request = Net::HTTP::Post.new(uri.path)
+request["Authorization"] = "Key YOUR_API_KEY"
+request["Content-Type"] = "application/json"
+request.body = { context: {}, options: {} }.to_json
+
+response = http.request(request)
+
+# Using httprb (gem)
+# require 'httparty'
+# response = HTTParty.post(
+#   "{{ trigger_url }}",
+#   headers: {
+#     "Authorization" => "Key YOUR_API_KEY",
+#     "Content-Type" => "application/json",
+#   },
+#   body: { context: {}, options: {} }.to_json,
+# )</pre>
+                </div>
+                <div x-show="tabs.cppT" class="tab-content">
+                    <h4>
+                        {% translate "libcurl (C++)" %}
+                    </h4>
+                    <pre class="code clipboard">#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
+CURL *curl = curl_easy_init();
+if (curl) {
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Authorization: Key YOUR_API_KEY");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+
+    nlohmann::json body = {
+        {"context", nlohmann::json::object()},
+        {"options", nlohmann::json::object()}
+    };
+
+    curl_easy_setopt(curl, CURLOPT_URL, "{{ trigger_url }}");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.dump().c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+}</pre>
+                    <h4>
+                        {% translate "cpprestsdk" %}
+                    </h4>
+                    <pre class="code clipboard">#include <cpprest/http_client.h>
+#include <cpprest/json.h>
+
+using namespace web;
+using namespace web::http;
+
+auto client = http_client(U("{{ trigger_url }}"));
+json::value body;
+body[U("context")] = json::value::object();
+body[U("options")] = json::value::object();
+
+auto headers = http_headers();
+headers.add(U("Authorization"), U("Key YOUR_API_KEY"));
+headers.add(U("Content-Type"), U("application/json"));
+
+auto response = client.request(methods::POST, U(""), body.serialize(), headers).get();</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extrahead %}
+    {{ block.super }}
+{% endblock extrahead %}
