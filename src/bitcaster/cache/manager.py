@@ -93,10 +93,13 @@ class CacheManager:
             deleted += self.client.delete(key)
         return deleted
 
+    def delete(self, key: str) -> None:
+        self.client.delete(self.get_key(key))
+
     def store(self, key: str, value: Any, timeout: int | None = None, timeboxed: bool = True) -> None:
         if flag_enabled("DISABLE_CACHE"):
             return
-        if timeout and not timeboxed:
+        if not timeout and not timeboxed:
             timeout = 25 * HOUR
         try:
             self.client.set(self.get_key(key), value, timeout=timeout)

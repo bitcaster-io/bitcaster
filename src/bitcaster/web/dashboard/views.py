@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from datetime import datetime
 
@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.db.models import Model, QuerySet
 from django.forms import HiddenInput
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from bitcaster.cache.manager import CacheManager
@@ -17,13 +19,44 @@ from bitcaster.constants import bitcaster
 from bitcaster.forms import unfold as uwidgets
 from bitcaster.utils.widgets import SmartMedia
 
+if TYPE_CHECKING:
+    from django.utils.functional import _StrPromise
+
+SANITY_CATEGORIES = ("subscriptions", "distributionlists", "events")
+SANITY_COMPONENT_ORDER = ("MessageTemplate", "Channel", "Event", "Application", "Project", "Notification")
+
 
 class ConsoleMixin(UnfoldModelAdminViewMixin):
-    pass
+    def get_breadcrumbs(self) -> "tuple[tuple[str | _StrPromise, str], ...]":
+        return (
+            (reverse_lazy("admin:app_list", args=["bitcaster"]), "Bitcaster"),
+            ("#", "Console"),
+            (reverse_lazy(f"admin:console-{self.__class__.__name__.lower()}"), str(self.title)),
+        )
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        kwargs["breadcrumbs"] = self.get_breadcrumbs()
+        return super().get_context_data(**kwargs)
+
+
+def start_sanity_check(request: HttpRequest, model_admin: Any) -> None:
+    from bitcaster.runner.tasks import sanity_check
+
+    cm = CacheManager(request)
+    cm.delete("sanity:subscriptions")
+    cm.delete("sanity:distributionlists")
+    cm.delete("sanity:events")
+    cm.store("sanity:state", "scheduled", timeout=120, timeboxed=False)
+    try:
+        sanity_check.send()
+    except Exception:
+        cm.delete("sanity:state")
+        raise
+    model_admin.message_user(request, "Sanity check started", messages.SUCCESS)
 
 
 class ToolsView(ConsoleMixin, TemplateView):
-    title = "Console: Tools"
+    title = "Tools"
     permission_required = ("bitcaster.console_tools",)
     template_name = "dashboards/tools.html"
 
@@ -33,17 +66,66 @@ class ToolsView(ConsoleMixin, TemplateView):
             case "clear_cache":
                 cm.clear_cache()
                 self.model_admin.message_user(request, "Cache cleared", messages.SUCCESS)
+            case "run_sanity_check":
+                start_sanity_check(request, self.model_admin)
             case _:
                 self.model_admin.message_user(request, "Nothing selected", messages.WARNING)
-        return self.get(request, *args, **kwargs)
+        return redirect(request.path)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         cm = CacheManager(self.request)
         ret = super().get_context_data(**kwargs)
         ret["opts"] = None
         ret["title"] = "console"
-        ret.update({"cache_size": cm.count_keys()})
+
+        ret.update(
+            {
+                "cache_size": cm.count_keys(),
+                "sanity_state": cm.retrieve("sanity:state") or "idle",
+                "has_sanity_results": any(cm.retrieve(f"sanity:{key}") for key in SANITY_CATEGORIES),
+            }
+        )
         return ret
+
+
+class SanityView(ConsoleMixin, TemplateView):
+    title = "Sanity Check"
+    permission_required = ("bitcaster.console_tools",)
+    template_name = "dashboards/sanity.html"
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if request.POST.get("op") == "run_sanity_check":
+            start_sanity_check(request, self.model_admin)
+        return redirect(request.path)
+
+    def get_breadcrumbs(self) -> "tuple[tuple[str | _StrPromise, str], ...]":
+        return (
+            (reverse_lazy("admin:app_list", args=["bitcaster"]), "Bitcaster"),
+            ("#", "Console"),
+            (reverse_lazy(f"admin:console-{ToolsView.__name__.lower()}"), str(ToolsView.title)),
+            (reverse_lazy(f"admin:console-{self.__class__.__name__.lower()}"), str(self.title)),
+        )
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        cm = CacheManager(self.request)
+        results: dict[str, Any] = {}
+        components: dict[str, list[dict[str, str]]] = {}
+        for key in SANITY_CATEGORIES:
+            report = cm.retrieve(f"sanity:{key}")
+            if report:
+                results[key] = report
+                for item in report.get("invalid", []):
+                    components.setdefault(item["component"], []).append(item)
+        grouped = {name: components[name] for name in SANITY_COMPONENT_ORDER if name in components}
+        kwargs.update(
+            {
+                "results": results,
+                "components": grouped,
+                "has_results": bool(results),
+                "sanity_state": cm.retrieve("sanity:state") or "idle",
+            }
+        )
+        return super().get_context_data(**kwargs)
 
 
 def form_builder(qs: QuerySet[Model], mode: str, data: dict[str, Any] | None = None) -> forms.Form:
@@ -60,7 +142,7 @@ def form_builder(qs: QuerySet[Model], mode: str, data: dict[str, Any] | None = N
 
 
 class LockView(ConsoleMixin, TemplateView):
-    title = "Console: Lock"
+    title = "Lock"
     permission_required = ("bitcaster.console_lock",)
     template_name = "dashboards/lock.html"
     targets: dict[str, dict[str, Any]] = {
@@ -98,14 +180,12 @@ class LockView(ConsoleMixin, TemplateView):
             _forms["pause"].append(form_builder(qs, "pause"))
 
         ret["forms"] = _forms
-        ret["title"] = "console"
-        ret["action_title"] = "Lock"
         ret.update({"cache_size": cm.count_keys()})
         return ret
 
 
 class MonitorView(ConsoleMixin, TemplateView):
-    title = "Console: Monitor"
+    title = "Monitor"
     permission_required = ("bitcaster.console_tools",)
     template_name = "dashboards/monitor.html"
 

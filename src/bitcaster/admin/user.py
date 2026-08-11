@@ -15,7 +15,7 @@ from bitcaster.constants import bitcaster
 from bitcaster.forms.unfold import UnfoldAdminSelect2Widget
 from bitcaster.models import User
 from bitcaster.utils.django import admin_toggle_bool_action
-from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
+from bitcaster.web.dashboard.views import LockView, MonitorView, SanityView, ToolsView
 
 from .base import BaseAdmin
 
@@ -84,7 +84,7 @@ class UserAdmin(BaseAdmin[User], DjangoUserAdmin[User]):
 
     def get_urls(self) -> list[URLPattern]:
         extra = []
-        for console in [ToolsView, LockView, MonitorView]:
+        for console in [ToolsView, LockView, MonitorView, SanityView]:
             custom_view = self.admin_site.admin_view(console.as_view(model_admin=self))
             extra.append(
                 path(console.__name__.lower(), custom_view, name=f"console-{console.__name__.lower()}"),

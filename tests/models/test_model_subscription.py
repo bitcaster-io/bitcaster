@@ -66,6 +66,25 @@ def test_user(data: "SubscriptionData") -> None:
 
 
 @pytest.mark.django_db
+def test_is_valid(data: "SubscriptionData") -> None:
+    assert data["subscription"].is_valid is True
+    assert "Invalid" not in str(data["subscription"].validity)
+
+
+@pytest.mark.django_db
+def test_is_valid_channel_not_enabled() -> None:
+    from testutils.factories import AssignmentFactory, ChannelFactory, NotificationFactory, SubscriptionFactory
+
+    channel = ChannelFactory()
+    notification = NotificationFactory(event__channels=[], distribution=None)
+    assignment = AssignmentFactory(channel=channel)
+    subscription = SubscriptionFactory(notification=notification, assignment=assignment)
+
+    assert subscription.is_valid is False
+    assert "Invalid" in str(subscription.validity)
+
+
+@pytest.mark.django_db
 def test_unique_constraint_same_assignment(data: "SubscriptionData") -> None:
     """The DB unique constraint prevents duplicate (notification, assignment) pairs."""
     from django.db import IntegrityError

@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Any
 
 from django.db import models
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
 from .assignment import Assignment
@@ -59,3 +61,22 @@ class Subscription(BitcasterBaseModel):
     @property
     def user(self) -> "User":
         return self.assignment.address.user
+
+    @property
+    def is_valid(self) -> bool:
+        """The subscription can be used only if the assignment channel is enabled for the notification event."""
+        return self.notification.event.channels.filter(pk=self.assignment.channel_id).exists()
+
+    @property
+    def validity(self) -> SafeString:
+        if self.is_valid:
+            return format_html(
+                '<span class="inline-block font-semibold rounded-default text-[11px] uppercase whitespace-nowrap '
+                'h-6 leading-6 px-2 bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400">{}</span>',
+                _("Valid"),
+            )
+        return format_html(
+            '<span class="inline-block font-semibold rounded-default text-[11px] uppercase whitespace-nowrap '
+            'h-6 leading-6 px-2 bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400">{}</span>',
+            _("Invalid"),
+        )

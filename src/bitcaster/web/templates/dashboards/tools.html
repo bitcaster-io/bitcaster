@@ -9,13 +9,42 @@
 {% block branding %}
     {% include "unfold/helpers/site_branding.html" %}
 {% endblock %}
+{% block extrahead %}
+    {% if sanity_state == "scheduled" or sanity_state == "running" %}
+        <meta http-equiv="refresh" content="5" />
+    {% endif %}
+{% endblock %}
 {% block content %}
     {% component "unfold/components/container.html" %}
-    <form method="post" id="clear_cache">
-        {% csrf_token %}
-        <button type="submit" class="button button-primary" name="op" value="clear_cache">
-            Clear cache ({{ cache_size }})
-        </button>
-    </form>
+    <div class="grid grid-cols-6 gap-1">
+        <div>
+            <form method="post" id="clear_cache">
+                {% csrf_token %}
+                <button type="submit" class="button button-primary" name="op" value="clear_cache">
+                    Clear cache ({{ cache_size }})
+                </button>
+            </form>
+        </div>
+        <div>
+            <form method="post" id="sanity_check">
+                {% csrf_token %}
+                {% if sanity_state == "running" %}
+                    <button type="submit" class="button button-warning" disabled>
+                        Sanity Check Running
+                    </button>
+                {% elif sanity_state == "scheduled" %}
+                    <button type="submit" class="button" disabled>
+                        Sanity Check Scheduled
+                    </button>
+                {% elif has_sanity_results %}
+                    <a href="{% url "admin:console-sanityview" %}" class="button button-success">View Sanity Check</a>
+                {% else %}
+                    <button type="submit" class="button button-primary" name="op" value="run_sanity_check">
+                        Run sanity check
+                    </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 {% endcomponent %}
 {% endblock %}

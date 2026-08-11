@@ -215,6 +215,61 @@ def test_inline_permissions_and_save(admin_user):
 
 
 @pytest.mark.django_db
+def test_subscription_inline_save_invalid_warns(admin_user):
+    from testutils.factories import NotificationFactory, SubscriptionFactory
+
+    from bitcaster.admin.member import SubscriptionInline
+    from bitcaster.models import Subscription
+
+    site = AdminSite()
+    member = MemberFactory()
+    channel = ChannelFactory()
+    other_channel = ChannelFactory()
+    notification = NotificationFactory(event__channels=[other_channel], distribution=None)
+    assignment = AssignmentFactory(address=AddressFactory(user=member), channel=channel)
+    subscription = SubscriptionFactory.build(notification=notification, assignment=assignment)
+
+    inline = SubscriptionInline(Member, site)
+    rf = RequestFactory()
+    request = rf.get("/")
+    request.user = admin_user
+    inline._request = request
+
+    with patch("bitcaster.admin.member.messages.warning") as mock_warning:
+        inline.save_new_instance(member, subscription)
+
+    mock_warning.assert_called_once()
+    assert Subscription.objects.filter(pk=subscription.pk).exists()
+
+
+@pytest.mark.django_db
+def test_subscription_inline_save_valid_no_warning(admin_user):
+    from testutils.factories import NotificationFactory, SubscriptionFactory
+
+    from bitcaster.admin.member import SubscriptionInline
+    from bitcaster.models import Subscription
+
+    site = AdminSite()
+    member = MemberFactory()
+    channel = ChannelFactory()
+    notification = NotificationFactory(event__channels=[channel], distribution=None)
+    assignment = AssignmentFactory(address=AddressFactory(user=member), channel=channel)
+    subscription = SubscriptionFactory.build(notification=notification, assignment=assignment)
+
+    inline = SubscriptionInline(Member, site)
+    rf = RequestFactory()
+    request = rf.get("/")
+    request.user = admin_user
+    inline._request = request
+
+    with patch("bitcaster.admin.member.messages.warning") as mock_warning:
+        inline.save_new_instance(member, subscription)
+
+    mock_warning.assert_not_called()
+    assert Subscription.objects.filter(pk=subscription.pk).exists()
+
+
+@pytest.mark.django_db
 def test_member_admin_changelist_invalid_dl(app):
     url = reverse("admin:bitcaster_member_changelist")
     # dl=invalid (not an int or not exists)

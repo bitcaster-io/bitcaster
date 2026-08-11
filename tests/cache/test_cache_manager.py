@@ -31,6 +31,14 @@ def test_incr_version_value_error():
     manager.client.set.assert_called_with(f"{manager.prefix}:key:version", 1)
 
 
+def test_delete():
+    manager = CacheManager(Mock(), prefix=f"test-{uuid.uuid4().hex}")
+    manager.client = Mock()
+
+    manager.delete("key")
+    manager.client.delete.assert_called_once_with(manager.get_key("key"))
+
+
 def test_activate_namespace():
     manager = CacheManager(Mock(), prefix=f"test-{uuid.uuid4().hex}")
     assert manager.current_namespace == ""
@@ -71,12 +79,27 @@ def test_store_timeout_not_timeboxed():
     manager = CacheManager(Mock(), prefix=f"test-{uuid.uuid4().hex}")
     manager.client = Mock()
 
-    manager.store("key", "value", timeout=100, timeboxed=False)
+    manager.store("key", "value", timeboxed=False)
 
     # Check if timeout was updated to 25 * 3600 (90000)
     manager.client.set.assert_called()
     args, kwargs = manager.client.set.call_args
     assert kwargs["timeout"] == 25 * 60 * 60
+
+    # Verify expire was NOT called
+    manager.client.expire.assert_not_called()
+
+
+def test_store_timeout_not_timeboxed_explicit_timeout():
+    manager = CacheManager(Mock(), prefix=f"test-{uuid.uuid4().hex}")
+    manager.client = Mock()
+
+    manager.store("key", "value", timeout=100, timeboxed=False)
+
+    # Explicit timeout is honored when not timeboxed
+    manager.client.set.assert_called()
+    args, kwargs = manager.client.set.call_args
+    assert kwargs["timeout"] == 100
 
     # Verify expire was NOT called
     manager.client.expire.assert_not_called()

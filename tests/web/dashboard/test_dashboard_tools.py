@@ -20,9 +20,9 @@ def test_tools_view_post(django_app: TestApp, user, application):
     url = reverse("admin:console-toolsview")
     with user_grant_permissions(user, ["bitcaster.console_tools"]):
         res = django_app.get(url, user=user)
-        res = res.forms["clear_cache"].submit("op")
+        res = res.forms["clear_cache"].submit("op").follow()
         assert_message(res, "Cache cleared")
     with user_grant_permissions(user, ["bitcaster.console_tools"]):
         res = django_app.get(url, user=user)
-        res = res.forms["clear_cache"].submit()
+        res = res.forms["clear_cache"].submit().follow()
         assert_message(res, "Nothing selected")

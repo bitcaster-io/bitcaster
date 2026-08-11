@@ -115,6 +115,13 @@ class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTem
             .select_related("channel", "application", "project", "channel__organization", "event", "notification")
         )
 
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        return {
+            "channel": request.GET.get("channel"),
+            "event": request.GET.get("event"),
+            "notification": request.GET.get("notification"),
+        }
+
     def get_form(
         self,
         request: HttpRequest,

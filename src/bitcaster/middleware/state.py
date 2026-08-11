@@ -20,8 +20,10 @@ class StateMiddleware:
 
     def __call__(self, request: "HttpRequest") -> "HttpResponse":
         state.request = request
-        response = self.get_response(request)
-        state.set_cookies(response)
-        state.request = None
-        state.cookies = {}
+        try:
+            response = self.get_response(request)
+            state.set_cookies(response)
+        finally:
+            state.request = None
+            state.cookies = {}
         return response

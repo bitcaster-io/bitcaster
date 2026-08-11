@@ -1,0 +1,100 @@
+{% extends 'dashboards/_base.html' %}
+{% load i18n unfold %}
+{% block extrahead %}
+    {% if sanity_state == "scheduled" or sanity_state == "running" %}
+        <meta http-equiv="refresh" content="5" />
+    {% endif %}
+{% endblock %}
+{% block welcome-msg %}
+    <div class="flex flex-row grow font-semibold items-center min-w-0 mr-3">
+        {% if is_nav_sidebar_enabled and not is_popup %}
+            <span class="cursor-pointer flex flex-row items-center">
+                <span class="material-symbols-outlined" x-on:click="sidebarToggle()">dock_to_right</span>
+            </span>
+            <span class="block bg-base-200 h-5 mx-3 w-px dark:bg-base-700"></span>
+        {% endif %}
+        {% include "unfold/helpers/header_back_button.html" %}
+        <h1 class="overflow-hidden leading-5 text-important flex items-center whitespace-nowrap xl:text-base">
+            {% spaceless %}
+                <a href="{% url "admin:index" %}" class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">{% trans "Bitcaster" %}</a>
+                <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
+                <span class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">{% trans "Console" %}</span>
+                <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
+                <a href="{% url "admin:console-toolsview" %}" class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">{% trans "Tools" %}</a>
+                <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
+                <span class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">{% trans "Sanity Check" %}</span>
+            {% endspaceless %}
+        </h1>
+    </div>
+{% endblock %}
+{% block content %}
+    {% component "unfold/components/container.html" %}
+    <form method="post" id="sanity_check">
+        {% csrf_token %}
+        {% if sanity_state == "running" %}
+            <button type="submit" class="button button-warning" disabled>
+                Sanity Check Running
+            </button>
+        {% elif sanity_state == "scheduled" %}
+            <button type="submit" class="button" disabled>
+                Sanity Check Scheduled
+            </button>
+        {% else %}
+            <button type="submit" class="button button-primary" name="op" value="run_sanity_check">
+                {% if has_results %}
+                    Re-Run Sanity Check
+                {% else %}
+                    Run sanity check
+                {% endif %}
+            </button>
+        {% endif %}
+    </form>
+    <div class="mt-5">
+        {% if has_results %}
+            {% for category, data in results.items %}
+                {% if data %}
+                    <div class="mb-1 text-base-500">
+                        {{ category|title }}: Run at {{ data.timestamp }} - Checked: {{ data.checked }} -
+                        Valid: {{ data.valid }} - Invalid: {{ data.invalid|length }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if components %}
+                <div class="mt-5">
+                    {% for component, items in components.items %}
+                        <div class="mb-5">
+                            <div class="text-2xl mb-2">
+                                {{ component }} ({{ items|length }})
+                            </div>
+                            <ul class="list-disc ml-5">
+                                {% for item in items %}
+                                    <li>
+                                        <span class="text-base-500">{{ item.source }}</span> -
+                                        {% if item.link %}
+                                            <a class="underline" href="{{ item.link|safe }}">{{ item.label }}</a>
+                                        {% else %}
+                                            {{ item.label }}
+                                        {% endif %}
+                                        - {{ item.detail }}
+                                        {% if item.fix %}
+                                            <a class="underline ml-2" href="{{ item.fix|safe }}">Fix Issue</a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mt-5 text-green-600">
+                    All checks passed.
+                </div>
+            {% endif %}
+        {% else %}
+            <div>
+                No results yet. Run a sanity check from the Tools page.
+            </div>
+        {% endif %}
+    </div>
+{% endcomponent %}
+{% endblock %}

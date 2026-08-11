@@ -138,13 +138,28 @@ class SubscriptionInline(NonrelatedTabularInline):
     form = SubscriptionForm
     formset = SubscriptionFormSet
     autocomplete_fields = ["notification"]
+    readonly_fields = ["validity"]
+
+    def get_formset(self, request: HttpRequest, obj: Member | None = None, **kwargs: Any) -> Any:
+        self._request = request
+        return super().get_formset(request, obj, **kwargs)
 
     def get_form_queryset(self, obj: Member) -> QuerySet[Subscription]:
-        return Subscription.objects.filter(assignment__address__user=obj)
+        return Subscription.objects.filter(assignment__address__user=obj).select_related(
+            "notification__event", "assignment__channel"
+        )
 
     def save_new_instance(self, parent: Member, instance: Subscription) -> None:
         instance.full_clean()
         instance.save()
+        if not instance.is_valid:
+            messages.warning(
+                self._request,
+                _(
+                    "Subscription created but cannot be used: the assignment channel is not enabled "
+                    "for the notification event."
+                ),
+            )
 
     def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
         return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)

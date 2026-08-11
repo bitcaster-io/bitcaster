@@ -1,4 +1,4 @@
-{% load admin_urls i18n unfold %}
+{% load admin_urls i18n unfold bitcaster %}
 <div class="flex flex-row grow font-semibold items-center min-w-0 mr-3">
     {% if is_nav_sidebar_enabled %}
         <span class="cursor-pointer flex flex-row items-center">
@@ -19,7 +19,9 @@
             </span>
             <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
         </a>
-        {% header_title %}
+        {% block breadcrumbs %}
+            {% bc_header_title %}
+        {% endblock breadcrumbs %}
         {% if action_title %}
             <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
             {{ action_title }}

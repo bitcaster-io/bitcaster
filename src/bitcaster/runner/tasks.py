@@ -16,6 +16,11 @@ from ..dispatchers import UserMessageDispatcher
 from ..models import Monitor
 
 if TYPE_CHECKING:
+    from django.utils.functional import _StrPromise
+
+    from ..models.channel import Channel
+    from ..models.event import Event
+    from ..models.notification import Notification
     from ..models.occurrence import OccurrenceOptions, ProcessingData
 
 logger = logging.getLogger(__name__)
@@ -267,3 +272,280 @@ def monitor_check(pk: int) -> str:
         raise
     finally:
         monitor.save()
+
+
+def _message_template_fix_url(
+    channel: "Channel", event: "Event | None" = None, notification: "Notification | None" = None
+) -> str:
+    from urllib.parse import urlencode
+
+    from django.urls import reverse
+
+    params: dict[str, str] = {"channel": str(channel.pk)}
+    if notification:
+        params["event"] = str(notification.event_id)
+        params["notification"] = str(notification.pk)
+    elif event:
+        params["event"] = str(event.pk)
+    return f"{reverse('admin:bitcaster_messagetemplate_add')}?{urlencode(params)}"
+
+
+def _sanity_item(
+    source: str, url: str, detail: "str | _StrPromise", component: "str | _StrPromise", fix: str = ""
+) -> dict[str, str]:
+    return {
+        "source": source,
+        "link": url,
+        "label": source,
+        "detail": str(detail),
+        "component": str(component),
+        "fix": fix,
+    }
+
+
+def _sanity_report(timestamp: str, invalid: list[dict[str, str]], checked: int) -> dict[str, Any]:
+    return {
+        "timestamp": timestamp,
+        "checked": checked,
+        "valid": checked - len(invalid),
+        "invalid": invalid,
+    }
+
+
+def _check_subscriptions(timestamp: str) -> dict[str, Any]:
+    from django.urls import reverse
+    from django.utils.translation import gettext_lazy as _
+
+    from bitcaster.models import Subscription
+
+    invalid: list[dict[str, str]] = []
+    checked = 0
+    for subscription in Subscription.objects.select_related("notification__event", "assignment__channel"):
+        checked += 1
+        channel = subscription.assignment.channel
+        if not subscription.is_valid:
+            invalid.append(
+                _sanity_item(
+                    source=str(subscription),
+                    url=reverse("admin:bitcaster_subscription_change", args=[subscription.pk]),
+                    detail=_("The channel is not enabled for the notification event"),
+                    component=_("Channel"),
+                )
+            )
+        elif subscription.notification.get_message(channel) is None:
+            invalid.append(
+                _sanity_item(
+                    source=str(subscription),
+                    url=reverse("admin:bitcaster_subscription_change", args=[subscription.pk]),
+                    detail=_("Missing MessageTemplate for channel '{channel}'").format(channel=channel),
+                    component=_("MessageTemplate"),
+                    fix=_message_template_fix_url(channel, subscription.notification.event, subscription.notification),
+                )
+            )
+    return _sanity_report(timestamp, invalid, checked)
+
+
+def _check_distribution_lists(timestamp: str) -> dict[str, Any]:
+    from django.urls import reverse
+    from django.utils.translation import gettext_lazy as _
+
+    from bitcaster.models import DistributionList
+
+    invalid: list[dict[str, str]] = []
+    checked = 0
+    for dl in DistributionList.objects.prefetch_related("recipients__channel").all():
+        notifications = list(dl.notifications.filter(active=True).select_related("event"))
+        if not notifications:
+            continue
+        for notification in notifications:
+            for assignment in dl.recipients.all():
+                checked += 1
+                if notification.get_message(assignment.channel) is None:
+                    invalid.append(
+                        _sanity_item(
+                            source=str(dl),
+                            url=reverse("admin:bitcaster_distributionlist_change", args=[dl.pk]),
+                            detail=_("Missing MessageTemplate for channel '{channel}'").format(
+                                channel=assignment.channel
+                            ),
+                            component=_("MessageTemplate"),
+                            fix=_message_template_fix_url(assignment.channel, notification.event, notification),
+                        )
+                    )
+    return _sanity_report(timestamp, invalid, checked)
+
+
+def _check_events(timestamp: str) -> dict[str, Any]:
+    from django.core.exceptions import ValidationError
+    from django.urls import reverse
+    from django.utils.translation import gettext_lazy as _
+
+    from bitcaster.models import Event
+
+    invalid: list[dict[str, str]] = []
+    checked = 0
+    for event in Event.objects.select_related("application__project").all():
+        checked += 1
+        project = event.application.project
+        if not event.active:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                    detail=_("Event is not active"),
+                    component=_("Event"),
+                )
+            )
+        if event.locked:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                    detail=_("Event is locked"),
+                    component=_("Event"),
+                )
+            )
+        if event.paused:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                    detail=_("Event is paused"),
+                    component=_("Event"),
+                )
+            )
+        if not event.application.active:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_application_change", args=[event.application_id]),
+                    detail=_("Application is not active"),
+                    component=_("Application"),
+                )
+            )
+        if event.application.locked:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_application_change", args=[event.application_id]),
+                    detail=_("Application is locked"),
+                    component=_("Application"),
+                )
+            )
+        if event.application.paused:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_application_change", args=[event.application_id]),
+                    detail=_("Application is paused"),
+                    component=_("Application"),
+                )
+            )
+        if project.locked:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_project_change", args=[project.pk]),
+                    detail=_("Project is locked"),
+                    component=_("Project"),
+                )
+            )
+        if project.paused:
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_project_change", args=[project.pk]),
+                    detail=_("Project is paused"),
+                    component=_("Project"),
+                )
+            )
+        if not event.channels.exists():
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                    detail=_("No channel enabled for the event"),
+                    component=_("Channel"),
+                )
+            )
+        if not event.notifications.filter(active=True).exists():
+            invalid.append(
+                _sanity_item(
+                    source=str(event),
+                    url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                    detail=_("No active notification for the event"),
+                    component=_("Notification"),
+                )
+            )
+        for channel in event.channels.all():
+            if not channel.active:
+                invalid.append(
+                    _sanity_item(
+                        source=str(event),
+                        url=reverse("admin:bitcaster_channel_change", args=[channel.pk]),
+                        detail=_("Channel is not active"),
+                        component=_("Channel"),
+                    )
+                )
+            if channel.locked:
+                invalid.append(
+                    _sanity_item(
+                        source=str(event),
+                        url=reverse("admin:bitcaster_channel_change", args=[channel.pk]),
+                        detail=_("Channel is locked"),
+                        component=_("Channel"),
+                    )
+                )
+            if channel.paused:
+                invalid.append(
+                    _sanity_item(
+                        source=str(event),
+                        url=reverse("admin:bitcaster_channel_change", args=[channel.pk]),
+                        detail=_("Channel is paused"),
+                        component=_("Channel"),
+                    )
+                )
+            try:
+                config = channel.dispatcher.config_class(data=channel.config)
+                valid = config.is_valid()
+            except (ValidationError, ValueError, TypeError):
+                valid = False
+            if not valid:
+                invalid.append(
+                    _sanity_item(
+                        source=str(event),
+                        url=reverse("admin:bitcaster_channel_change", args=[channel.pk]),
+                        detail=_("Invalid dispatcher configuration"),
+                        component=_("Channel"),
+                    )
+                )
+            if not event.messages.filter(channel=channel).exists():
+                invalid.append(
+                    _sanity_item(
+                        source=str(event),
+                        url=reverse("admin:bitcaster_event_change", args=[event.pk]),
+                        detail=_("Missing MessageTemplate for channel '{channel}'").format(channel=channel),
+                        component=_("MessageTemplate"),
+                        fix=_message_template_fix_url(channel, event),
+                    )
+                )
+    return _sanity_report(timestamp, invalid, checked)
+
+
+@dramatiq.actor(actor_class=SmartActor, logging=True)
+def sanity_check() -> None:
+    from django.utils import timezone
+
+    from bitcaster.cache.manager import CacheManager
+
+    cm = CacheManager(None)
+    cm.store("sanity:state", "running", timeout=120, timeboxed=False)
+    try:
+        timestamp = timezone.now().isoformat()
+        cm.store("sanity:subscriptions", _check_subscriptions(timestamp))
+        cm.store("sanity:distributionlists", _check_distribution_lists(timestamp))
+        cm.store("sanity:events", _check_events(timestamp))
+        cm.store("sanity:state", "done", timeout=120, timeboxed=False)
+    except Exception:
+        cm.delete("sanity:state")
+        raise
