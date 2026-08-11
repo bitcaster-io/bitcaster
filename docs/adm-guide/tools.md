@@ -62,7 +62,7 @@ component** (e.g. `MessageTemplate`, `Channel`, `Event`). Each errored entry
 shows its source, links to the affected object and offers a **Fix Issue** link.
 For missing <glossary:Message> issues the link opens the "add MessageTemplate"
 page with the form pre-filled with the relevant channel, event and
-notification (for <glossary:Subscription> and
+notification (for **Subscription** and
 <glossary:Distribution List> issues), channel/event (for
 <glossary:Event> issues), or channel/project when a stale report cannot
 determine the event; other issues point to the affected object's page.
