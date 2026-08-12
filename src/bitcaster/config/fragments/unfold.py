@@ -270,6 +270,12 @@ UNFOLD = {
                         "permission": has_model_permission(model_name="application"),
                     },
                     {
+                        "title": _("Memberships"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_applicationmembership_changelist"),
+                        "permission": has_model_permission(model_name="applicationmembership"),
+                    },
+                    {
                         "title": _("Projects"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_project_changelist"),
