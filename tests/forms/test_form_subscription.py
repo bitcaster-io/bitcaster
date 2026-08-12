@@ -38,3 +38,11 @@ def test_form_allows_duplicate_when_editing_same_instance() -> None:
         instance=subscription,
     )
     assert form.is_valid()
+
+
+@pytest.mark.django_db
+def test_form_missing_assignment_skips_duplicate_check() -> None:
+    subscription = SubscriptionFactory()
+    form = SubscriptionForm({"notification": subscription.notification.pk, "active": True})
+    assert not form.is_valid()
+    assert "A subscription for this notification and assignment already exists." not in str(form.errors)

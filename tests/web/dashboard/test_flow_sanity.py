@@ -21,6 +21,7 @@ from bitcaster.runner.tasks import (
     _check_distribution_lists,
     _check_events,
     _check_subscriptions,
+    _message_template_fix_url,
     sanity_check,
 )
 
@@ -82,6 +83,14 @@ def test_sanity_view_post_error(django_app, user):
             with pytest.raises(RuntimeError, match="boom"):
                 res.forms["sanity_check"].submit("op")
     assert cm.retrieve("sanity:state") is None
+
+
+def test_sanity_view_post_without_op(django_app, user):
+    url = reverse("admin:console-sanityview")
+    with user_grant_permissions(user, ["bitcaster.console_tools"]):
+        res = django_app.get(url, user=user)
+        res = res.forms["sanity_check"].submit("op", value="other")
+    assert res.status_code == 302
 
 
 def test_tools_view_sanity_link(django_app, user):
@@ -211,6 +220,14 @@ def test_distribution_list_no_active_notifications_skipped():
     report = _check_distribution_lists("ts")
     assert report["checked"] == 0
     assert report["invalid"] == []
+
+
+def test_message_template_fix_url_channel_only():
+    channel = ChannelFactory()
+    url = _message_template_fix_url(channel)
+    assert f"channel={channel.pk}" in url
+    assert "event=" not in url
+    assert "notification=" not in url
 
 
 def test_events_issues():
