@@ -83,7 +83,8 @@ all Distribution Lists pinned to that application.
 From the [Project page](https://SERVER_ADDRESS/admin/bitcaster/project/current/){:target=_bc}
 click on `Add Distribution List`{ .bc-tool-button .action }
 
-![Image](_screenshots/dl_add.png)
+The form contains a `Name` field, an optional `Application` selector to pin
+the list, and the `Save` button.
 
 Enter a name and optionally pin it to an Application. After saving, you can add
 recipients via the `Recipients` button.

@@ -6,6 +6,7 @@ nav:
   - Enable Channel: channel_enable.md
   - Create Distribution List: dl.md
   - Add Application: app.md
+  - Manage Application Memberships: membership.md
   - Register Events: events.md
   - Create Notification Rule: notification.md
   - Notification Policies: notification_policies.md

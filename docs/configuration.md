@@ -34,11 +34,24 @@ Password for initial user created at first deploy. It is ignored if `ADMIN_EMAIL
     This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
 
 
+### BITCASTER_DOCUMENTATION_SITE_URL
+Default: `https://docs.bitcaster.io`
+
+Base URL of the Bitcaster documentation site (no trailing slash). It is used
+by the admin "help" links to point to the online documentation.
+
+
 ### AGENT_FILESYSTEM_ROOT
 Default: ``
 
 Base path allowed by the local filestem <glossary:Agent>
 
+
+
+### AGENT_FILESYSTEM_VALIDATOR
+Default: `bitcaster.agents.fs.validate_path`
+
+Callable that validates the path used by the local filesystem <glossary:Agent>.
 
 
 ### ALLOWED_HOSTS
@@ -47,6 +60,12 @@ Default: "127.0.0.1,localhost"
 A list of strings representing the host/domain names that this Django site can serve. This is a security measure to prevent HTTP Host header attacks, which are possible even under many seemingly-safe web server configurations.
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#allowed-hosts>
+
+
+### CACHE_PREFIX
+Default: ``
+
+Prefix string to use in cache keys.
 
 
 ### CACHE_URL
@@ -62,10 +81,19 @@ Es: `redis://192.168.66.66:6379/1?client_class=django_redis.client.DefaultClient
 
 see <https://docs.djangoproject.com/en/5.1/topics/cache/>
 
-### CELERY_BROKER_URL
-Default: ``
+### DRAMATIQ_BROKER
+Default: `redis://dramatiq-broker:6379/0`
 
-see <https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html>
+Redis URL used as broker for background tasks.
+
+see <https://dramatiq.io/reference.html#brokers>
+
+
+### ENVIRONMENT
+Default: `production`
+
+Bitcaster environment name. It is displayed in the admin header and tunes
+runtime behaviour (e.g. `local` enables development helpers).
 
 
 ### CSRF_TRUSTED_ORIGINS
@@ -90,6 +118,24 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 Default: `/media/`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#media-url>
+
+
+### REDIRECT_TO_HTTPS
+Default: `false`
+
+Redirect all HTTP traffic to HTTPS.
+
+
+### ROOT_TOKEN
+Default: ``
+
+Static token accepted by the root API endpoints.
+
+
+### ROOT_TOKEN_HEADER
+Default: `x-root-token`
+
+HTTP header that carries the root token value.
 
 
 ### SECRET_KEY
@@ -173,7 +219,7 @@ Default Storage
 see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 
-### STORAGE_MEDIA=
+### STORAGE_MEDIA
 Default: ''
 
 Storage to use for media files. STORAGE_DEFAULT is used if not set
@@ -185,6 +231,13 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 Default: `django.core.files.storage.FileSystemStorage`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
+
+
+### SUPERUSERS
+Default: ``
+
+Comma-separated list of users that are granted superuser privileges when
+created.
 
 
 ### TIME_ZONE
@@ -203,23 +256,7 @@ Default: ``
 
 If set all the emails will be sent to this address
 
-### CELERY_TASK_ALWAYS_EAGER
-Default: false
-
-see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_always_eager>
-
-### CELERY_TASK_EAGER_PROPAGATES
-Default: True
-
-see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates>
-
-
-### CELERY_VISIBILITY_TIMEOUT
-Default: 1800
-
-see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-transport-options>
-
-###CSRF_COOKIE_SAMESITE
+### CSRF_COOKIE_SAMESITE
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#csrf-cookie-samesite>
 

@@ -2,7 +2,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from testutils.factories import ApplicationFactory
+from testutils.factories import ApplicationFactory, ApplicationMembershipFactory
 from testutils.factories.user import SuperUserFactory
 
 from django.urls import reverse
@@ -43,6 +43,20 @@ def test_admin_change_form_contains_link(app: "DjangoTestApp") -> None:
     res = app.get(reverse("admin:bitcaster_application_change", args=[application.pk]))
     assert res.status_code == 200
     assert f'href="{HELP_SITE}/adm-guide/app/"' in res
+
+
+def test_admin_membership_changelist_contains_link(app: "DjangoTestApp") -> None:
+    ApplicationMembershipFactory()
+    res = app.get(reverse("admin:bitcaster_applicationmembership_changelist"))
+    assert res.status_code == 200
+    assert f'href="{HELP_SITE}/adm-guide/membership/"' in res
+
+
+def test_admin_membership_change_form_contains_link(app: "DjangoTestApp") -> None:
+    membership = ApplicationMembershipFactory()
+    res = app.get(reverse("admin:bitcaster_applicationmembership_change", args=[membership.pk]))
+    assert res.status_code == 200
+    assert f'href="{HELP_SITE}/adm-guide/membership/"' in res
 
 
 def test_admin_popup_has_no_link(app: "DjangoTestApp") -> None:

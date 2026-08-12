@@ -4,6 +4,7 @@ import re
 
 HELP_LINKS: Final[dict[str, str]] = {
     "^/admin/$": "adm-guide/quickstart/",
+    "^/admin/bitcaster/applicationmembership": "adm-guide/membership/",
     "^/admin/bitcaster/application": "adm-guide/app/",
     "^/admin/bitcaster/event": "adm-guide/events/",
     "^/admin/bitcaster/eventsimulation": "adm-guide/events/",
@@ -30,9 +31,12 @@ HELP_LINKS: Final[dict[str, str]] = {
     "^/admin/bitcaster/processlogentry": "adm-guide/process_log/",
     "^/admin/bitcaster/task": "adm-guide/tasks/",
     "^/admin/bitcaster/logentry": "adm-guide/system_log/",
+    "^/admin/bitcaster/delivery": "adm-guide/occurrence/",
     "^/admin/flags/flagstate": "adm-guide/flags/",
     "^/admin/constance/config": "configuration/",
     "^/admin/auth/group": "adm-guide/user_management/",
+    "^/admin/social/": "adm-guide/sso/",
+    "^/admin/webpush/": "adm-guide/address/",
     "^/admin/": "adm-guide/quickstart/",
     "^/console/": "adm-guide/cli/",
 }

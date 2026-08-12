@@ -13,6 +13,8 @@ from bitcaster.help.links import HELP_LINKS, resolve_help_path, resolve_help_url
         pytest.param("/admin/", "adm-guide/quickstart/", id="admin-index"),
         pytest.param("/admin/bitcaster/application/", "adm-guide/app/", id="application-changelist"),
         pytest.param("/admin/bitcaster/application/1/change/", "adm-guide/app/", id="application-change"),
+        pytest.param("/admin/bitcaster/applicationmembership/", "adm-guide/membership/", id="application-membership"),
+        pytest.param("/admin/bitcaster/applicationmembership/1/", "adm-guide/membership/", id="membership-change"),
         pytest.param("/admin/bitcaster/event/", "adm-guide/events/", id="event"),
         pytest.param("/admin/bitcaster/notification/", "adm-guide/notification/", id="notification"),
         pytest.param("/admin/bitcaster/channel/", "adm-guide/abstract_channel_create/", id="channel"),
@@ -37,7 +39,9 @@ from bitcaster.help.links import HELP_LINKS, resolve_help_path, resolve_help_url
         pytest.param("/admin/constance/config/", "configuration/", id="constance"),
         pytest.param("/admin/auth/group/", "adm-guide/user_management/", id="group"),
         pytest.param("/admin/bitcaster/whatever/", "adm-guide/quickstart/", id="unmapped-model-fallback"),
-        pytest.param("/admin/social/socialaccount/", "adm-guide/quickstart/", id="third-party-fallback"),
+        pytest.param("/admin/social/socialaccount/", "adm-guide/sso/", id="social-provider"),
+        pytest.param("/admin/webpush/browser/", "adm-guide/address/", id="webpush-browser"),
+        pytest.param("/admin/bitcaster/delivery/", "adm-guide/occurrence/", id="delivery"),
         pytest.param("/console/", "adm-guide/cli/", id="console"),
         pytest.param("/console/1/", "adm-guide/cli/", id="console-detail"),
     ],
@@ -61,6 +65,8 @@ def test_weighted_strictest_wins() -> None:
         pytest.param("/admin/bitcaster/usermessage/", "adm-guide/dispatchers/user_message/", id="usermessage"),
         pytest.param("/admin/bitcaster/user/", "adm-guide/user_management/", id="user"),
         pytest.param("/admin/bitcaster/deliverysimulation/", "adm-guide/events/", id="deliverysimulation"),
+        pytest.param("/admin/bitcaster/delivery/", "adm-guide/occurrence/", id="delivery-prefix-wins"),
+        pytest.param("/admin/bitcaster/deliverysimulation/1/", "adm-guide/events/", id="delivery-sim-sub-prefix"),
     ],
 )
 def test_prefix_collisions(path: str, expected: str) -> None:

@@ -19,7 +19,8 @@ Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/current/>{: tar
     you will find an already created OS4D Organization, you cannot edit or delete it.
     It is used by Bitcaster.
 
-![Image](_screenshots/add_org.png)
+The Organization form contains the `Name`, `From email`, `Subject Prefix` and
+`Owner` fields; the `Save` button is at the bottom of the form.
 
 Now you can create your first Project.
 
@@ -31,5 +32,6 @@ Click on the
 
     Depending on your license you could be limited to only one Project per installation.
 
-
-![Image](_screenshots/add_prj.png)
+The Project form shows the `Name`, `Organization`, `Owner`, `From Email`,
+`Subject Prefix` and `Environments` fields; the organization is pre-filled
+when the project is created from the organization page.

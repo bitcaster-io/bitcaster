@@ -4,6 +4,7 @@ dispatchers:
     - log.md
     - mailgun.md
     - mailjet.md
+    - rabbitmq.md
     - sendgrid.md
     - slack.md
     - sys.md
