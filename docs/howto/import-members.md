@@ -52,3 +52,7 @@ invalid-email,,,Human Resources,3003
 -   The final success message will report that "2/3" records were imported.
 
 **Note:** The import process is designed to **add new members only**. It uses the email address to identify conflicts. If a member with a given email already exists in the system, that row will be skipped. All successfully imported members will be automatically added to the group you select on the import form.
+
+**Synchronous import:** the import runs synchronously in the browser request. The page redirects back to the Member list only after the file has been fully processed, and the result message reports how many records were imported. Very large files may therefore take a while to complete.
+
+The same CSV import is also available from the command line — see [Command Line Interface](../adm-guide/cli.md) (`bc import users`).

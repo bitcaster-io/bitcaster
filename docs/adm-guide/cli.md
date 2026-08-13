@@ -24,11 +24,14 @@ Starts the background workers responsible for physically sending messages and pr
 bc run [OPTIONS]
 ```
 
-**Common Options**:
+**Options**:
 - `-p, --processes INTEGER`: Number of worker processes (default: 1).
 - `-t, --threads INTEGER`: Number of threads per process (default: 1).
-- `--autoreload`: Automatically restart workers when code changes (useful for development).
+- `-d, --debug`: Enable debug logging.
+- `-v, --verbose`: Increase verbosity (use `-vv` for more detail).
 - `--reset`: Clear all pending tasks in the queue before starting.
+- `--pid-file PATH`: Write the worker PID to this file.
+- `--autoreload`: Automatically restart workers when code changes (useful for development).
 
 ---
 
@@ -40,8 +43,9 @@ Starts the scheduler that triggers periodic tasks, such as monitors, log rotatio
 bc cron [OPTIONS]
 ```
 
-**Common Options**:
-- `-v, --verbose`: Increase output verbosity.
+**Options**:
+- `-d, --debug`: Enable debug logging.
+- `-v, --verbose`: Increase verbosity (use `-vv` for more detail; default: 3).
 - `--autoreload`: Restart the scheduler on code changes.
 
 > **Note**: For a fully functional Bitcaster instance, both `bc run` and `bc cron` must be running.
@@ -51,8 +55,16 @@ bc cron [OPTIONS]
 ### 3. Queue Management (`bc queue`)
 Tools to inspect and manage the state of the message queues (Redis/RabbitMQ).
 
+**Usage**:
+```bash
+bc queue [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+- `-l, --loglevel TEXT`: Logging level (default: `info`).
+
 **Subcommands**:
-- `bc queue list`: Shows the number of messages waiting in each queue and the status of active runners.
+- `bc queue list`: Lists all queues content — shows the status of active runners and the number of messages waiting in each queue.
 - `bc queue reset`: Safely clears all pending tasks from all queues.
 
 ---
@@ -60,17 +72,32 @@ Tools to inspect and manage the state of the message queues (Redis/RabbitMQ).
 ### 4. Data Import (`bc import`)
 Used for mass-importing data into the system.
 
-**Subcommands**:
-- `bc import users`: Import users from a CSV file.
-    - `--org SLUG`: Target organization (defaults to the first local one).
-    - `--group NAME`: Optional group to add users to.
+**Usage**:
+```bash
+bc import users [OPTIONS] CSV_FILE
+```
+
+**Arguments**:
+- `CSV_FILE`: Path to the CSV file to import (required).
+
+**Options**:
+- `--org SLUG`: Target organization (defaults to the first local one).
+- `--group NAME`: Optional group to add users to.
+
+The import result is printed to the console: `Processed N lines, created/updated M users`. Errors (missing organization or group) are reported per import run.
 
 ---
 
 ### 5. Diagnostics (`bc inspect`)
 Lists all registered background tasks (actors) available in the system. This is useful for verifying that custom dispatchers or plugins are correctly recognized by the worker.
 
----
+**Usage**:
+```bash
+bc inspect [OPTIONS]
+```
+
+**Options**:
+- `-l, --loglevel TEXT`: Logging level (default: `info`).
 
 ## Environment Variables
 
