@@ -10,16 +10,25 @@ reachable by the API.
 To allow Bitcaster to process [events][event], those need to be listed and configured.
 
 ## Create Event
-![Image](_screenshots/events/add.png)
+
+The Event form contains:
+
+- `Name`: name of the event (also used to build its trigger).
+- `Description`: description of the event.
+- `Active`: enable/disable notifications for this event.
+- `Newsletter mode`: do not customise notifications per single user.
+- `Channels`: the channels this event may use; recipients on other channels
+  are ignored.
+- `Occurrence retention`: how many days occurrences are kept before being
+  purged (if empty the system default is used).
 
 After the Event has been successfully created, you can choose which <glossary:Channel>s
 you want make available for this
 
 ## Enable Channels
 
-Setup which channels can be used to notify this event
-
-![Image](_screenshots/events/cfg.png)
+Setup which channels can be used to notify this event: open the event's detail
+page, tick the channels in the `Channels` selector and save.
 
 ## Event Simulations
 

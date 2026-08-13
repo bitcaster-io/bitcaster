@@ -16,7 +16,7 @@ from lxml import html
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DOCS_CHANGE_PATHS = ("docs/", "mkdocs.yml", "tests/docs/")
+DOCS_CHANGE_PATHS = ("docs/", "properdocs.yml", "tests/docs/")
 DOCS_TEST_FLAG = "RUN_DOCS_TESTS"
 
 
@@ -47,7 +47,7 @@ def _can_run() -> bool:
 
 pytestmark = pytest.mark.skipif(
     not _can_run(),
-    reason="docs not changed (docs/ or mkdocs.yml) or properdocs not installed",
+    reason="docs not changed (docs/ or properdocs.yml) or properdocs not installed",
 )
 
 
@@ -73,13 +73,13 @@ PLACEHOLDER_HOST_RE = re.compile(r"[<>]")
 
 
 def _site_url_path() -> str:
-    content = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    content = (PROJECT_ROOT / "properdocs.yml").read_text(encoding="utf-8")
     match = re.search(r"^site_url:\s*(\S+)", content, flags=re.MULTILINE)
     return urlparse(match.group(1)).path.strip("/") if match else ""
 
 
 def _site_url_host() -> str:
-    content = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    content = (PROJECT_ROOT / "properdocs.yml").read_text(encoding="utf-8")
     match = re.search(r"^site_url:\s*(\S+)", content, flags=re.MULTILINE)
     return urlparse(match.group(1)).hostname or "" if match else ""
 

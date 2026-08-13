@@ -116,12 +116,9 @@ plugins:
         python:
           paths: [src]
   - privacy
-  - redirects:
-      redirect_maps: {}
   - search
   - social
-  - tags:
-      tags_file: tags.md
+  - tags
 
 watch:
   - docs/

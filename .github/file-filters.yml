@@ -66,7 +66,7 @@ lint:
 
 docs:
   - added|modified: './docs/**/*'
-  - modified: './mkdocs.yml'
+  - modified: './properdocs.yml'
   - added|modified: './tests/docs/**'
   - modified: './src/bitcaster/config/__init__.py'
   - modified: './.github/workflows/docs.yml'

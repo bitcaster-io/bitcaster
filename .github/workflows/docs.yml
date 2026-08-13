@@ -6,7 +6,7 @@ on:
       - develop
     paths:
       - 'docs/**'
-      - 'mkdocs.yml'
+      - 'properdocs.yml'
       - '.github/workflows/docs.yml'
       - 'tests/docs/**'
   pull_request:
@@ -17,7 +17,7 @@ on:
       - synchronize
     paths:
       - 'docs/**'
-      - 'mkdocs.yml'
+      - 'properdocs.yml'
       - '.github/workflows/docs.yml'
       - 'tests/docs/**'
 

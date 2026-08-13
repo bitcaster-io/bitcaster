@@ -25,7 +25,8 @@ From the sidebar open **Organizations** and click `Add`{ .bc-tool-button .action
     You will find an already created `OS4D` Organization. It is used by
     Bitcaster itself: you cannot edit or delete it.
 
-![Image](_screenshots/add_org.png)
+The Organization form contains the `Name`, `From email`, `Subject Prefix` and
+`Owner` fields; the `Save` button is at the bottom of the form.
 
 ### Project
 
@@ -42,7 +43,8 @@ click `Add`:
 - `Environments`: comma-separated environments available for the project
   (e.g. `prod,staging`), used for environment-based notification routing.
 
-![Image](_screenshots/add_prj.png)
+The Project form shows the fields above; the organization is pre-filled when
+the project is created from the organization page.
 
 See [Create the Initial Structure](structure.md) for more details.
 
@@ -60,7 +62,8 @@ From the [project page](structure.md) click `Add Channel`{ .bc-tool-button .acti
 - `Protocol`: derived from the dispatcher, read-only.
 - `Active`: enable/disable the channel.
 
-![Image](_screenshots/channels/create.png)
+The Channel form contains the fields above; after saving, the dispatcher may
+ask for extra provider-specific configuration.
 
 You can also enable an Organization's
 <glossary:Abstract Channel> instead of creating a new one — see
@@ -84,7 +87,8 @@ From the sidebar open **Applications** and click `Add`{ .bc-tool-button .action 
 - `Subject prefix`: default subject prefix for messages.
 - `Advanced configuration`: JSON for advanced features (e.g. attachment support).
 
-![Image](_screenshots/app/add.png)
+The Application form contains the fields above, grouped in sections such as
+`General` and `Notification`; the `Save` button is at the bottom.
 
 See [Add Application](app.md) for more details.
 
@@ -104,12 +108,12 @@ From the application page click `Add Event`{ .bc-tool-button .action }:
 - `Occurrence retention`: how many days occurrences are kept before being
   purged (if empty the system default is used).
 
-![Image](_screenshots/events/add.png)
+The Event form contains the fields above; the `Channels` field lets you pick
+which of the project's channels this event may use.
 
 After the event has been created, make sure the channel from step 2 is enabled
-for it:
-
-![Image](_screenshots/events/cfg.png)
+for it: open the event's detail page and check the `Channels` selection, then
+save.
 
 See [Register Application Events](events.md) for more details.
 
@@ -120,9 +124,9 @@ A **Notification** is the rule that connects an Event to its recipients.
 From the event's detail page click `Notifications`{ .bc-tool-button .link }
 and then `Add`:
 
-![Image](_screenshots/events/notifications.png)
-
-![Image](_screenshots/events/notification_add.png)
+The Notifications page lists the event's rules — with `Name`, `Event`,
+`Application`, `Policy` and `Active` columns — and shows the `Add` button in
+the top right corner. The Add form opens on the `General` tab.
 
 - `Name`: name of the notification rule.
 - `Description`: short description of the notification.
@@ -156,9 +160,8 @@ A **Message** is the content the recipients see, rendered for one specific
 Channel.
 
 From the notification page click `Messages`{ .bc-tool-button .link } and then
-`Create`{ .bc-button }:
-
-![Image](_screenshots/notification/messages.png)
+`Create`{ .bc-button }. The Create form contains a `Name` field and a
+`Channel` selector for the channels enabled on the event:
 
 - `Name`: name of the template.
 - `Channel`: the channel this template applies to (the channel from step 2,
@@ -238,7 +241,8 @@ From the sidebar open **API Keys** and click `Add`{ .bc-tool-button .action }:
     - Warning: **Full Access** grants every permission.
 - `Environments`: if set, the key is only valid for these environments.
 
-![Image](_screenshots/add_key.png)
+The API Key form contains the fields above. After saving, the `Token` field
+shows the generated key once — copy it before leaving the page.
 
 !!! danger "Warning"
 
