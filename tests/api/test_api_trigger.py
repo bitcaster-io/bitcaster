@@ -13,6 +13,7 @@ from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
 from bitcaster.models import Application
 from bitcaster.models.choices import FILTERING_EXTERNAL
+from bitcaster.models.key import KeyKind
 from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
@@ -118,6 +119,49 @@ def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
         "assignments": assignments,
         "channel": email_channel,
         "notification": n,
+        "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+            event.application.project.organization.slug,
+            event.application.project.slug,
+            event.application.slug,
+            event.slug,
+        ),
+    }
+
+
+@pytest.fixture
+def public_data(admin_user: "User", email_channel: "Channel") -> "Context":
+    from testutils.factories import (
+        ApiKeyFactory,
+        AssignmentFactory,
+        EventFactory,
+        MessageTemplateFactory,
+        NotificationFactory,
+    )
+
+    from bitcaster.constants import bitcaster
+
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
+    assignments = [AssignmentFactory.create(channel=email_channel) for __ in range(4)]
+
+    n = NotificationFactory.create(distribution__recipients=assignments, event=event)
+
+    key = ApiKeyFactory.create(
+        user=admin_user,
+        grants=[Grant.EVENT_TRIGGER],
+        application=event.application,
+        kind=KeyKind.PUBLIC,
+        origins=["https://example.com"],
+    )
+    return {
+        "event": event,
+        "key": key,
+        "user": admin_user,
+        "system_user": bitcaster.system_user,
+        "channel": email_channel,
+        "notification": n,
+        "assignments": assignments,
         "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
             event.application.project.organization.slug,
             event.application.project.slug,
@@ -604,3 +648,90 @@ def test_trigger_auto_create_options(client: APIClient, data: "Context", opt) ->
         with key_grants(api_key, [Grant.EVENT_TRIGGER, Grant.EVENT_AUTO_CREATE]):
             res = client.post(url, data={}, format="json")
     assert res.status_code in [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST]
+
+
+def test_trigger_public_key(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    res = client.post(url, data={"context": {"key": "value"}}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED, res.json()
+
+
+def test_trigger_public_key_wrong_origin(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://evil.example")
+
+    res = client.post(url, data={"context": {}}, format="json")
+    assert res.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_trigger_public_key_no_origin(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    res = client.post(url, data={"context": {}}, format="json")
+    assert res.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_trigger_public_key_limit_to(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    res = client.post(url, data={"options": {"limit_to": ["user@example.com"]}}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_public_key_filters(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    res = client.post(url, data={"options": {"filters": {"include": []}}}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_public_key_non_scalar_context(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    url: str = public_data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    res = client.post(url, data={"context": {"nested": {"a": 1}}}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_public_key_allowed_events(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    event: Event = public_data["event"]
+    api_key.allowed_events = ["other-event"]
+    api_key.save()
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        event.slug,
+    )
+    res = client.post(url, data={"context": {}}, format="json")
+    assert res.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_trigger_public_key_auto_create_denied(client: APIClient, public_data: "Context") -> None:
+    api_key = public_data["key"]
+    event: Event = public_data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}", HTTP_ORIGIN="https://example.com")
+
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        uuid.uuid4().hex,
+    )
+    with configure_model(event.application, auto_create_event=True):
+        res = client.post(url, data={"context": {}}, format="json")
+    assert res.status_code == status.HTTP_404_NOT_FOUND

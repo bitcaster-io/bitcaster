@@ -116,3 +116,36 @@ def test_sliding_window_fallback_rejection(api_factory: APIRequestFactory, monke
     assert view(api_factory.get(url)).status_code == status.HTTP_200_OK
     # 3rd request should hit Line 111 (return False)
     assert view(api_factory.get(url)).status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+
+class MockPublicView(APIView):
+    throttle_classes = [SlidingWindowThrottle]
+    permission_classes = [AllowAny]
+    throttle_rate = 30
+
+
+@pytest.mark.django_db
+def test_sliding_window_public_key_rate(api_factory: APIRequestFactory) -> None:
+    """
+    PUBLIC keys are capped at the public_rate (10/min) regardless of the view rate
+    and the budget is scoped per origin.
+    """
+    from testutils.factories import ApiKeyFactory
+
+    from bitcaster.models.key import KeyKind
+
+    api_key = ApiKeyFactory(name=f"public-throttle-{uuid.uuid4()}", kind=KeyKind.PUBLIC, origins=["https://a.example"])
+    throttle = SlidingWindowThrottle()
+    view = MockPublicView()
+
+    for _ in range(10):
+        request = api_factory.get("/fake-endpoint/", HTTP_ORIGIN="https://a.example")
+        request.auth = api_key
+        assert throttle.allow_request(request, view) is True
+    request = api_factory.get("/fake-endpoint/", HTTP_ORIGIN="https://a.example")
+    request.auth = api_key
+    assert throttle.allow_request(request, view) is False
+
+    request = api_factory.get("/fake-endpoint/", HTTP_ORIGIN="https://b.example")
+    request.auth = api_key
+    assert throttle.allow_request(request, view) is True

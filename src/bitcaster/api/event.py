@@ -14,6 +14,7 @@ from .base import SecurityMixin
 from ..auth.constants import Grant
 from ..exceptions import InactiveError, LockError
 from ..models import Application, Event, LogEntry, Occurrence, User
+from ..models.key import KeyKind
 from ..utils.filtering import validate_filters, validate_lookups, validate_schema
 
 if TYPE_CHECKING:
@@ -119,6 +120,8 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
             slug = self.kwargs["evt"]
             create_occurrence = True
             try:
+                if error := self._check_public_key_request(request, slug, ser.validated_data):
+                    return error
                 data: dict[str, "JSONValue"] = {}
                 try:
                     evt: "Event" = self.get_queryset().get(slug=slug)
@@ -205,3 +208,23 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:
             return Response(ser.errors, status=400)
+
+    def _check_public_key_request(self, request: "Request", slug: str, payload: dict[str, Any]) -> "Response | None":
+        """Enforce restricted trigger semantics for PUBLIC keys.
+
+        Public keys cannot target specific recipients or filter users (user
+        enumeration) and can only use scalar context values.
+        """
+        if getattr(request.auth, "kind", KeyKind.SERVER) != KeyKind.PUBLIC:
+            return None
+        opts_raw = payload.get("options", {})
+        if "limit_to" in opts_raw or "filters" in opts_raw:
+            return Response(
+                {"error": "options 'limit_to' and 'filters' are not allowed for public keys"},
+                status=400,
+            )
+        if request.auth.allowed_events and slug not in request.auth.allowed_events:
+            return Response({"error": f"Event not allowed for this key: {slug}"}, status=403)
+        if any(not isinstance(v, str | int | float | bool) for v in payload.get("payload_context", {}).values()):
+            return Response({"error": "context values must be scalar for public keys"}, status=400)
+        return None

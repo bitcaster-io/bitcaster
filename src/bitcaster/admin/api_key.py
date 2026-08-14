@@ -8,7 +8,6 @@ from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from flags.state import flag_enabled
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -18,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster.auth.constants import Grant
 from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
+from bitcaster.models.key import KeyKind
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
@@ -33,12 +33,33 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
+    allowed_events = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label=_("Restrict to Events"),
+        help_text=_("Events this key can trigger. Empty means any event of the application."),
+    )
+
     class Meta:
         model = ApiKey
-        fields = ("name", "organization", "user", "grants", "environments", "project", "application")
+        fields = (
+            "name",
+            "kind",
+            "organization",
+            "user",
+            "grants",
+            "environments",
+            "project",
+            "application",
+            "origins",
+            "allowed_events",
+        )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.application_id:
+            self.fields["allowed_events"].choices = [(e.slug, str(e)) for e in self.instance.application.events.all()]
+            self.fields["allowed_events"].initial = self.instance.allowed_events or []
         if self.instance and self.instance.pk and self.instance.project and self.instance.project.environments:
             choices = [(k, k) for k in self.instance.project.environments]
             self.fields["environments"] = forms.MultipleChoiceField(
@@ -49,20 +70,27 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = cast("dict[str, Any]", super().clean())
-        if self.instance.pk is None and (g := cleaned_data.get("grants")):
+        if cleaned_data.get("kind") == KeyKind.PUBLIC:
+            cleaned_data["grants"] = [Grant.EVENT_TRIGGER]
+            if not cleaned_data.get("application"):
+                self.add_error("application", _("Public keys must be pinned to an application"))
+            if not cleaned_data.get("origins"):
+                self.add_error("origins", _("Public keys must declare at least one allowed origin"))
+        elif self.instance.pk is None and (g := cleaned_data.get("grants")):
             a = cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
-                raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
+                self.add_error("application", _("Application must be set if EVENT_TRIGGER is granted"))
         return cleaned_data
 
 
 class ApiKeyAdmin(BaseAdmin[ApiKey]):
     search_fields = ("name",)
-    list_display = ("name", "user", "organization", "project", "application", "environments")
+    list_display = ("name", "kind", "user", "organization", "project", "application", "environments")
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="project")),
+        "kind",
         EnvironmentFilter,
     )
     autocomplete_fields = ("user", "application", "organization", "project")
@@ -72,6 +100,12 @@ class ApiKeyAdmin(BaseAdmin[ApiKey]):
 
     def get_queryset(self, request: HttpRequest) -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
+
+    def get_fields(self, request: HttpRequest, obj: ApiKey | None = None) -> "_ListOrTuple[str]":
+        fields = super().get_fields(request, obj)
+        if obj is None or not obj.application_id:
+            fields = [f for f in fields if f != "allowed_events"]
+        return fields
 
     def get_readonly_fields(self, request: HttpRequest, obj: ApiKey | None = None) -> list[str]:
         if obj and obj.pk:

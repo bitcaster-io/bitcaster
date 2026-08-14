@@ -14,11 +14,13 @@ from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 from bitcaster.auth.constants import Grant
+from bitcaster.models import ApiKey
+from bitcaster.models.key import KeyKind
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
 
-    from bitcaster.models import ApiKey, Application
+    from bitcaster.models import Application
 
 
 @pytest.fixture
@@ -115,6 +117,48 @@ def test_add_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None
     assert res.status_code == 302, res.context["adminform"].form.errors
 
 
+def test_add_public_key(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    url = reverse("admin:bitcaster_apikey_add")
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["application"].force_value(api_key.application.pk)
+    frm["organization"].force_value(api_key.organization.pk)
+    frm["name"] = "Public-1"
+    frm["kind"] = KeyKind.PUBLIC
+    frm.fields["origins"][0].value = "https://example.com"
+    res = frm.submit()
+    assert res.status_code == 302, res.context["adminform"].form.errors
+
+    key = ApiKey.objects.get(name="Public-1")
+    assert key.kind == KeyKind.PUBLIC
+    assert key.grants == [Grant.EVENT_TRIGGER]
+    assert key.origins == ["https://example.com"]
+
+
+def test_add_public_key_requires_origin(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    url = reverse("admin:bitcaster_apikey_add")
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["application"].force_value(api_key.application.pk)
+    frm["name"] = "Public-2"
+    frm["kind"] = KeyKind.PUBLIC
+    res = frm.submit(expect_errors=True)
+    assert res.status_code == 200
+    assert "origins" in res.context["adminform"].form.errors
+
+
+def test_add_public_key_requires_application(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    url = reverse("admin:bitcaster_apikey_add")
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["name"] = "Public-3"
+    frm["kind"] = KeyKind.PUBLIC
+    frm.fields["origins"][0].value = "https://example.com"
+    res = frm.submit(expect_errors=True)
+    assert res.status_code == 200
+    assert "application" in res.context["adminform"].form.errors
+
+
 def test_edit_apikey_without_project(app: DjangoTestApp, db: Any) -> None:
     from testutils.factories import ApiKeyFactory
 
@@ -152,3 +196,44 @@ def test_show_key(app: DjangoTestApp, root: bool) -> None:
     with mock.patch("bitcaster.admin.api_key.is_root", return_value=root):
         res: DjangoWebtestResponse = app.get(url)
         assert (api_key.key in res.text) is root
+
+
+def test_add_form_hides_allowed_events(app: DjangoTestApp) -> None:
+    url = reverse("admin:bitcaster_apikey_add")
+    res = app.get(url)
+    assert "allowed_events" not in res.forms["apikey_form"].fields
+
+
+def test_change_form_hides_allowed_events_without_application(app: DjangoTestApp, db: Any) -> None:
+    from testutils.factories import ApiKeyFactory
+
+    key = ApiKeyFactory(application=None)
+    url = reverse("admin:bitcaster_apikey_change", args=[key.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    assert "allowed_events" not in res.forms["apikey_form"].fields
+
+
+def test_change_form_shows_allowed_events(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    from testutils.factories import EventFactory
+
+    event = EventFactory(application=api_key.application)
+    url = reverse("admin:bitcaster_apikey_change", args=[api_key.pk])
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    assert "allowed_events" in frm.fields
+    assert f'value="{event.slug}"' in res.text
+
+
+def test_change_form_save_allowed_events(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    from testutils.factories import EventFactory
+
+    event = EventFactory(application=api_key.application)
+    url = reverse("admin:bitcaster_apikey_change", args=[api_key.pk])
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["allowed_events"] = [event.slug]
+    res = frm.submit()
+    assert res.status_code == 302, res.context["adminform"].form.errors
+    api_key.refresh_from_db()
+    assert api_key.allowed_events == [event.slug]

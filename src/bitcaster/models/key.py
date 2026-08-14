@@ -5,6 +5,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
@@ -19,6 +20,11 @@ from .user import User
 logger = logging.getLogger(__name__)
 
 TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-_~."
+
+
+class KeyKind(models.TextChoices):
+    SERVER = "SERVER", _("Server")
+    PUBLIC = "PUBLIC", _("Public")
 
 
 def make_token() -> str:
@@ -80,6 +86,27 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
         null=True,
         help_text=_("grants for this key"),
     )
+    kind = models.CharField(
+        verbose_name=_("Kind"),
+        max_length=16,
+        choices=KeyKind.choices,
+        default=KeyKind.SERVER,
+        help_text=_("PUBLIC keys are bound to declared origins and restricted to event triggering."),
+    )
+    origins = ArrayField(
+        models.CharField(max_length=255, blank=True, null=True),
+        verbose_name=_("Origins"),
+        blank=True,
+        null=True,
+        help_text=_("Allowed origins for PUBLIC keys. Requests with other origins are rejected."),
+    )
+    allowed_events = ArrayField(
+        models.CharField(max_length=64, blank=True, null=True),
+        verbose_name=_("Allowed events"),
+        blank=True,
+        null=True,
+        help_text=_("Optional event slug allowlist for PUBLIC keys. Empty means any event of the application."),
+    )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
         verbose_name=_("Environments"),
@@ -94,6 +121,28 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
         unique_together = (("name", "user"),)
         verbose_name = _("Api Key")
         verbose_name_plural = _("Api Keys")
+
+    def clean(self) -> None:
+        super().clean()
+        if self.kind == KeyKind.PUBLIC:
+            if not self.application_id:
+                raise ValidationError(_("Public keys must be pinned to an application"))
+            if not self.grants:
+                self.grants = [Grant.EVENT_TRIGGER]
+            elif self.grants != [Grant.EVENT_TRIGGER]:
+                raise ValidationError(_("Public keys can only have the EVENT_TRIGGER grant"))
+            if not self.origins:
+                raise ValidationError(_("Public keys must declare at least one allowed origin"))
+            for origin in self.origins:
+                if urlsplit(origin).scheme not in ("http", "https"):
+                    raise ValidationError(_("Invalid origin: %(origin)s") % {"origin": origin})
+        if self.allowed_events:
+            if not self.application_id:
+                raise ValidationError(_("Allowed events require an application"))
+            available = set(self.application.events.values_list("slug", flat=True))
+            unknown = [slug for slug in self.allowed_events if slug is not None and slug not in available]
+            if unknown:
+                raise ValidationError(_("Unknown events for application: %(slugs)s") % {"slugs": ", ".join(unknown)})
 
     def get_bae(self) -> str:
         password = self.key

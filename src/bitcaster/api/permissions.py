@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from ..auth.constants import Grant
 from ..exceptions import InvalidGrantError
 from ..models import ApiKey, User
+from ..models.key import KeyKind
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,18 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
 
 
 class ApiBasePermission(permissions.BasePermission):
+    def _check_public_key(self, request: "Request", token: "ApiKey") -> bool:
+        if token.kind != KeyKind.PUBLIC:
+            return True
+        if token.grants != [Grant.EVENT_TRIGGER]:
+            raise InvalidGrantError(f"Public keys can only trigger events ({token})")
+        if not token.application_id:
+            raise InvalidGrantError(f"Public key not enabled for application scope ({token})")
+        origin = request.headers.get("Origin", "")
+        if not origin or origin not in (token.origins or []):
+            raise InvalidGrantError(f"Origin not allowed for {token}")
+        return True
+
     def _check_valid_scope(self, token: "ApiKey", view: "APIView") -> bool:
         if "org" in view.kwargs and view.kwargs["org"] != token.organization.slug:
             raise InvalidGrantError(f"Invalid organization for {token}")
@@ -60,7 +73,11 @@ class ApiApplicationPermission(ApiBasePermission):
                 and request.user.is_authenticated
                 and request.user.is_superuser
             )
-        return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
+        return (
+            isinstance(request.auth, ApiKey)
+            and self._check_valid_scope(request.auth, view)
+            and self._check_public_key(request, request.auth)
+        )
 
     def has_object_permission(self, request: Request, view: "APIView", obj: "Model") -> bool:
         if getattr(request, "auth", None) is None:
@@ -69,4 +86,8 @@ class ApiApplicationPermission(ApiBasePermission):
                 and request.user.is_authenticated
                 and request.user.is_superuser
             )
-        return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
+        return (
+            isinstance(request.auth, ApiKey)
+            and self._check_valid_scope(request.auth, view)
+            and self._check_public_key(request, request.auth)
+        )

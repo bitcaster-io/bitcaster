@@ -96,6 +96,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "bitcaster.middleware.cors.BrowserCorsMiddleware",
     "bitcaster.middleware.errors.ExceptionHandlingMiddleware",
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
