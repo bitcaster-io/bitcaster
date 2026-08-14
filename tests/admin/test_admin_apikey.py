@@ -152,3 +152,70 @@ def test_show_key(app: DjangoTestApp, root: bool) -> None:
     with mock.patch("bitcaster.admin.api_key.is_root", return_value=root):
         res: DjangoWebtestResponse = app.get(url)
         assert (api_key.key in res.text) is root
+
+
+@pytest.mark.parametrize(
+    "overrides,message",
+    [
+        ({"application": None}, "Web keys must be scoped to an application"),
+        ({"grants": [Grant.EVENT_TRIGGER]}, "Web keys can only have the WEB_TRIGGER grant"),
+        ({"allowed_origins": []}, "Web keys require at least one allowed origin"),
+    ],
+)
+def test_web_key_admin_form_rejects(api_key: "ApiKey", overrides: dict[str, Any], message: str) -> None:
+    from bitcaster.admin.api_key import ApiKeyForm
+    from bitcaster.models.key import ApiKeyKind
+
+    data: dict[str, Any] = {
+        "name": "Web-Key",
+        "organization": api_key.organization.pk,
+        "project": api_key.project.pk,
+        "application": api_key.application.pk,
+        "user": api_key.user.pk,
+        "kind": ApiKeyKind.WEB,
+        "grants": [Grant.WEB_TRIGGER],
+        "allowed_origins": ["https://example.com"],
+    }
+    data.update(overrides)
+    form = ApiKeyForm(data=data)
+    assert not form.is_valid()
+    assert message in " ".join(str(e) for e in form.errors.values())
+
+
+def test_server_key_admin_form_rejects_web_trigger(api_key: "ApiKey") -> None:
+    from bitcaster.admin.api_key import ApiKeyForm
+    from bitcaster.models.key import ApiKeyKind
+
+    form = ApiKeyForm(
+        data={
+            "name": "Server-Key",
+            "organization": api_key.organization.pk,
+            "project": api_key.project.pk,
+            "application": api_key.application.pk,
+            "user": api_key.user.pk,
+            "kind": ApiKeyKind.SERVER,
+            "grants": [Grant.WEB_TRIGGER],
+            "allowed_origins": ["https://example.com"],
+        }
+    )
+    assert not form.is_valid()
+    assert "WEB_TRIGGER is only allowed for web keys" in str(form.errors)
+
+
+def test_web_key_admin_form_valid(api_key: "ApiKey") -> None:
+    from bitcaster.admin.api_key import ApiKeyForm
+    from bitcaster.models.key import ApiKeyKind
+
+    form = ApiKeyForm(
+        data={
+            "name": "Web-Key",
+            "organization": api_key.organization.pk,
+            "project": api_key.project.pk,
+            "application": api_key.application.pk,
+            "user": api_key.user.pk,
+            "kind": ApiKeyKind.WEB,
+            "grants": [Grant.WEB_TRIGGER],
+            "allowed_origins": ["https://example.com"],
+        }
+    )
+    assert form.is_valid(), form.errors

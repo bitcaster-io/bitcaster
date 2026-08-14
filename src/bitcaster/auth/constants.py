@@ -22,6 +22,7 @@ class Grant(TextChoices):
     EVENT_LIST = "EVENT_LIST", "Event list"
     EVENT_TRIGGER = "EVENT_TRIGGER", "Event Trigger"
     EVENT_AUTO_CREATE = "EVENT_AUTO_CREATE", "Event Auto-Create"
+    WEB_TRIGGER = "WEB_TRIGGER", "Web Event Trigger"
 
     DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"
     MANAGE_APPLICATION_USERS = "MANAGE_APPLICATION_USERS", "Manage Application Users"

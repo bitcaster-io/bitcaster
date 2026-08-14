@@ -18,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster.auth.constants import Grant
 from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
+from bitcaster.models.key import ApiKeyKind
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
@@ -35,7 +36,19 @@ logger = logging.getLogger(__name__)
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
     class Meta:
         model = ApiKey
-        fields = ("name", "organization", "user", "grants", "environments", "project", "application")
+        fields = (
+            "name",
+            "organization",
+            "user",
+            "kind",
+            "grants",
+            "environments",
+            "project",
+            "application",
+            "allowed_origins",
+            "expires_at",
+            "is_active",
+        )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -53,17 +66,40 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
             a = cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
                 raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
+        kind = cleaned_data.get("kind", ApiKeyKind.SERVER)
+        grants = cleaned_data.get("grants") or []
+        if kind == ApiKeyKind.WEB:
+            if not cleaned_data.get("application"):
+                raise ValidationError(_("Web keys must be scoped to an application"))
+            if set(grants) != {Grant.WEB_TRIGGER}:
+                raise ValidationError(_("Web keys can only have the WEB_TRIGGER grant"))
+            if not cleaned_data.get("allowed_origins"):
+                raise ValidationError(_("Web keys require at least one allowed origin"))
+        elif Grant.WEB_TRIGGER in grants:
+            raise ValidationError(_("WEB_TRIGGER is only allowed for web keys"))
         return cleaned_data
 
 
 class ApiKeyAdmin(BaseAdmin[ApiKey]):
     search_fields = ("name",)
-    list_display = ("name", "user", "organization", "project", "application", "environments")
+    list_display = (
+        "name",
+        "kind",
+        "user",
+        "organization",
+        "project",
+        "application",
+        "environments",
+        "expires_at",
+        "is_active",
+    )
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="project")),
         EnvironmentFilter,
+        "kind",
+        "is_active",
     )
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm

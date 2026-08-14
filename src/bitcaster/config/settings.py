@@ -93,6 +93,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "bitcaster.middleware.cors.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -258,8 +259,10 @@ TIME_FORMATS = [
 logger = logging.getLogger(__name__)
 
 from .fragments.agents import *  # noqa
+from .fragments.api import *  # noqa
 from .fragments.bitcaster import *  # noqa
 from .fragments.constance import *  # noqa
+from .fragments.cors import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
 from .fragments.dramatiq import *  # noqa
@@ -268,7 +271,6 @@ from .fragments.help import *  # noqa
 from .fragments.logging import *  # noqa
 from .fragments.pwa import *  # noqa
 from .fragments.rest_framework import *  # noqa
-from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa

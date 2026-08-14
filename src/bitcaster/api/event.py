@@ -1,19 +1,22 @@
 from typing import TYPE_CHECKING, Any
 
+import json
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import QuerySet
 from django.utils.translation import gettext as _
 
 from .base import SecurityMixin
 from ..auth.constants import Grant
-from ..exceptions import InactiveError, LockError
-from ..models import Application, Event, LogEntry, Occurrence, User
+from ..exceptions import InactiveError, InvalidGrantError, LockError
+from ..models import ApiKey, Application, ClientToken, Event, LogEntry, Occurrence, User
 from ..utils.filtering import validate_filters, validate_lookups, validate_schema
 
 if TYPE_CHECKING:
@@ -91,7 +94,7 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
     """Trigger application's event."""
 
     serializer_class = EventSerializer
-    required_grants = [Grant.EVENT_TRIGGER]
+    required_grants = [Grant.EVENT_TRIGGER, Grant.WEB_TRIGGER]
     parser = (JSONParser,)
     http_method_names = ["post"]
 
@@ -101,6 +104,29 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
             application__project__slug=self.kwargs["prj"],
             application__slug=self.kwargs["app"],
         )
+
+    @staticmethod
+    def _is_web_credential(request: "Request") -> bool:
+        auth = getattr(request, "auth", None)
+        if isinstance(auth, ClientToken):
+            return True
+        if isinstance(auth, ApiKey):
+            return auth.is_web()
+        return False
+
+    def _check_web_restrictions(self, request: "Request", ser: ActionSerializer) -> Response | None:
+        if not self._is_web_credential(request):
+            return None
+        initial_options = ser.initial_data.get("options") or {}
+        if "filters" in initial_options:
+            return Response({"error": "filters are not allowed for web credentials"}, status=400)
+        context = ser.validated_data.get("payload_context", {})
+        if len(json.dumps(context).encode("utf-8")) > settings.TRIGGER_CONTEXT_MAX_SIZE:
+            return Response(
+                {"error": f"context exceeds the maximum size of {settings.TRIGGER_CONTEXT_MAX_SIZE} bytes"},
+                status=400,
+            )
+        return None
 
     @extend_schema(
         request=ActionSerializer,
@@ -125,7 +151,7 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
                     if not evt.active:
                         raise InactiveError(evt)
                 except Event.DoesNotExist:
-                    grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
+                    grant = not self._is_web_credential(request) and Grant.EVENT_AUTO_CREATE in request.auth.grants
                     if grant and (
                         app := Application.objects.select_related("project__organization")
                         .filter(
@@ -181,12 +207,18 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
                     raise LockError(evt.application.project)
                 self.check_object_permissions(self.request, evt)
 
+                if isinstance(request.auth, ClientToken) and request.auth.event and request.auth.event_id != evt.pk:
+                    raise InvalidGrantError("Token is not valid for this event")
+
+                if restriction := self._check_web_restrictions(request, ser):
+                    return restriction
+
                 opts: "OccurrenceOptions" = ser.validated_data.get("options", {})
-                if request.auth.environments:
+                if environments := getattr(request.auth, "environments", None):
                     if "environs" in opts:
-                        opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
+                        opts["environs"] = list(set(opts["environs"]).intersection(environments))
                     else:
-                        opts["environs"] = request.auth.environments
+                        opts["environs"] = environments
                 if create_occurrence:
                     o: "Occurrence" = evt.trigger(
                         context=ser.validated_data.get("payload_context", {}),

@@ -172,7 +172,7 @@ When triggering an event via API, use the `context` for message data and `option
 ### Basic Trigger (Standard Policy)
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
-     -H "Authorization: Token YOUR_API_KEY" \
+     -H "Authorization: Key YOUR_API_KEY" \
      -d '{
            "context": {"user_count": 50, "status": "ok"}
          }'
@@ -183,7 +183,7 @@ If your notification is set to **External Ruled Filtering**, you must provide th
 
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
-     -H "Authorization: Token YOUR_API_KEY" \
+     -H "Authorization: Key YOUR_API_KEY" \
      -d '{
            "context": {"ticket_id": 123},
            "options": {

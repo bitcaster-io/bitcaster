@@ -146,16 +146,29 @@ Default: `false`
 Redirect all HTTP traffic to HTTPS.
 
 
-### ROOT_TOKEN
+### CLIENT_TOKEN_TTL
+Default: `900`
+
+Lifetime in seconds of client tokens minted via the token exchange endpoint.
+Client tokens are short-lived credentials meant to be used from web pages.
+
+
+### CORS_ALLOWED_ORIGINS
 Default: ``
 
-Static token accepted by the root API endpoints.
+Explicit allowlist of origins allowed to call the public API from a browser.
+Use full origins without trailing slash, e.g. `https://example.com`.
+
+Requests carrying an `Origin` header are only served CORS headers when the
+origin is listed here. Combined with web API keys and client tokens, this
+prevents other websites from using credentials embedded in your pages.
 
 
-### ROOT_TOKEN_HEADER
-Default: `x-root-token`
+### TRIGGER_CONTEXT_MAX_SIZE
+Default: `32768`
 
-HTTP header that carries the root token value.
+Maximum size in bytes of the serialized `context` payload accepted from web
+credentials (web API keys and client tokens) on the trigger endpoint.
 
 
 ### SECRET_KEY

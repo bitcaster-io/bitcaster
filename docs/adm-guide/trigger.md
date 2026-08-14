@@ -12,6 +12,16 @@ Authentication is performed via an <glossary:API Key> sent in the `Authorization
 
 The API Key must have the `event:trigger` grant for the specified event's application.
 
+### Web Credentials
+
+Triggers coming from a browser must use a **Web API Key** or a **Client Token** instead. Web credentials require the request to carry an `Origin` header matching one of the configured allowed origins, and:
+
+-   they can only have the `web:trigger` grant;
+-   they cannot auto-create events or use `filters`;
+-   the serialized `context` payload is limited to `TRIGGER_CONTEXT_MAX_SIZE` bytes (default `32768`).
+
+See [Trigger Events from a Web Page](web-client.md) for the recommended setup.
+
 ## Request Body
 
 The request body should be a JSON object with the following properties:
@@ -91,6 +101,6 @@ In this example, the notification will be sent to all staff members who are also
     }
     ```
 -   **`400 BAD REQUEST`**: The request was invalid. The response body will contain details about the error.
--   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
--   **`403 FORBIDDEN`**: The API key does not have the required permissions.
+-   **`401 UNAUTHORIZED`**: The API key is invalid, revoked, or expired.
+-   **`403 FORBIDDEN`**: The API key does not have the required permissions, or the `Origin` header is missing or not allowed.
 -   **`404 NOT FOUND`**: The organization, project, application, or event does not exist.

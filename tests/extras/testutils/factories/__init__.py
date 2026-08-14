@@ -6,6 +6,7 @@ from .assignment import AssignmentFactory
 from .attachment import AttachmentFactory
 from .browser import BrowserFactory
 from .channel import ChannelFactory
+from .client_token import ClientTokenFactory
 from .delivery import DeliveryFactory
 from .deliverysimulation import DeliverySimulationFactory
 from .distribution import DistributionListFactory
@@ -41,6 +42,7 @@ __all__ = [
     "BrowserFactory",
     "BrowserFactory",
     "ChannelFactory",
+    "ClientTokenFactory",
     "DeliveryFactory",
     "DeliverySimulationFactory",
     "DistributionListFactory",

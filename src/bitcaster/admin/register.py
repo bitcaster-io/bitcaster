@@ -11,6 +11,7 @@ from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
 from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
+from .client_token import ClientTokenAdmin
 from .delivery import DeliveryAdmin
 from .deliverysimulation import DeliverySimulationAdmin
 from .distribution import DistributionListAdmin
@@ -55,6 +56,7 @@ admin.site.register(models.ApplicationMembership, ApplicationMembershipAdmin)
 admin.site.register(models.Assignment, AssignmentAdmin)
 admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
+admin.site.register(models.ClientToken, ClientTokenAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
 admin.site.register(models.Delivery, DeliveryAdmin)
 admin.site.register(models.DeliverySimulation, DeliverySimulationAdmin)

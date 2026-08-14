@@ -5,7 +5,9 @@ from urllib.parse import urlsplit, urlunsplit
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import TextChoices
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
@@ -23,6 +25,11 @@ TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-_~."
 
 def make_token() -> str:
     return get_random_string(96, TOKEN_CHARS)
+
+
+class ApiKeyKind(TextChoices):
+    SERVER = "SERVER", _("Server Key")
+    WEB = "WEB", _("Web Key")
 
 
 class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
@@ -73,6 +80,13 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     key = models.CharField(
         verbose_name=_("Token"), max_length=255, default=make_token, unique=True, help_text=_("api key")
     )
+    kind = models.CharField(
+        verbose_name=_("Kind"),
+        max_length=20,
+        choices=ApiKeyKind.choices,
+        default=ApiKeyKind.SERVER,
+        help_text=_("Server keys are used by backends. Web keys are meant to be embedded in web pages"),
+    )
     grants = ChoiceArrayField(
         models.CharField(max_length=255, choices=Grant.choices),
         verbose_name=_("Grants"),
@@ -87,6 +101,35 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
         null=True,
         help_text=_("Limit validity to these environments. If empty the key will be valid for any environment"),
     )
+    allowed_origins = ArrayField(
+        models.CharField(max_length=255, blank=True, null=True),
+        verbose_name=_("Allowed origins"),
+        blank=True,
+        null=True,
+        default=list,
+        help_text=_(
+            "Origins allowed to use this key (required for web keys). "
+            "Requests carrying an Origin header must match one of these values"
+        ),
+    )
+    is_active = models.BooleanField(
+        verbose_name=_("Active"),
+        default=True,
+        help_text=_("If unchecked the key is revoked and cannot be used"),
+    )
+    expires_at = models.DateTimeField(
+        verbose_name=_("Expires at"),
+        blank=True,
+        null=True,
+        help_text=_("Optional expiration date. Expired keys are rejected by the API"),
+    )
+    last_used_at = models.DateTimeField(
+        verbose_name=_("Last used at"),
+        blank=True,
+        null=True,
+        editable=False,
+        help_text=_("Timestamp of the last successful authentication"),
+    )
     objects = ApiKeyManager()
 
     class Meta:
@@ -94,6 +137,22 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
         unique_together = (("name", "user"),)
         verbose_name = _("Api Key")
         verbose_name_plural = _("Api Keys")
+
+    def clean(self) -> None:
+        super().clean()
+        grants = self.grants or []
+        if self.kind == ApiKeyKind.WEB:
+            if not self.application:
+                raise ValidationError({"application": _("Web keys must be scoped to an application")})
+            if set(grants) != {Grant.WEB_TRIGGER}:
+                raise ValidationError({"grants": _("Web keys can only have the WEB_TRIGGER grant")})
+            if not self.allowed_origins:
+                raise ValidationError({"allowed_origins": _("Web keys require at least one allowed origin")})
+        elif Grant.WEB_TRIGGER in grants:
+            raise ValidationError({"grants": _("WEB_TRIGGER is only allowed for web keys")})
+
+    def is_web(self) -> bool:
+        return self.kind == ApiKeyKind.WEB
 
     def get_bae(self) -> str:
         password = self.key

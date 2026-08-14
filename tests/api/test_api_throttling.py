@@ -116,3 +116,66 @@ def test_sliding_window_fallback_rejection(api_factory: APIRequestFactory, monke
     assert view(api_factory.get(url)).status_code == status.HTTP_200_OK
     # 3rd request should hit Line 111 (return False)
     assert view(api_factory.get(url)).status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+
+@pytest.mark.django_db
+def test_sliding_window_web_key_per_key_and_ip(api_factory: APIRequestFactory, monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Web credentials (WEB API keys / client tokens) are throttled per key AND IP.
+    """
+    from testutils.factories import ApiKeyFactory
+
+    from bitcaster.auth.constants import Grant
+    from bitcaster.models.key import ApiKeyKind
+
+    mock_caches = MagicMock()
+    mock_caches.__getitem__.return_value.client.get_client.side_effect = Exception("Redis Down")
+    monkeypatch.setattr("bitcaster.api.throttling.caches", mock_caches)
+
+    key = ApiKeyFactory(grants=[Grant.WEB_TRIGGER], kind=ApiKeyKind.WEB, allowed_origins=["https://example.com"])
+
+    view = MockView.as_view()  # rate = 2
+    url = "/fake-endpoint/"
+
+    def request_for(ip: str):
+        req = api_factory.get(url, REMOTE_ADDR=ip)
+        req._force_auth_user = key.user
+        req._force_auth_token = key
+        return req
+
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_200_OK
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_200_OK
+    # same key + same IP exceeds the limit
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_429_TOO_MANY_REQUESTS
+    # same key + different IP gets a fresh bucket
+    assert view(request_for("2.2.2.2")).status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+def test_sliding_window_client_token_per_key_and_ip(
+    api_factory: APIRequestFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """
+    Client tokens are throttled per token AND IP.
+    """
+    from testutils.factories import ClientTokenFactory
+
+    mock_caches = MagicMock()
+    mock_caches.__getitem__.return_value.client.get_client.side_effect = Exception("Redis Down")
+    monkeypatch.setattr("bitcaster.api.throttling.caches", mock_caches)
+
+    token = ClientTokenFactory(allowed_origins=["https://example.com"])
+
+    view = MockView.as_view()  # rate = 2
+    url = "/fake-endpoint/"
+
+    def request_for(ip: str):
+        req = api_factory.get(url, REMOTE_ADDR=ip)
+        req._force_auth_user = token.user
+        req._force_auth_token = token
+        return req
+
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_200_OK
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_200_OK
+    assert view(request_for("1.1.1.1")).status_code == status.HTTP_429_TOO_MANY_REQUESTS
+    assert view(request_for("2.2.2.2")).status_code == status.HTTP_200_OK

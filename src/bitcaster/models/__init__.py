@@ -5,6 +5,7 @@ from .application import Application
 from .assignment import Assignment
 from .attachment import Attachment
 from .channel import Channel
+from .client_token import ClientToken
 from .delivery import Delivery
 from .deliverysimulation import DeliverySimulation
 from .distribution import DistributionList
@@ -37,6 +38,7 @@ __all__ = [
     "Assignment",
     "Attachment",
     "Channel",
+    "ClientToken",
     "DistributionList",
     "Delivery",
     "DeliverySimulation",
