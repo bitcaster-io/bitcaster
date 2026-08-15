@@ -77,8 +77,6 @@ def test_model_occurrence_filter(
                 }
             ],
             "missing_template": [],
-            "phase1_at": "",
-            "phase2_attempts": [],
             "processing": {
                 "phase1_at": occurrence.data["processing"]["phase1_at"],
                 "phase2_attempts": [],
@@ -228,9 +226,8 @@ def test_preview_fast_no_side_effects(user: "User") -> None:
     notification.distribution.recipients.add(assignment)
 
     occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
-    success, data = occurrence.preview("fast")
+    data = occurrence.preview("fast")
 
-    assert success is True
     assert data["delivered"] == []
     assert data["recipients"] == [
         (
@@ -258,9 +255,8 @@ def test_preview_full_renders_all(user: "User") -> None:
     notification.distribution.recipients.add(assignment)
 
     occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
-    success, data = occurrence.preview("full")
+    data = occurrence.preview("full")
 
-    assert success is True
     assert data["delivered"] == []
     rendered = data["rendered"]
     assert len(rendered) == 1
@@ -289,9 +285,8 @@ def test_preview_partial_caps_rendering(user: "User") -> None:
         notification.distribution.recipients.add(asm)
 
     occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
-    success, data = occurrence.preview("partial", limit=2)
+    data = occurrence.preview("partial", limit=2)
 
-    assert success is True
     assert len(data["recipients"]) == 5  # all recipients collected
     assert len(data["rendered"]) == 2  # rendering capped
 
@@ -306,9 +301,8 @@ def test_preview_missing_template(user: "User") -> None:
     notification.distribution.recipients.add(assignment)
 
     occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
-    success, data = occurrence.preview("full")
+    data = occurrence.preview("full")
 
-    assert success is True
     assert data["recipients"][0][5] is None  # template_pk is None
     assert data["rendered"] == []
     assert data["missing_template"] == [
@@ -342,9 +336,8 @@ def test_preview_render_error_does_not_abort(user: "User", monkeypatch: pytest.M
     )
 
     occurrence = Occurrence(event=notification.event, context={"foo": "bar"}, options={})
-    success, data = occurrence.preview("full")
+    data = occurrence.preview("full")
 
-    assert success is True
     assert len(data["rendered"]) == 1  # second recipient still rendered
     assert data["rendered"][0]["assignment_pk"] == asm2.pk
     assert any("boom" in error for error in data["errors"])
@@ -371,3 +364,13 @@ def test_process_missing_template_does_not_crash(user: "User", monkeypatch: pyte
     assert occurrence.status == Occurrence.Status.PROCESSING
     assert occurrence.data["recipients"][0][5] is None  # template_pk None, no crash
     assert occurrence.data["messages"] == []
+
+
+def test_process_swallows_exception(user: "User", monkeypatch: pytest.MonkeyPatch) -> None:
+    from testutils.factories import ChannelFactory, NotificationFactory
+    from unittest.mock import patch
+
+    notification = NotificationFactory.create(event__channels=[ChannelFactory()])
+    occurrence: "Occurrence" = notification.event.trigger(context={})
+    with patch("bitcaster.models.occurrence.Occurrence._process", side_effect=RuntimeError("boom")):
+        assert occurrence.process() == 0

@@ -24,7 +24,6 @@ class XConfig(DispatcherConfig):
 
 
 class XDispatcher(Dispatcher):
-    id = 500
     slug = "x"
     verbose_name = "X (Twitter)"
     config_class = XConfig

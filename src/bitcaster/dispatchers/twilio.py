@@ -22,7 +22,6 @@ class TwilioConfig(DispatcherConfig):
 
 
 class TwilioSMS(Dispatcher):
-    id = 500
     slug = "sms"
     verbose_name = "SMS (Twilio)"
     config_class: type[DispatcherConfig] = TwilioConfig

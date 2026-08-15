@@ -330,8 +330,6 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
             }
         ],
         "missing_template": [],
-        "phase1_at": "",
-        "phase2_attempts": [],
         "processing": {
             "phase1_at": mock.ANY,
             "phase2_attempts": [],

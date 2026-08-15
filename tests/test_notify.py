@@ -137,8 +137,6 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
             },
         ],
         "missing_template": [],
-        "phase1_at": "",
-        "phase2_attempts": [],
         "processing": {
             "phase1_at": ANY,
             "phase2_attempts": [],

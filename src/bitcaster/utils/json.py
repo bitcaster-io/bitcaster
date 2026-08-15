@@ -66,12 +66,7 @@ def merge_dicts(d1: Any, d2: Any) -> Any:
 
 
 def override_dicts(d1: "JSON", d2: "JSON") -> "JSON":
-    """Shallow override.
-
-    - values in d2 completely replace values in d1
-    """
-    result = d1.copy()
-    result.update(d2)
+    """Return d2, ignoring d1."""
     return d2
 
 

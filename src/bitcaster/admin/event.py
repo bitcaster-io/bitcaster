@@ -243,7 +243,7 @@ class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Eve
                 try:
                     limit = config.DEBUG_PREVIEW_RENDER_LIMIT if mode == "partial" else None
                     occurrence = Occurrence(event=evt, context=ctx, options=opts)
-                    _success, data = occurrence.preview(mode, limit)
+                    data = occurrence.preview(mode, limit)
                     simulation.save_deliveries(data)
                 except Exception as e:
                     logger.exception(e)

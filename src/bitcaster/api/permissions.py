@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from ..auth.constants import Grant
 from ..exceptions import InvalidGrantError
-from ..models import ApiKey, User
+from ..models import ApiKey
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +19,6 @@ if TYPE_CHECKING:
 class ApiKeyAuthentication(authentication.TokenAuthentication):
     keyword = "Key"
     model = ApiKey
-
-    def authenticate(self, request: "Request") -> "tuple[ApiKey, User] | None":
-        certs: "tuple[ApiKey, User] | None" = super().authenticate(request)
-        if certs:
-            request.user = certs[1]
-        return certs
 
 
 class ApiBasePermission(permissions.BasePermission):
@@ -49,11 +43,11 @@ class ApiBasePermission(permissions.BasePermission):
         if not ret:
             logger.error(f"{view.grants} not in {token.grants}")
             raise InvalidGrantError(f"You do not have permission to perform this action. {view.grants}")
-        return ret
+        return True
 
 
 class ApiApplicationPermission(ApiBasePermission):
-    def has_permission(self, request: Request, view: APIView) -> bool:
+    def _has_permission(self, request: Request, view: APIView) -> bool:
         if getattr(request, "auth", None) is None:
             return (
                 getattr(request, "user", None) is not None
@@ -62,11 +56,8 @@ class ApiApplicationPermission(ApiBasePermission):
             )
         return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
 
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        return self._has_permission(request, view)
+
     def has_object_permission(self, request: Request, view: "APIView", obj: "Model") -> bool:
-        if getattr(request, "auth", None) is None:
-            return (
-                getattr(request, "user", None) is not None
-                and request.user.is_authenticated
-                and request.user.is_superuser
-            )
-        return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
+        return self._has_permission(request, view)

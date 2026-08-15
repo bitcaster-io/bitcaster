@@ -13,7 +13,7 @@ Organization (owner FK→User)
                  └── Monitor (event FK→Event)
        └── DistributionList (project FK→Project)
        └── Channel (org FK→Organization, optional project)
-  └── ApiKey (Scoped3Mixin: org/project/application)
+  └── ApiKey (ScopedMixin: org/project/application)
   └── UserRole (user FK→User, org FK→Organization, group FK→Group)
 ```
 
@@ -47,7 +47,7 @@ Organization (owner FK→User)
 
 ## Scoped Models
 
-- `Scoped3Mixin` (ApiKey, MessageTemplate): auto-resolves org→project→application cascade on `save()`
+- `ScopedMixin` (ApiKey, MessageTemplate): auto-resolves org→project→application cascade on `save()`
 - `ScopedManager`: auto-resolves during `get_or_create`/`update_or_create`
 - `Channel` uses `ChainedForeignKey` for org→project scoping
 
@@ -55,5 +55,5 @@ Organization (owner FK→User)
 
 - Creating an Application without a Project (or breaking the FK chain)
 - Forgetting `.local()` when querying user-facing objects
-- Setting `organization`/`project` directly on a `Scoped3Mixin` model — overwritten on save
+- Setting `organization`/`project` directly on a `ScopedMixin` model — overwritten on save
 - Assuming `owner` field is enforced as authorization

@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
 import json
-import logging
 
 import pika
 from pika.adapters.blocking_connection import BlockingChannel
@@ -11,12 +10,9 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.dispatchers.base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
-from bitcaster.exceptions import DispatcherError
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment
-
-logger = logging.getLogger(__name__)
 
 
 class RabbitMQConfig(DispatcherConfig):
@@ -49,6 +45,7 @@ class RabbitMQDispatcher(Dispatcher):
     verbose_name = "RabbitMQ"
     protocol = MessageProtocol.PLAINTEXT
     config_class = RabbitMQConfig
+    error_prefix = "RabbitMQ publish failed"
 
     def _get_connection_params(self) -> dict[str, Any]:
         return {
@@ -72,18 +69,15 @@ class RabbitMQDispatcher(Dispatcher):
         return channel
 
     def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        try:
-            channel = self._get_channel()
-            routing_key = self.config.get("routing_key") or payload.event.slug
-            body = payload.as_dict()
-            body["event"] = payload.event.slug
-            channel.basic_publish(
-                exchange=self.config["exchange"],
-                routing_key=routing_key,
-                body=json.dumps(body),
-                properties=BasicProperties(delivery_mode=2),
-            )
-            channel.connection.close()
-            return True
-        except Exception as e:
-            raise DispatcherError(f"RabbitMQ publish failed: {e}") from e
+        channel = self._get_channel()
+        routing_key = self.config.get("routing_key") or payload.event.slug
+        body = payload.as_dict()
+        body["event"] = payload.event.slug
+        channel.basic_publish(
+            exchange=self.config["exchange"],
+            routing_key=routing_key,
+            body=json.dumps(body),
+            properties=BasicProperties(delivery_mode=2),
+        )
+        channel.connection.close()
+        return True

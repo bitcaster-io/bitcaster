@@ -1,15 +1,11 @@
 from typing import Any
 
-import logging
-
 from unfold import forms
 
 from django.forms import ChoiceField
 
 from bitcaster.dispatchers.base import MessageProtocol
 from bitcaster.models import Channel
-
-logger = logging.getLogger(__name__)
 
 
 class EmailChannel(ChoiceField):

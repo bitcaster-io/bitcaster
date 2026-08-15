@@ -151,30 +151,34 @@ def delete_expired_user_messages() -> None | Exception:
     UserMessage.objects.expired().delete()
 
 
-@dramatiq.actor(actor_class=SmartActor, logging=True)
-def purge_occurrences(max_batches: int = 100) -> None | Exception:
+def _purge(model: "type[Any]", label: str, max_batches: int = 100) -> None | Exception:
     from django.db import transaction
 
-    from bitcaster.models import Occurrence
-
-    logger.info("Starting occurrence purge")
+    logger.info(f"Starting {label} purge")
     try:
         batch_size = 10000
         iteration = 0
         while iteration < max_batches:
             with transaction.atomic():
                 # Order by PK for deterministic batching
-                ids = list(Occurrence.objects.purgeable().order_by("pk").values_list("pk", flat=True)[:batch_size])
+                ids = list(model.objects.purgeable().order_by("pk").values_list("pk", flat=True)[:batch_size])
 
                 if not ids:
                     break
 
-                Occurrence.objects.filter(pk__in=ids).delete()
+                model.objects.filter(pk__in=ids).delete()
                 iteration += 1
                 logger.debug(f"Deleted batch {iteration}")
     except Exception as e:
-        logger.exception("Failed to purge occurrences")
+        logger.exception(f"Failed to purge {label}")
         return e
+
+
+@dramatiq.actor(actor_class=SmartActor, logging=True)
+def purge_occurrences(max_batches: int = 100) -> None | Exception:
+    from bitcaster.models import Occurrence
+
+    return _purge(Occurrence, "occurrence", max_batches)
 
 
 @dramatiq.actor(actor_class=SmartActor, max_retries=0)
@@ -191,7 +195,7 @@ def run_event_simulation(simulation_pk: int) -> None:
     try:
         limit = config.DEBUG_PREVIEW_RENDER_LIMIT if simulation.mode == EventSimulation.Mode.PARTIAL else None
         occurrence = Occurrence(event=simulation.event, context=simulation.context, options=simulation.options)
-        _, data = occurrence.preview(simulation.mode, limit)
+        data = occurrence.preview(simulation.mode, limit)
         simulation.save_deliveries(data)
     except Exception as e:
         logger.exception(e)
@@ -202,28 +206,9 @@ def run_event_simulation(simulation_pk: int) -> None:
 
 @dramatiq.actor(actor_class=SmartActor, logging=True)
 def purge_event_simulations(max_batches: int = 100) -> None | Exception:
-    from django.db import transaction
-
     from bitcaster.models import EventSimulation
 
-    logger.info("Starting event simulations purge")
-    try:
-        batch_size = 10000
-        iteration = 0
-        while iteration < max_batches:
-            with transaction.atomic():
-                # Order by PK for deterministic batching
-                ids = list(EventSimulation.objects.purgeable().order_by("pk").values_list("pk", flat=True)[:batch_size])
-
-                if not ids:
-                    break
-
-                EventSimulation.objects.filter(pk__in=ids).delete()
-                iteration += 1
-                logger.debug(f"Deleted batch {iteration}")
-    except Exception as e:
-        logger.exception("Failed to purge event simulations")
-        return e
+    return _purge(EventSimulation, "event simulations", max_batches)
 
 
 @dramatiq.actor(actor_class=SmartActor, logging=True)

@@ -152,8 +152,6 @@ def test_process_event_single(setup: "Context") -> None:
             },
         ],
         "missing_template": [],
-        "phase1_at": "",
-        "phase2_attempts": [],
         "processing": {
             "phase1_at": ANY,
             "phase2_attempts": [],
@@ -268,8 +266,6 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
         "messages": [],
         "rendered": [],
         "missing_template": [],
-        "phase1_at": "",
-        "phase2_attempts": [],
         "processing": {
             "phase1_at": ANY,
             "phase2_attempts": [],

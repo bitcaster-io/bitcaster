@@ -218,7 +218,7 @@ class OccurrenceAdmin(BaseAdmin[Occurrence]):
                             with mock.patch(
                                 "bitcaster.models.notification.Notification.notify_to_channel", collect_info
                             ):
-                                __, data = obj._process()
+                                data = obj._process()
                         else:
                             data = obj.data
                         recipients_list = data.get("recipients", [])

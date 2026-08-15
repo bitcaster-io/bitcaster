@@ -11,7 +11,7 @@ from bitcaster.utils.shortcuts import render_message
 
 from .channel import Channel
 from .event import Event
-from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, ScopedMixin
 from .notification import Notification
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class MessageManager(BitcasterBaselManager["MessageTemplate"]):
         return self.get(name=name, organization__slug=org, **filters)
 
 
-class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
+class MessageTemplate(ScopedMixin, BitcasterBaseModel):
     application: "Application"
 
     name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("name of this template message"))

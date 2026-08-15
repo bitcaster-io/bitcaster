@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 import logging
 import time
 
-from dramatiq import Message, Middleware, Worker
+from dramatiq import Middleware, Worker
 
 from django import db
 
@@ -53,17 +53,8 @@ class ClickMiddleware(Middleware):
     def actor_options(self) -> set[str]:
         return {"logging", "start"}
 
-    def before_worker_boot(self, broker: "Broker", worker: "Worker") -> None:
-        pass
-
     def after_worker_boot(self, broker: "Broker", worker: "Worker") -> None:
         BackgroundManager().register_runner()
-
-    def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
-        pass
-
-    def before_ack(self, broker: "Broker", message: "MessageProxy") -> None:
-        pass
 
     def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
         message.options["start"] = time.perf_counter()

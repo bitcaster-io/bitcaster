@@ -112,9 +112,7 @@ def test_run_event_simulation_success():
 
     sim = EventSimulationFactory(mode="full")
     with override_config(DEBUG_PREVIEW_RENDER_LIMIT=2):
-        with patch(
-            "bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": []})
-        ) as mock_preview:
+        with patch("bitcaster.models.occurrence.Occurrence.preview", return_value={"delivered": []}) as mock_preview:
             run_event_simulation(sim.pk)
     sim.refresh_from_db()
     assert sim.status == Occurrence.Status.PROCESSING.value
@@ -128,7 +126,7 @@ def test_run_event_simulation_partial_uses_limit():
 
     sim = EventSimulationFactory(mode="partial")
     with override_config(DEBUG_PREVIEW_RENDER_LIMIT=7):
-        with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {})) as mock_preview:
+        with patch("bitcaster.models.occurrence.Occurrence.preview", return_value={}) as mock_preview:
             run_event_simulation(sim.pk)
     mock_preview.assert_called_once()
     assert mock_preview.call_args.args == ("partial", 7)
@@ -151,7 +149,7 @@ def test_run_event_simulation_does_not_overwrite_processed():
     """Atomic status guard: a concurrent completion is not overwritten by the task."""
 
     sim = EventSimulationFactory(mode="full", status=Occurrence.Status.PROCESSING.value, data={"errors": []})
-    with patch("bitcaster.models.occurrence.Occurrence.preview", return_value=(True, {"delivered": [1]})):
+    with patch("bitcaster.models.occurrence.Occurrence.preview", return_value={"delivered": [1]}):
         run_event_simulation(sim.pk)
     sim.refresh_from_db()
     assert sim.status == Occurrence.Status.PROCESSING.value

@@ -95,7 +95,6 @@ class DispatcherConfig(forms.Form):
 
 
 class DispatcherMeta(abc.ABCMeta):
-    _all = {}
     verbose_name: str = ""
 
     def __repr__(cls) -> str:
@@ -140,14 +139,17 @@ class Dispatcher(metaclass=DispatcherMeta):
         else:
             klass = self.backend
         logger.debug(f"Dispacther: {klass} creating connection with config {self.config}")
-        return klass(fail_silently=False, **self.config)
+        return klass(fail_silently=False, **self.get_backend_kwargs())
+
+    def get_backend_kwargs(self) -> dict[str, Any]:
+        return self.config
 
     @property
     def config(self) -> dict[str, Any]:
         cfg: "TDispatcherConfig_co" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
-        return cfg.cleaned_data
+        return {**self.default_config, **cfg.cleaned_data}
 
     def get_extra_config_info(self) -> str:
         return ""
@@ -160,13 +162,15 @@ class Dispatcher(metaclass=DispatcherMeta):
     def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         raise NotImplementedError
 
+    error_prefix = "Error sending message"
+
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             return self._send(address, payload, assignment, **kwargs)
         except DispatcherError:
             raise
         except Exception as e:
-            raise DispatcherError(f"Error sending message: {e}") from e
+            raise DispatcherError(f"{self.error_prefix}: {e}") from e
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
         return HttpResponseRedirect(".")

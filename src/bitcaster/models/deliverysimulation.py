@@ -7,9 +7,9 @@ from .mixins import BitcasterBaseModel
 
 
 def _status_choices() -> list[tuple[str, str]]:
-    from .occurrence import Occurrence
+    from .occurrence import status_choices
 
-    return Occurrence.Status.choices
+    return status_choices()
 
 
 class DeliverySimulation(BitcasterBaseModel):

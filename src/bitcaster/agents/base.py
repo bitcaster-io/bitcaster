@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class AgentMeta(type["Agent"]):
-    _all = {}
     verbose_name: str = ""
 
     def __repr__(cls) -> str:
@@ -51,8 +50,8 @@ class Agent(metaclass=AgentMeta):
     @abc.abstractmethod
     def check(self, notify: bool = True, update: bool = True) -> None: ...
 
-    @abc.abstractmethod
-    def notify(self) -> None: ...
+    def notify(self) -> None:
+        self.check(notify=True, update=False)
 
     @abc.abstractmethod
     def changes_detected(self) -> bool: ...

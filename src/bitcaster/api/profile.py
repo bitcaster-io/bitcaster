@@ -7,7 +7,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from .base import SecurityMixin
@@ -26,9 +25,6 @@ class UserProfileSerializer(serializers.ModelSerializer[User]):
 class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
     serializer_class = UserProfileSerializer
     required_grants = [Grant.USER_PROFILE]
-
-    def get_queryset(self) -> QuerySet[User]:
-        raise NotImplementedError
 
     def get_object(self) -> "User":
         return cast("User", self.request.user)

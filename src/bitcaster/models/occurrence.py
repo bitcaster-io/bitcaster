@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
 
 import logging
 from collections.abc import Generator
@@ -64,8 +64,6 @@ if TYPE_CHECKING:
         messages: list[int]
         rendered: NotRequired[list[RenderedData]]
         missing_template: NotRequired[list[MissingTemplateData]]
-        phase1_at: NotRequired[str]
-        phase2_attempts: NotRequired[list[str]]
         processing: NotRequired[ProcessingData | dict[str, Any]]
 
     class RecipientsData(TypedDict):
@@ -203,14 +201,12 @@ class Occurrence(BitcasterBaseModel):
                     o.attempts = o.attempts - 1
                     o.save()
                     if o.status == Occurrence.Status.NEW:
-                        success, ret = o._process()
-                        o.data = ret
+                        o.data = o._process()
                         o.data["processing"] = {
                             "phase1_at": timezone.now().isoformat(),
                             "phase2_attempts": [],
                         }
-                        if success:
-                            o.status = Occurrence.Status.PROCESSING
+                        o.status = Occurrence.Status.PROCESSING
                         o.recipients = o.deliveries.count()
                         if o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
                             bitcaster.trigger_event(
@@ -234,7 +230,7 @@ class Occurrence(BitcasterBaseModel):
                     num_sent = 0
                     o.save()
         except Exception as e:
-            logger.exception(e)
+            logger.exception("Occurrence %s processing failed: %s", self.pk, e)
         return num_sent
 
     def _get_valid_notifications(self) -> Generator["Notification", None, None]:
@@ -289,11 +285,10 @@ class Occurrence(BitcasterBaseModel):
             data["errors"].append(str(e))
         return data
 
-    def _process(self) -> "tuple[bool, OccurrenceData]":
-        _, data = self.preview("full")
+    def _process(self) -> "OccurrenceData":
+        data = self.preview("full")
         self._create_deliveries(data)
-        data["delivered"] = []
-        return True, data
+        return data
 
     def _create_deliveries(self, data: "OccurrenceData") -> None:
         from .delivery import Delivery
@@ -333,7 +328,7 @@ class Occurrence(BitcasterBaseModel):
                 defaults=defaults,
             )
 
-    def preview(self, mode: str, limit: int | None = None) -> "tuple[bool, OccurrenceData]":
+    def preview(self, mode: str, limit: int | None = None) -> "OccurrenceData":
         """Dry-run of the recipient pipeline with zero side effects.
 
         Runs `collect_recipients` and, for `full`/`partial` modes, renders the
@@ -346,8 +341,6 @@ class Occurrence(BitcasterBaseModel):
         errors = list(recipients_data["errors"])
         data: "OccurrenceData" = {
             "delivered": [],
-            "phase1_at": "",
-            "phase2_attempts": [],
             "processing": {},
             "recipients": [
                 (
@@ -405,4 +398,8 @@ class Occurrence(BitcasterBaseModel):
                     errors.append(f"{e.__class__.__name__}: {str(e)}")
             data["rendered"] = rendered
             data["missing_template"] = missing_template
-        return True, data
+        return data
+
+
+def status_choices() -> list[tuple[str, str]]:
+    return cast("list[tuple[str, str]]", Occurrence.Status.choices)

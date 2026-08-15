@@ -166,6 +166,3 @@ class AgentImap(Agent):
             except Exception as e:
                 logger.error(e)
         return False
-
-    def notify(self) -> None:
-        self.check(notify=True, update=False)

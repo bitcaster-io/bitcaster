@@ -102,8 +102,8 @@ class SlugMixin(models.Model):
 
 
 class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
-    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel_co, bool]":
-        values = dict(**(defaults or {}))
+    @staticmethod
+    def _resolve_scope(kwargs: dict[str, Any], values: dict[str, Any]) -> None:
         if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project
 
@@ -117,6 +117,9 @@ class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
             if values.get("project"):
                 values["organization"] = values["project"].organization
 
+    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel_co, bool]":
+        values = dict(**(defaults or {}))
+        self._resolve_scope(kwargs, values)
         return super().get_or_create(values, **kwargs)
 
     def update_or_create(
@@ -126,22 +129,13 @@ class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
         **kwargs: Any,
     ) -> "tuple[AnyModel_co, bool]":
         values = dict(**(defaults or {}))
-        if kwargs.get("application"):
-            kwargs["project"] = kwargs["application"].project
-
-        if kwargs.get("project"):
-            kwargs["organization"] = kwargs["project"].organization
-
-        if values:
-            if values.get("application"):
-                values["project"] = values["application"].project
-
-            if values.get("project"):
-                values["organization"] = values["project"].organization
-        return super().update_or_create(values, **kwargs)
+        create_values = dict(**(create_defaults or {}))
+        self._resolve_scope(kwargs, values)
+        self._resolve_scope(kwargs, create_values)
+        return super().update_or_create(values, create_defaults=create_values or None, **kwargs)
 
 
-class Scoped2Mixin(models.Model):
+class ScopedMixin(models.Model):
     organization = models.ForeignKey(
         "Organization", on_delete=models.CASCADE, related_name="%(class)s_set", blank=True, help_text=_("Organization")
     )
@@ -156,12 +150,6 @@ class Scoped2Mixin(models.Model):
         show_all=False,
         help_text=_("Project this record belong to"),
     )
-
-    class Meta:
-        abstract = True
-
-
-class Scoped3Mixin(Scoped2Mixin):
     application = ChainedForeignKey(
         "Application",
         on_delete=models.CASCADE,
@@ -183,19 +171,14 @@ class Scoped3Mixin(Scoped2Mixin):
         using: str | None = None,
         update_fields: Iterable[str] | None = None,
     ) -> None:
-        try:
-            if hasattr(self, "application") and self.application:
-                self.project = self.application.project
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
-        try:
-            if hasattr(self, "project") and self.project:
-                self.organization = self.project.organization
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
+        self._sync_scope()
         super().save(force_insert, force_update, using, update_fields)
 
     def clean(self) -> None:
+        self._sync_scope()
+        super().clean()
+
+    def _sync_scope(self) -> None:
         try:
             if hasattr(self, "application") and self.application:
                 self.project = self.application.project
@@ -206,4 +189,3 @@ class Scoped3Mixin(Scoped2Mixin):
                 self.organization = self.project.organization
         except ObjectDoesNotExist:  # pragma: no cover
             pass
-        super().clean()

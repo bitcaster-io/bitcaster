@@ -1,7 +1,7 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import parsers, serializers
+from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -35,11 +35,27 @@ class AttachmentResponseSerializer(serializers.ModelSerializer[Attachment]):
 
 class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
     serializer_class = AttachmentUploadSerializer
-    parser = (parsers.MultiPartParser,)
     http_method_names = ["get", "post", "put"]
     # XXX: this is the only way to bypass grants, as the default
     #      permission classes require at least one.
     permission_classes = []
+
+    def _get_application(self) -> Application:
+        return get_object_or_404(
+            Application,
+            slug=self.kwargs["app"],
+            project__slug=self.kwargs["prj"],
+            project__organization__slug=self.kwargs["org"],
+        )
+
+    def _check_support(self, application: Application) -> Response | None:
+        try:
+            self.verify_attachment_support(application)
+        except AttachmentsNotSupportedError:
+            return Response(
+                {"detail": _("This application does not support attachments.")}, status=HTTP_400_BAD_REQUEST
+            )
+        return None
 
     @extend_schema(
         request=AttachmentUploadSerializer,
@@ -51,18 +67,9 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
         ),
     )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        application = get_object_or_404(
-            Application,
-            slug=self.kwargs["app"],
-            project__slug=self.kwargs["prj"],
-            project__organization__slug=self.kwargs["org"],
-        )
-        try:
-            self.verify_attachment_support(application)
-        except AttachmentsNotSupportedError:
-            return Response(
-                {"detail": _("This application does not support attachments.")}, status=HTTP_400_BAD_REQUEST
-            )
+        application = self._get_application()
+        if error := self._check_support(application):
+            return error
 
         correlation_id = kwargs.get("correlation_id")
         if (
@@ -94,18 +101,9 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
         description=_("Replace an existing attachment file with a new document using its correlation_id."),
     )
     def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        application = get_object_or_404(
-            Application,
-            slug=self.kwargs["app"],
-            project__slug=self.kwargs["prj"],
-            project__organization__slug=self.kwargs["org"],
-        )
-        try:
-            self.verify_attachment_support(application)
-        except AttachmentsNotSupportedError:
-            return Response(
-                {"detail": _("This application does not support attachments.")}, status=HTTP_400_BAD_REQUEST
-            )
+        application = self._get_application()
+        if error := self._check_support(application):
+            return error
 
         correlation_id = kwargs.get("correlation_id")
         if not correlation_id:
@@ -130,12 +128,7 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
         description=_("List all current attachments stored for a specific application."),
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        application = get_object_or_404(
-            Application,
-            slug=self.kwargs["app"],
-            project__slug=self.kwargs["prj"],
-            project__organization__slug=self.kwargs["org"],
-        )
+        application = self._get_application()
         attachments = Attachment.objects.filter(application=application)
         serializer = AttachmentResponseSerializer(attachments, many=True)
         return Response(serializer.data, status=HTTP_200_OK)

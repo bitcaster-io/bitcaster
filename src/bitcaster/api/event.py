@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -22,8 +21,6 @@ if TYPE_CHECKING:
     from ..models.occurrence import OccurrenceOptions
     from ..types.filtering import QuerysetFilter
     from ..types.json import JSONValue
-
-app_name = "api"
 
 
 class OptionSerializer(serializers.Serializer[Any]):
@@ -92,7 +89,6 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
 
     serializer_class = EventSerializer
     required_grants = [Grant.EVENT_TRIGGER]
-    parser = (JSONParser,)
     http_method_names = ["post"]
 
     def get_queryset(self) -> QuerySet[Event]:

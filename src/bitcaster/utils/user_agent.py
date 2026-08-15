@@ -49,9 +49,7 @@ def get_cache_key(ua_string: bytes | str) -> str:
 def get_user_agent(request: "AnyRequest_co") -> UserAgent:
     """Try to get UserAgent objects from cache before constructing a UserAgent from scratch.
 
-    Because parsing regexes.yaml/json (ua-parser) is slow
-    if not hasattr(request, 'META'):
-        return None
+    Because parsing regexes.yaml/json (ua-parser) is slow.
     """
     ua_string = request.META.get("HTTP_USER_AGENT", "")
     if not ua_string:

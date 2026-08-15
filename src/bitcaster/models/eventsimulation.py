@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Any
 
-import logging
 from datetime import timedelta
 
 from constance import config
@@ -18,13 +17,11 @@ if TYPE_CHECKING:
 
     from .occurrence import OccurrenceData
 
-logger = logging.getLogger(__name__)
-
 
 def _status_choices() -> list[tuple[str, str]]:
-    from .occurrence import Occurrence
+    from .occurrence import status_choices
 
-    return Occurrence.Status.choices
+    return status_choices()
 
 
 class EventSimulationManager(BitcasterBaselManager["EventSimulation"]):

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from rest_framework import views
 from rest_framework.authentication import (
@@ -10,14 +10,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.db.migrations.serializer import BaseSerializer
-
 from bitcaster.api.permissions import ApiApplicationPermission, ApiKeyAuthentication
 from bitcaster.api.throttling import SlidingWindowThrottle
 from bitcaster.exceptions import InvalidGrantError
 
 if TYPE_CHECKING:
     from rest_framework.permissions import BasePermission
+    from rest_framework.serializers import BaseSerializer
 
     from django.utils.datastructures import _ListOrTuple
 
@@ -43,14 +42,10 @@ class SecurityMixin(APIView):
             return Response({"detail": str(exc)}, status=403)
         return super().handle_exception(exc)
 
-    def get_serializer_class(self) -> type[BaseSerializer]:
+    def get_serializer_class(self) -> "type[BaseSerializer[Any]]":
         if hasattr(self, "action_serializers"):
             return self.action_serializers.get(self.action, self.serializer_class)
         return super().get_serializer_class()
-
-
-class SerializerMixin(APIView):
-    pass
 
 
 class BaseView(SecurityMixin, views.APIView):

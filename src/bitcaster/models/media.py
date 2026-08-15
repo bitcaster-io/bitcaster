@@ -9,8 +9,8 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models.mixins import (
     BitcasterBaseModel,
-    Scoped3Mixin,
     ScopedManager,
+    ScopedMixin,
     SlugMixin,
 )
 
@@ -88,7 +88,7 @@ class ImageFieldWithExtra(models.ImageField):
             pass
 
 
-class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
+class MediaFile(ScopedMixin, SlugMixin, BitcasterBaseModel):
     image = ImageFieldWithExtra(
         verbose_name=_("Image"),
         storage=storages["mediafiles"],

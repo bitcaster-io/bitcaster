@@ -25,8 +25,7 @@ def simulation() -> "tuple[EventSimulation, dict, Assignment, Notification, Chan
     MessageTemplateFactory(channel=channel, event=notification.event, content="Hello {{ foo }}")
     notification.distribution.recipients.add(asm)
     sim: EventSimulation = EventSimulationFactory(event=notification.event, mode="full")
-    success, data = Occurrence(event=notification.event, context={"foo": "bar"}, options={}).preview("full")
-    assert success
+    data = Occurrence(event=notification.event, context={"foo": "bar"}, options={}).preview("full")
     return sim, data, asm, notification, channel
 
 
@@ -56,7 +55,7 @@ def test_save_deliveries_missing_template(simulation: "tuple") -> None:
     sim, _data, _asm, _notification, _channel = simulation
     MessageTemplate.objects.all().delete()
 
-    _, data = Occurrence(event=sim.event, context={"foo": "bar"}, options={}).preview("full")
+    data = Occurrence(event=sim.event, context={"foo": "bar"}, options={}).preview("full")
     sim.save_deliveries(data)
 
     sim.refresh_from_db()
@@ -71,7 +70,7 @@ def test_save_deliveries_multiple_notifications(simulation: "tuple") -> None:
     sim, _data, asm, _notification, _channel = simulation
     for _ in range(2):
         NotificationFactory(event=sim.event, distribution__recipients=[asm])
-    _, data = Occurrence(event=sim.event, context={"foo": "bar"}, options={}).preview("full")
+    data = Occurrence(event=sim.event, context={"foo": "bar"}, options={}).preview("full")
 
     sim.save_deliveries(data)
 

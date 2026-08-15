@@ -59,20 +59,17 @@ DEFAULT_INVALID_LOOKUPS = [".*password.*", ".*token.*", ".*secret.*", ".*key.*"]
 DEFAULT_MODEL_INVALID_LOOKUPS = {"bitcaster.User": [r".*_password.*"]}
 
 
-def clean_field_error_message(message: str) -> str:
-    return message
+def _dummy_render(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: _dummy_render(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_dummy_render(v) for v in obj]
+    if isinstance(obj, str) and "{{" in obj:
+        return "dummy"
+    return obj
 
 
 def validate_lookups(model: "type[models.Model]", filter_spec: "QuerysetFilter") -> None:
-    def _dummy_render(obj: Any) -> Any:
-        if isinstance(obj, dict):
-            return {k: _dummy_render(v) for k, v in obj.items()}
-        if isinstance(obj, list):
-            return [_dummy_render(v) for v in obj]
-        if isinstance(obj, str) and "{{" in obj:
-            return "dummy"
-        return obj
-
     clean_spec = _dummy_render(filter_spec)
     for family in ["include", "exclude"]:
         if parsed := parse_filter_clause(clean_spec.get(family, [])):
@@ -93,21 +90,12 @@ def validate_schema(d: "dict[str, Any] | QuerysetFilter") -> None:
 
 
 def validate_filters(queryset: "QuerySetOrManager[M]", d: "AllowedFilters") -> None:
-    def _dummy_render(obj: Any) -> "AllowedFilters":
-        if isinstance(obj, dict):
-            return {k: _dummy_render(v) for k, v in obj.items()}
-        if isinstance(obj, list):
-            return [_dummy_render(v) for v in obj]
-        if isinstance(obj, str) and "{{" in obj:
-            return "dummy"
-        return obj
-
     try:
         clean_data = _dummy_render(d)
         fm = FilterManager(queryset=queryset, filter_spec=clean_data)
         fm.filter().first()
     except (FieldError, ValidationError) as e:
-        raise ValidationError(clean_field_error_message(str(e))) from None
+        raise ValidationError(str(e)) from None
 
 
 def normalize_groups(data: "JSON | list[JSON] | list[list[JSON]]") -> "list[list[JSON]]":

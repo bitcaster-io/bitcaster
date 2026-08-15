@@ -2,11 +2,6 @@ import dramatiq
 
 __all__ = ["dramatiq", "SCHEDULER"]
 
-SECOND = 1000
-MINUTE = SECOND * 60
-HOUR = MINUTE * 60
-DAY = HOUR * 24
-
 SCHEDULER = {
     "scan_occurrences": {
         "func": "bitcaster.runner.tasks.scan_occurrences",

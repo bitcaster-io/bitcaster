@@ -21,7 +21,6 @@ class SlackConfig(DispatcherConfig):
 
 
 class SlackDispatcher(Dispatcher):
-    id = 500
     slug = "slack"
     config_class: type[DispatcherConfig] = SlackConfig
     protocol = MessageProtocol.PLAINTEXT

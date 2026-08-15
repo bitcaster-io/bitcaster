@@ -15,8 +15,6 @@ from bitcaster.models import Channel
 from .base import SecurityMixin
 from .serializers import ChannelSerializer
 
-app_name = "api"
-
 
 class ChannelView(SecurityMixin, ViewSet, ListAPIView[Channel], RetrieveAPIView[Channel]):
     """List channels."""

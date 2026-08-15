@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterator
 
 import contextlib
 import json
@@ -75,6 +75,14 @@ class AgentAMQP(Agent):
             credentials=credentials,
         )
 
+    @contextlib.contextmanager
+    def _connection(self, connection: pika.BlockingConnection) -> "Iterator[pika.BlockingConnection]":
+        try:
+            yield connection
+        finally:
+            with contextlib.suppress(Exception):
+                connection.close()
+
     def ensure_queue(self, channel: "BlockingChannel") -> None:
         c = self.cfg
         if c["exchange"]:
@@ -130,7 +138,7 @@ class AgentAMQP(Agent):
         except Exception:
             logger.exception("Failed to connect to RabbitMQ")
             return
-        try:
+        with self._connection(connection):
             try:
                 channel = connection.channel()
             except Exception:
@@ -149,13 +157,10 @@ class AgentAMQP(Agent):
                     logger.exception("Error processing message")
                     channel.basic_nack(method_frame.delivery_tag, requeue=False)
             channel.cancel()
-        finally:
-            with contextlib.suppress(Exception):
-                connection.close()
 
     def changes_detected(self) -> bool:
         connection = pika.BlockingConnection(self.get_connection_params())
-        try:
+        with self._connection(connection):
             channel = connection.channel()
             self.ensure_queue(channel)
             method_frame, _properties, _body = channel.basic_get(self.cfg["queue"])
@@ -163,9 +168,3 @@ class AgentAMQP(Agent):
                 channel.basic_nack(method_frame.delivery_tag, requeue=True)
                 return True
             return False
-        finally:
-            with contextlib.suppress(Exception):
-                connection.close()
-
-    def notify(self) -> None:
-        self.check(notify=True, update=False)

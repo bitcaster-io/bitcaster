@@ -109,7 +109,7 @@ class ApplicationRegisterView(BaseView):
             for entry in data["addresses"]:
                 address_type: "AddressType" = Address.objects.get_type_from_value(entry["value"])
                 name = entry["name"] or address_type.lower()
-                address, addr_created = Address.objects.get_or_create(user=user, value=entry["value"], name=name)
+                address, _ = Address.objects.get_or_create(user=user, value=entry["value"], name=name)
                 addresses.append({"value": address.value, "name": address.name, "type": address.type})
                 if not entry["assign_to_preferred_channel"]:
                     continue

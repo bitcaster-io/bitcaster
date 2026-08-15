@@ -31,6 +31,8 @@ Under no circumstances should production code be written before confirming the t
 
 Any code must pass `tox` before can be cosidered ready to commit.
 
+Any changes must be reflected in the documentation, adding new pages/sections or updating existing
+
 
 ## Validation Protocol
 - **Patch Coverage:** 100% patch coverage is mandatory — `diff-cover` compares against `origin/develop`

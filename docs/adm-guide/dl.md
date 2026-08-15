@@ -39,9 +39,9 @@ Distribution List. The flow is:
   and **how** (via Channels and Message Templates).
 - The **Distribution List** defines the actual recipients.
 
-Notifications with policy `FILTERING_NONE` (the default) require a
-Distribution List. Other policies (`DYNAMIC`, `EXTERNAL`) select recipients
-without using a Distribution List.
+Notifications with the default **No Filters** [Notification Policy](notification_policies.md)
+require a Distribution List. Other policies (`subscription`, `external`,
+`dynamic`) select recipients without using a Distribution List.
 
 ## Pinned Distribution List
 

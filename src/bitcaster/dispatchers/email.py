@@ -5,7 +5,6 @@ import logging
 from django import forms
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
@@ -14,20 +13,22 @@ from ..exceptions import DispatcherError
 if TYPE_CHECKING:
     from bitcaster.models import Assignment
 
-
 logger = logging.getLogger(__name__)
 
 
 class BaseEmailDispatcher(Dispatcher):
     protocol: MessageProtocol = MessageProtocol.EMAIL
 
+    def get_from_email(self, payload: Payload) -> str:
+        return self.channel.from_email
+
     def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(
-                subject=subject or "",
+                subject=subject,
                 body=payload.message,
-                from_email=self.channel.from_email,
+                from_email=self.get_from_email(payload),
                 to=[address],
                 connection=self.get_connection(),
             )
@@ -45,19 +46,22 @@ class BaseEmailDispatcher(Dispatcher):
             raise DispatcherError(e) from e
 
 
-class EmailConfig(DispatcherConfig):
-    host = forms.CharField(label=_("Host"))
-    port = forms.CharField(label=_("Port"))
+class SMTPConfig(DispatcherConfig):
     username = forms.CharField(label=_("Username"))
-    password = forms.CharField(label=_("Password"), widget=PasswordInput)
-    use_tls = forms.BooleanField(label=_("TLS"), required=False)
-    use_ssl = forms.BooleanField(label=_("SSL"), required=False)
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
     timeout = forms.IntegerField(
         label=_("Timeout"),
         initial=3,
         required=True,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
+
+
+class EmailConfig(SMTPConfig):
+    host = forms.CharField(label=_("Host"))
+    port = forms.CharField(label=_("Port"))
+    use_tls = forms.BooleanField(label=_("TLS"), required=False)
+    use_ssl = forms.BooleanField(label=_("SSL"), required=False)
 
 
 class EmailDispatcher(BaseEmailDispatcher):
