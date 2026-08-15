@@ -126,7 +126,7 @@ def test_public_key_wrong_grants(rf: "RequestFactory", public_key: "ApiKey") -> 
     public_key.save()
     perm = ApiApplicationPermission()
     view = MagicMock(spec=EventTrigger)
-    view.grants = [Grant.EVENT_TRIGGER]
+    view.grants = [Grant.EVENT_LIST]
     view.kwargs = {
         "org": public_key.organization.slug,
         "prj": public_key.project.slug,
@@ -140,7 +140,7 @@ def test_public_key_wrong_grants(rf: "RequestFactory", public_key: "ApiKey") -> 
     request.auth = public_key
     request.user = public_key.user
 
-    with pytest.raises(InvalidGrantError):
+    with pytest.raises(InvalidGrantError, match="Public keys can only trigger events"):
         perm.has_permission(request, view)
 
 
