@@ -24,6 +24,7 @@ nav:
   - System Log: system_log.md
   - Command line interface: cli.md
   - Trigger Event: trigger.md
+  - Trigger Events from a Web Page: web-client.md
   - Configure Monitors: monitor.md
   - Login:
     - login.md

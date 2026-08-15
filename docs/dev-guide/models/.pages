@@ -1,0 +1,31 @@
+nav:
+  - Address: address.md
+  - ApiKey: api_key.md
+  - Application: application.md
+  - Application Membership: application_membership.md
+  - Assignment: assignment.md
+  - Attachment: attachment.md
+  - Channel: channel.md
+  - Delivery: delivery.md
+  - Delivery Simulation: deliverysimulation.md
+  - Distribution List: distribution.md
+  - Event: event.md
+  - Event Simulation: eventsimulation.md
+  - Group: group.md
+  - LogEntry: log.md
+  - LogMessage: internal.md
+  - MediaFile: media.md
+  - Member: member.md
+  - MessageTemplate: messagetemplate.md
+  - Monitor: monitor.md
+  - Notification: notification.md
+  - Occurrence: occurrence.md
+  - Organization: organization.md
+  - ProcessLogEntry: process_log.md
+  - Project: project.md
+  - SocialProvider: social_provider.md
+  - Subscription: subscription.md
+  - Task: task.md
+  - User: user.md
+  - UserMessage: user_message.md
+  - UserRole: user_role.md

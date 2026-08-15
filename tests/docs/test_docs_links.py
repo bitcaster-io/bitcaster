@@ -67,6 +67,7 @@ def docs_site(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Path]:
 
 
 SKIP_SCHEMES = ("mailto:", "tel:", "javascript:", "data:")
+SKIP_HOSTS = {"bitcaster-io.slack.com"}  # Slack workspaces require auth and return 403 to bots
 SKIP_DIRS = {"_theme"}
 PLACEHOLDER_HOSTS = {"SERVER_ADDRESS", "bitcaster.yourdomain.com"}
 PLACEHOLDER_HOST_RE = re.compile(r"[<>]")
@@ -153,7 +154,9 @@ def test_external_links(docs_site: Path) -> None:
     for page, _tree, url in _iter_links(docs_site):
         if not url.startswith(("http://", "https://")):
             continue
-        if _is_placeholder(url) or urlparse(url).hostname == self_host:
+        if _is_placeholder(url) or urlparse(url).hostname in SKIP_HOSTS:
+            continue
+        if urlparse(url).hostname == self_host:
             continue
         if url in seen:
             continue

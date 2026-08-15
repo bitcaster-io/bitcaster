@@ -189,3 +189,71 @@ class ScopedMixin(models.Model):
                 self.organization = self.project.organization
         except ObjectDoesNotExist:  # pragma: no cover
             pass
+
+
+class Scoped2Mixin(models.Model):
+    organization = models.ForeignKey(
+        "Organization", on_delete=models.CASCADE, related_name="%(class)s_set", blank=True, help_text=_("Organization")
+    )
+    project = ChainedForeignKey(
+        "Project",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_set",
+        blank=True,
+        null=True,
+        chained_field="organization",
+        chained_model_field="organization",
+        show_all=False,
+        help_text=_("Project this record belong to"),
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Scoped3Mixin(Scoped2Mixin):
+    application = ChainedForeignKey(
+        "Application",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_set",
+        blank=True,
+        null=True,
+        chained_field="project",
+        chained_model_field="project",
+        show_all=False,
+    )
+
+    class Meta:
+        abstract = True
+
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        try:
+            if hasattr(self, "application") and self.application:
+                self.project = self.application.project
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        try:
+            if hasattr(self, "project") and self.project:
+                self.organization = self.project.organization
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self) -> None:
+        try:
+            if hasattr(self, "application") and self.application:
+                self.project = self.application.project
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        try:
+            if hasattr(self, "project") and self.project:
+                self.organization = self.project.organization
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        super().clean()

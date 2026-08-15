@@ -14,4 +14,6 @@ nav:
   - Security: security
   - SBOM: sbom
   - HowTos: howto
+  - Process: process
+  - Support: support
   - tags.md

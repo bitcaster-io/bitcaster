@@ -14,6 +14,7 @@ from rest_framework.status import (
 
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.auth.constants import Grant
 from bitcaster.exceptions import AttachmentsNotSupportedError
 from bitcaster.models import Application, Attachment
 
@@ -36,9 +37,7 @@ class AttachmentResponseSerializer(serializers.ModelSerializer[Attachment]):
 class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
     serializer_class = AttachmentUploadSerializer
     http_method_names = ["get", "post", "put"]
-    # XXX: this is the only way to bypass grants, as the default
-    #      permission classes require at least one.
-    permission_classes = []
+    required_grants = [Grant.APPLICATION_ADMIN]
 
     def _get_application(self) -> Application:
         return get_object_or_404(

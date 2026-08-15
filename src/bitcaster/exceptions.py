@@ -22,6 +22,10 @@ class InvalidGrantError(Exception):
     pass
 
 
+class InvalidOriginError(Exception):
+    pass
+
+
 class AgentError(Exception):
     pass
 

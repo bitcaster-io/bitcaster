@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 
 from django.core.cache import cache, caches
 
+from bitcaster.models import ApiKey, ClientToken
+
 # Rate limiting with Sliding Window using LUA for atomicity
 LUA_SLIDING_WINDOW = """
 local key = KEYS[1]
@@ -85,8 +87,12 @@ class SlidingWindowThrottle(BaseThrottle):
         return self._get_attr(view, "throttle_window", self.window)
 
     def allow_request(self, request: Request, view: APIView) -> bool:
-        if request.auth:
-            key = f"throttle_{request.auth.id}"
+        auth = getattr(request, "auth", None)
+        if auth:
+            if isinstance(auth, ClientToken) or (isinstance(auth, ApiKey) and auth.is_web()):
+                key = f"throttle_{type(auth).__name__}_{auth.id}_{self.get_ident(request)}"
+            else:
+                key = f"throttle_{auth.id}"
         elif request.user.is_authenticated:
             key = f"throttle_{request.user.id}"
         else:

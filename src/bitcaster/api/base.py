@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from bitcaster.api.permissions import ApiApplicationPermission, ApiKeyAuthentication
 from bitcaster.api.throttling import SlidingWindowThrottle
-from bitcaster.exceptions import InvalidGrantError
+from bitcaster.exceptions import InvalidGrantError, InvalidOriginError
 
 if TYPE_CHECKING:
     from rest_framework.permissions import BasePermission
@@ -38,7 +38,7 @@ class SecurityMixin(APIView):
         return self.required_grants
 
     def handle_exception(self, exc: Exception) -> Response:
-        if isinstance(exc, InvalidGrantError):
+        if isinstance(exc, InvalidGrantError | InvalidOriginError):
             return Response({"detail": str(exc)}, status=403)
         return super().handle_exception(exc)
 

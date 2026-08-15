@@ -13,6 +13,7 @@ from .project import ProjectView
 from .register import ApplicationRegisterView
 from .subscription import NotificationSubscriptionView
 from .system import LoginView, PingView
+from .token import ClientTokenView
 from .unregister import ApplicationUnregisterView
 from .unsubscribe import ApplicationUnsubscribeView
 from .user import UserView
@@ -68,6 +69,7 @@ urlpatterns = [
     ),
     path("o/<slug:org>/p/<slug:prj>/d/", DistributionView.as_view({"get": "list"}), name="distribution-list"),
     path("o/<slug:org>/p/<slug:prj>/a/<slug:app>/e/<slug:evt>/trigger/", EventTrigger.as_view(), name="event-trigger"),
+    path("o/<slug:org>/p/<slug:prj>/a/<slug:app>/token/", ClientTokenView.as_view(), name="client-token"),
     path("o/<slug:org>/p/<slug:prj>/a/<slug:app>/e/", EventList.as_view(), name="events-list"),
     path("o/<slug:org>/p/<slug:prj>/a/<slug:app>/attachment/", AttachmentView.as_view(), name="attachment-upload"),
     path(

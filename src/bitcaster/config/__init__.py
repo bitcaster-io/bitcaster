@@ -45,6 +45,12 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
     "CACHE_URL": (str, "redis://cache-server:6379/0", "", "redis://cache-server:6379/0"),
     "CHANNEL_SERVER": (str, "channel-server:6379", "", "channel-server:6379"),
+    "CLIENT_TOKEN_TTL": (int, 900, "Lifetime in seconds of client tokens minted via the token exchange endpoint"),
+    "CORS_ALLOWED_ORIGINS": (
+        list,
+        [],
+        "Origins allowed to call the API from a browser (full origins, no trailing slash)",
+    ),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
     "CSRF_COOKIE_SAMESITE": (str, setting("csrf-cookie-samesite")),
@@ -74,7 +80,6 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
     "MEDIA_URL": (str, "/media/", setting("media-url")),
-    "ROOT_TOKEN": (str, "", ""),
     "SECRET_KEY": (str, NOT_SET, setting("secret-key")),
     "SECURE_HSTS_PRELOAD": (bool, True, setting("secure-hsts-preload"), False),
     "SECURE_HSTS_SECONDS": (int, 60, setting("secure-hsts-seconds")),
@@ -103,6 +108,11 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "STATIC_URL": (str, "/static/", setting("static-url")),
     "SUPERUSERS": (list, [], "Users in this list will be granted superuser privileges when created."),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
+    "TRIGGER_CONTEXT_MAX_SIZE": (
+        int,
+        32768,
+        "Maximum size in bytes of the serialized context payload accepted from web credentials",
+    ),
     "USE_X_FORWARDED_HOST": (bool, False, setting("use-x-forwarded-host")),
     "USE_X_FORWARDED_PORT": (bool, False, setting("use-x-forwarded-port")),
 }

@@ -1,15 +1,29 @@
-# Supporting Process
+# Support
 
-This document describes Sentry’s process for handling issues that are created
-by external contributors in our public GitHub repos.
+This page describes how to get support for Bitcaster.
 
+## Reporting Issues
 
-## Validate
+Report bugs and feature requests in the public GitHub repository:
 
-We use GitHub Issue Forms to strongly encourage quality reports.
-If When people give us garbage issues anyway, we close them.
+- [Open an issue](https://github.com/bitcaster-io/bitcaster/issues)
+- [Pull requests](https://github.com/bitcaster-io/bitcaster/pulls)
 
-## Route
+When reporting a bug, include:
 
-Each ticket is routed to a group of product owners based on the product area.
-Some of our code is covered by a CODEOWNERS file; most is not. GitHub auto-assigns PRs that touch code covered by CODEOWNERS.
+- the Bitcaster version you are running;
+- the deployment type (Docker, docker-compose, source);
+- the steps to reproduce the problem;
+- the expected and actual behavior;
+- relevant log output.
+
+## Documentation
+
+The [Glossary](./glossary/index.md) explains the core terminology used across
+this documentation. If a page is missing, wrong or stale, open an issue with
+the "documentation" label.
+
+## Release Notes and Status
+
+- [Releases](https://github.com/bitcaster-io/bitcaster/releases) — changelog of the project.
+- [SBOM](./sbom.md) — the software bill of materials.

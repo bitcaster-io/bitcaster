@@ -1,4 +1,4 @@
-dispatchers:
+nav:
     - email.md
     - gmail.md
     - log.md

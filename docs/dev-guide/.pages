@@ -5,3 +5,4 @@ nav:
   - Filtering: filtering.md
   - Tasks: tasks.md
   - Dispatchers: dispatchers.md
+  - Models: models

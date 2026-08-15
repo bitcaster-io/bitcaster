@@ -72,7 +72,7 @@ import asyncio
 import httpx
 
 API_URL = "https://bitcaster.yourdomain.com/api/v1/user/my-org/"
-HEADERS = {"Authorization": "Token YOUR_API_KEY"}
+HEADERS = {"Authorization": "Key YOUR_API_KEY"}
 
 async def create_user(client, user_data):
     response = await client.post(API_URL, json=user_data)
@@ -110,7 +110,7 @@ To keep Bitcaster users in sync with an external source of truth, use the User A
 To ensure a user exists and is part of your organization:
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/user/my-org/ \
-     -H "Authorization: Token YOUR_API_KEY" \
+     -H "Authorization: Key YOUR_API_KEY" \
      -H "Content-Type: application/json" \
      -d '{
        "email": "user@company.com",
@@ -136,7 +136,7 @@ When updating users, Bitcaster provides a powerful `_mode` parameter to control 
 **Example: Partial Sync** (Only update office, leave department alone):
 ```bash
 curl -X PATCH https://bitcaster.yourdomain.com/api/v1/user/my-org/john.doe@company.com/ \
-     -H "Authorization: Token YOUR_API_KEY" \
+     -H "Authorization: Key YOUR_API_KEY" \
      -d '{
        "custom_fields": {"office": "London"},
        "_mode": "merge"

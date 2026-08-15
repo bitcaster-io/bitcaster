@@ -20,7 +20,7 @@ Username and Email of the initial user. Created at first deploy
 
 !!! warning
 
-    This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
+    This variable has effect only the first time Bitcaster starts. Any attempt to change it later will produce a startup error
 
 
 
@@ -31,7 +31,7 @@ Password for initial user created at first deploy. It is ignored if `ADMIN_EMAIL
 
 !!! warning
 
-    This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
+    This variable has effect only the first time Bitcaster starts. Any attempt to change it later will produce a startup error
 
 
 ### BITCASTER_DOCUMENTATION_SITE_URL
@@ -44,7 +44,7 @@ by the admin "help" links to point to the online documentation.
 ### AGENT_FILESYSTEM_ROOT
 Default: ``
 
-Base path allowed by the local filestem <glossary:Agent>
+Base path allowed by the local filesystem <glossary:Agent>
 
 
 
@@ -52,6 +52,12 @@ Base path allowed by the local filestem <glossary:Agent>
 Default: `bitcaster.agents.fs.validate_path`
 
 Callable that validates the path used by the local filesystem <glossary:Agent>.
+
+
+### AGENT_FILESYSTEM_DISALLOWED
+Default: ``
+
+List of directories disallowed for the local filesystem <glossary:Agent>.
 
 
 ### ALLOWED_HOSTS
@@ -62,6 +68,14 @@ A list of strings representing the host/domain names that this Django site can s
 see <https://docs.djangoproject.com/en/5.0/ref/settings#allowed-hosts>
 
 
+### AUTHENTICATION_BACKENDS
+Default: ``
+
+Django authentication backends used by the site.
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#authentication-backends>
+
+
 ### CACHE_PREFIX
 Default: ``
 
@@ -69,7 +83,7 @@ Prefix string to use in cache keys.
 
 
 ### CACHE_URL
-Default: ``
+Default: `redis://cache-server:6379/0`
 
 Redis URL to use as cache backend.
 
@@ -94,6 +108,12 @@ Default: `production`
 
 Bitcaster environment name. It is displayed in the admin header and tunes
 runtime behaviour (e.g. `local` enables development helpers).
+
+
+### CHANNEL_SERVER
+Default: `channel-server:6379`
+
+Redis URL used by the async channel layer for realtime notifications.
 
 
 ### CSRF_TRUSTED_ORIGINS
@@ -126,16 +146,29 @@ Default: `false`
 Redirect all HTTP traffic to HTTPS.
 
 
-### ROOT_TOKEN
+### CLIENT_TOKEN_TTL
+Default: `900`
+
+Lifetime in seconds of client tokens minted via the token exchange endpoint.
+Client tokens are short-lived credentials meant to be used from web pages.
+
+
+### CORS_ALLOWED_ORIGINS
 Default: ``
 
-Static token accepted by the root API endpoints.
+Explicit allowlist of origins allowed to call the public API from a browser.
+Use full origins without trailing slash, e.g. `https://example.com`.
+
+Requests carrying an `Origin` header are only served CORS headers when the
+origin is listed here. Combined with web API keys and client tokens, this
+prevents other websites from using credentials embedded in your pages.
 
 
-### ROOT_TOKEN_HEADER
-Default: `x-root-token`
+### TRIGGER_CONTEXT_MAX_SIZE
+Default: `32768`
 
-HTTP header that carries the root token value.
+Maximum size in bytes of the serialized `context` payload accepted from web
+credentials (web API keys and client tokens) on the trigger endpoint.
 
 
 ### SECRET_KEY
@@ -153,6 +186,13 @@ Default: `60`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-seconds>
 
+
+### SECURE_PROXY_SSL_HEADER
+Default: ``
+
+Header used to detect an HTTPS request behind a reverse proxy.
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-proxy-ssl-header>
 
 ### SECURE_SSL_REDIRECT
 Default: `True`
@@ -328,6 +368,22 @@ Default: False
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#email-use-tls>
 
+### EXTRA_APPS
+Default: ``
+
+Extra Django applications to load in addition to the default ones.
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#installed-apps>
+
+
+### INTERNAL_IPS
+Default: ``
+
+List of IP addresses that are trusted for debug tooling (e.g. the debug toolbar).
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#internal-ips>
+
+
 ### LOGGING_LEVEL
 Default: CRITICAL
 
@@ -353,5 +409,19 @@ see <https://python-social-auth.readthedocs.io/en/latest/configuration/django.ht
 
 
 ### STATIC_ROOT
-Default: `/var/run/app/static`
+Default: `/var/bitcaster/static`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#static-root>
+
+### USE_X_FORWARDED_HOST
+Default: `False`
+
+Use the `X-Forwarded-Host` header from the proxy as the host name.
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#use-x-forwarded-host>
+
+### USE_X_FORWARDED_PORT
+Default: `False`
+
+Use the `X-Forwarded-Port` header from the proxy as the port.
+
+see <https://docs.djangoproject.com/en/5.0/ref/settings#use-x-forwarded-port>
