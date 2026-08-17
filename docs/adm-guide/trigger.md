@@ -38,9 +38,26 @@ The `options` object can contain the following keys:
 -   `environs`: A list of environment names to limit the notifications to.
 -   `filters`: A set of rules to dynamically filter recipients.
 
+#### `limit_to`
+
+`limit_to` is an **intersection filter**, not an override: it narrows the recipients selected by the notification's [Recipient Policy](notification_policies.md) to those whose registered address value (email, phone, etc.) appears in the list. The user must be reachable through the policy **and** match one of the given addresses, otherwise no delivery occurs. Delivery also requires the user to have an **active Assignment** (address + channel) for one of the event's channels.
+
+If the policy excludes the user (not subscribed, not in the list, or filtered out), adding `limit_to` will **not** force delivery and the request will simply deliver to nobody. To always target exactly one user regardless of policy, use the **API filters** policy and pass the user through `filters` instead — see [Notification Policies](notification_policies.md) for per-policy behaviour and examples.
+
+**Example — send only to a single user:**
+
+```json
+{
+    "context": {"key": "value"},
+    "options": {
+        "limit_to": ["john@example.com"]
+    }
+}
+```
+
 #### The `filters` object
 
-The `filters` object allows for dynamic filtering of recipients based on user attributes. It is only considered for notifications that have the `external_filtering` flag enabled.
+The `filters` object allows for dynamic filtering of recipients based on user attributes. It is only considered for notifications whose policy is **API filters** (see [Notification Policies](notification_policies.md)).
 
 Like fixed rules, the `filters` object supports **Context Variables**. You can use `{ { ... } }` placeholders that will be rendered using the `context` provided in the same request.
 

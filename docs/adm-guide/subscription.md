@@ -13,7 +13,7 @@ The user is derived from the address of the subscribed
 channel the notification is delivered on.
 
 Subscriptions are the recipient source for notifications using the
-`FILTERING_SUBSCRIPTION` policy.
+**Direct subscriptions** [Notification Policy](notification_policies.md).
 
 ## Subscription list
 

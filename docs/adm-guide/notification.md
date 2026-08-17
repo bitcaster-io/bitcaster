@@ -25,6 +25,9 @@ recipient selection).
 2. From the Event's detail page, click the `Notifications`{ .bc-tool-button .link } button
 3. The Notifications page lists the existing rules for the event — each row
    shows the `Name`, `Event`, `Application`, `Policy` and `Active` columns.
+   The **Policy** column shows the recipient routing strategy; see
+   [Notification Policies](notification_policies.md) for the details of each
+   policy.
    Click on `Add` to create a new rule.
 4. On the Add page, the `General` tab contains the `Name`, `Event` and
    `Environments` fields. Type the name of the rule and select the
