@@ -106,6 +106,60 @@ pytest tests/dispatchers/test_my_service.py
 
 ---
 
+## 6. Email Dispatchers with AnyMail
+
+Email dispatchers that use the [django-anymail](https://github.com/anymail/django-anymail) library
+can share a common base instead of implementing `_send` from scratch.
+
+### File Structure
+
+Place your dispatcher in `src/bitcaster/dispatchers/anymail/my_service.py` and export it in both
+`anymail/__init__.py` and `dispatchers/__init__.py`.
+
+### Basic Implementation
+
+```python
+from anymail.backends.my_service import EmailBackend
+from django import forms
+from .base import AnyMailDispatcher, AnyMailConfig
+from ..base import DispatcherConfig
+
+class MyServiceConfig(DispatcherConfig):
+    api_key = forms.CharField(label="API Key")
+    # Optional fields, or inherit from AnyMailConfig for api_key + sender_domain
+
+class MyServiceDispatcher(AnyMailDispatcher):
+    slug = "my-service"
+    verbose_name = "My Service Email"
+    config_class = MyServiceConfig
+    backend = EmailBackend
+```
+
+### Customising the Connection
+
+Override `get_connection()` if the backend needs extra kwargs:
+
+```python
+def get_connection(self) -> DispatcherHandler:
+    kwargs = {"api_key": self.config["api_key"]}
+    return self.backend(fail_silently=False, **kwargs)
+```
+
+### Customising the From Address
+
+Override `get_from_email()` if you need per-dispatcher sender logic:
+
+```python
+def get_from_email(self) -> str:
+    from_email = self.config.get("from_address") or self.channel.from_email
+    from_label = self.config.get("from_label") or ""
+    if from_label:
+        from_email = f"{from_label} <{from_email}>"
+    return from_email
+```
+
+---
+
 ## 5. Best Practices
 
 1. **Error Handling**: Do not catch all exceptions in `_send`. If an unhandled exception occurs, Bitcaster will catch it, log it, and mark the delivery as failed.

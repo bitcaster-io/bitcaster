@@ -72,3 +72,22 @@ def test_config() -> None:
     d: MailJetDispatcher = MailJetDispatcher(Mock(config={}))
     with pytest.raises(ValidationError):
         _ = d.config
+
+
+def test_mailjet_no_from_label(mail_payload: Payload, mocked_responses: RequestsMock) -> None:
+    from bitcaster.dispatchers import MailJetDispatcher
+    from bitcaster.models import Channel, Project
+
+    mocked_responses._add_from_file(file_path=RESPONSE_FIXTURE)
+
+    ch = Channel(
+        project=Project(from_email="sender@bitcaster.io", subject_prefix="[mailjet] "),
+        dispatcher=fqn(MailJetDispatcher),
+        config={
+            "api_key": "key",
+            "secret_key": "secret",
+            "from_address": "sender@bitcaster.io",
+            "from_label": "",
+        },
+    )
+    MailJetDispatcher(ch).send("recipient@example.com", mail_payload)

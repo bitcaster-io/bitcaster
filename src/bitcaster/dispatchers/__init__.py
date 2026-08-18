@@ -1,10 +1,17 @@
+from .anymail import (
+    AmazonSESDispatcher,
+    AnyMailDispatcher,
+    BrevoDispatcher,
+    MailJetDispatcher,
+    MailgunDispatcher,
+    PostmarkDispatcher,
+    ResendDispatcher,
+    SendGridDispatcher,
+)
 from .email import EmailDispatcher
 from .gmail import GMailDispatcher
 from .log import LocalDatabaseDispatcher
-from .mailgun import MailgunDispatcher
-from .mailjet import MailJetDispatcher
 from .rabbitmq import RabbitMQDispatcher
-from .sendgrid import SendGridDispatcher
 from .slack import SlackDispatcher
 from .sys import SystemDispatcher
 from .teams import TeamsDispatcher
@@ -13,12 +20,17 @@ from .user_message import UserMessageDispatcher
 from .x import XDispatcher
 
 __all__ = [
+    "AmazonSESDispatcher",
+    "AnyMailDispatcher",
+    "BrevoDispatcher",
     "LocalDatabaseDispatcher",
     "EmailDispatcher",
     "GMailDispatcher",
     "MailJetDispatcher",
     "MailgunDispatcher",
+    "PostmarkDispatcher",
     "RabbitMQDispatcher",
+    "ResendDispatcher",
     "SendGridDispatcher",
     "SlackDispatcher",
     "SystemDispatcher",

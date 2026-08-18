@@ -78,6 +78,7 @@ Notes:
 
 
 class WebPushDispatcher(Dispatcher):
+    slug = "webpush"
     config_class: type[DispatcherConfig] = WebPushConfig
     protocol = MessageProtocol.WEBPUSH
     need_subscription = True

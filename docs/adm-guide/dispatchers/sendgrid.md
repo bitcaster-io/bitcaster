@@ -7,6 +7,7 @@ The SendGrid dispatcher sends notifications via SendGrid's API.
 The following parameters are available to configure the SendGrid dispatcher:
 
 - **API Key** (required): Your SendGrid API Key.
+- **Sender Domain** (optional): The domain verified in SendGrid for sending.
 - **From Address** (optional): Override the sender email address.
 - **From Name** (optional): Override the sender display name.
 

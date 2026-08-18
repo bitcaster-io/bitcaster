@@ -1,10 +1,14 @@
 nav:
+    - brevo.md
     - email.md
     - gmail.md
     - log.md
     - mailgun.md
     - mailjet.md
+    - postmark.md
     - rabbitmq.md
+    - resend.md
+    - ses.md
     - sendgrid.md
     - slack.md
     - sys.md

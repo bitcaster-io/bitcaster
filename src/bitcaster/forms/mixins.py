@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class Scoped2FormMixin(forms.ModelForm["AnyModel_co"]):
-    # pass
     organization = forms.ModelChoiceField(
         queryset=Organization.objects.local(), required=True, widget=uwidgets.UnfoldAdminSelect2Widget
     )

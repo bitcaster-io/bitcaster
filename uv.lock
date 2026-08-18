@@ -261,7 +261,7 @@ dependencies = [
     { name = "django-adminactions" },
     { name = "django-adminfilters" },
     { name = "django-allauth", extra = ["mfa"] },
-    { name = "django-anymail" },
+    { name = "django-anymail", extra = ["amazon-ses"] },
     { name = "django-concurrency" },
     { name = "django-constance" },
     { name = "django-csp" },
@@ -297,7 +297,6 @@ dependencies = [
     { name = "jmespath" },
     { name = "jsonschema" },
     { name = "lxml" },
-    { name = "mailjet-rest" },
     { name = "msgpack" },
     { name = "oauthlib" },
     { name = "phonenumbers" },
@@ -357,6 +356,7 @@ dev = [
     { name = "pytest-repeat" },
     { name = "pytest-socket" },
     { name = "pytest-testmon" },
+    { name = "pytest-timeout" },
     { name = "pytest-xdist", extra = ["psutil"] },
     { name = "pyupgrade" },
     { name = "responses" },
@@ -418,7 +418,7 @@ requires-dist = [
     { name = "django-adminactions", specifier = ">=2.3" },
     { name = "django-adminfilters", specifier = ">=2.6" },
     { name = "django-allauth", extras = ["mfa"], specifier = ">=65.16.1" },
-    { name = "django-anymail", specifier = ">=10.3" },
+    { name = "django-anymail", extras = ["amazon-ses"], specifier = ">=10.3" },
     { name = "django-concurrency", specifier = ">=2.5" },
     { name = "django-constance", specifier = ">=3.1" },
     { name = "django-csp", specifier = ">=3.8" },
@@ -454,7 +454,6 @@ requires-dist = [
     { name = "jmespath", specifier = ">=1.0.1" },
     { name = "jsonschema", specifier = ">=4.24" },
     { name = "lxml", specifier = ">=6.1" },
-    { name = "mailjet-rest", specifier = ">=1.3.4" },
     { name = "msgpack", specifier = ">=1.2.1" },
     { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
@@ -514,6 +513,7 @@ dev = [
     { name = "pytest-repeat", specifier = ">=0.9.3" },
     { name = "pytest-socket", specifier = ">=0.7" },
     { name = "pytest-testmon", specifier = ">=2.1.1" },
+    { name = "pytest-timeout", specifier = ">=2.3.1" },
     { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.8" },
     { name = "pyupgrade", specifier = ">=3.21.2" },
     { name = "responses", specifier = ">=0.25" },
@@ -1136,6 +1136,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/00/43/f0aadb31f2c58afcd9f001f4291998cbd6d289898167e79d908506fc6faf/django_anymail-15.0.tar.gz", hash = "sha256:23d8ab6589afe8cc1ae7665c26879814ad192f4c3ed837a2a1868b0a056869e0", size = 106985, upload-time = "2026-04-18T20:44:19.237Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/75/d1/daae99ec3b30886010a499975880ec20c32c622bee6b92c226b715e42f0c/django_anymail-15.0-py3-none-any.whl", hash = "sha256:64d33dd1084bfc8e4e12245f56629be40aa0b0498fc7fc7544d87b9b2048be1e", size = 147229, upload-time = "2026-04-18T20:44:17.323Z" },
+]
+
+[package.optional-dependencies]
+amazon-ses = [
+    { name = "boto3" },
 ]
 
 [[package]]
@@ -2233,18 +2238,6 @@ wheels = [
 ]
 
 [[package]]
-name = "mailjet-rest"
-version = "1.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b2/c2/f709f5e281b48325608c1ae21ce8f7712b033d991c844d821790a632713a/mailjet_rest-1.7.0.tar.gz", hash = "sha256:e8f3f7db2d132417465e72cad555af582712076332e08b781821a5a3bbc00ac9", size = 54072, upload-time = "2026-06-12T10:43:39.535Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/8a/9da0a7a81a097ad76b515dbc666f70f670b890f98b5bf6f47fb60c287cd5/mailjet_rest-1.7.0-py3-none-any.whl", hash = "sha256:c1d039eed9527a12bfe493e0e92bb62e74646d4269a44f2c33436a7fde197e16", size = 36119, upload-time = "2026-06-12T10:43:38.409Z" },
-]
-
-[[package]]
 name = "markdown"
 version = "3.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2635,7 +2628,7 @@ version = "0.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyperclip" },
-    { name = "python3-xlib", marker = "sys_platform == 'linux'" },
+    { name = "python3-xlib" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/28/fa/b2ba8229b9381e8f6381c1dcae6f4159a7f72349e414ed19cfbbd1817173/MouseInfo-0.1.3.tar.gz", hash = "sha256:2c62fb8885062b8e520a3cce0a297c657adcc08c60952eb05bc8256ef6f7f6e7", size = 10850, upload-time = "2020-03-27T21:20:10.136Z" }
 
@@ -3284,7 +3277,7 @@ dependencies = [
     { name = "pygetwindow" },
     { name = "pymsgbox" },
     { name = "pyscreeze" },
-    { name = "python3-xlib", marker = "sys_platform == 'linux'" },
+    { name = "python3-xlib" },
     { name = "pytweening" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/65/ff/cdae0a8c2118a0de74b6cf4cbcdcaf8fd25857e6c3f205ce4b1794b27814/PyAutoGUI-0.9.54.tar.gz", hash = "sha256:dd1d29e8fd118941cb193f74df57e5c6ff8e9253b99c7b04f39cfc69f3ae04b2", size = 61236, upload-time = "2023-05-24T20:11:32.972Z" }
@@ -3791,6 +3784,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4d/1d/3e4230cc67cd6205bbe03c3527500c0ccaf7f0c78b436537eac71590ee4a/pytest_testmon-2.2.0.tar.gz", hash = "sha256:01f488e955ed0e0049777bee598bf1f647dd524e06f544c31a24e68f8d775a51", size = 23108, upload-time = "2025-12-01T07:30:24.76Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/61/55/ebb3c2f59fb089f08d00f764830d35780fc4e4c41dffcadafa3264682b65/pytest_testmon-2.2.0-py3-none-any.whl", hash = "sha256:2604ca44a54d61a2e830d9ce828b41a837075e4ebc1f81b148add8e90d34815b", size = 25199, upload-time = "2025-12-01T07:30:23.623Z" },
+]
+
+[[package]]
+name = "pytest-timeout"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/82/4c9ecabab13363e72d880f2fb504c5f750433b2b6f16e99f4ec21ada284c/pytest_timeout-2.4.0.tar.gz", hash = "sha256:7e68e90b01f9eff71332b25001f85c75495fc4e3a836701876183c4bcfd0540a", size = 17973, upload-time = "2025-05-05T19:44:34.99Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/b6/3127540ecdf1464a00e5a01ee60a1b09175f6913f0644ac748494d9c4b21/pytest_timeout-2.4.0-py3-none-any.whl", hash = "sha256:c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2", size = 14382, upload-time = "2025-05-05T19:44:33.502Z" },
 ]
 
 [[package]]

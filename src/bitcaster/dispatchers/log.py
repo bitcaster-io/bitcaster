@@ -14,7 +14,7 @@ MESSAGES = []
 
 class LocalDatabaseDispatcher(Dispatcher):
     id = 1
-    slug = "test"
+    slug = "log"
     local = True
     verbose_name = "Log"
     protocol = MessageProtocol.PLAINTEXT

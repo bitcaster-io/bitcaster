@@ -105,7 +105,7 @@ class DispatcherMeta(abc.ABCMeta):
         if attrs["__qualname__"] == "Dispatcher":
             return super().__new__(cls, class_name, bases, attrs)
         new_cls = super().__new__(cls, class_name, bases, attrs)
-        if new_cls not in dispatcherManager:  # pragma: no branch
+        if not attrs.get("abstract", False) and new_cls not in dispatcherManager:  # pragma: no branch
             dispatcherManager.register(new_cls)
         return cast("Dispatcher", new_cls)
 
@@ -173,6 +173,8 @@ class Dispatcher(metaclass=DispatcherMeta):
 
 
 class DispatcherManager(Registry):
+    _choices: list[tuple[str, str]] | None
+
     def get_name(self, entry: type) -> str:
         if hasattr(entry, "verbose_name"):
             attr = entry.verbose_name
@@ -182,6 +184,12 @@ class DispatcherManager(Registry):
                 return str(attr())
             return str(attr)
         return fqn(entry)
+
+    def as_choices(self) -> list[tuple[str, str]]:
+        if not self._choices:
+            super().as_choices()
+            self._choices = sorted(self._choices or [], key=lambda x: x[1])
+        return self._choices
 
 
 dispatcherManager = DispatcherManager(Dispatcher)  # noqa N816

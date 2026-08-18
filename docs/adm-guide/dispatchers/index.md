@@ -6,11 +6,16 @@ and so on.
 
 The available dispatchers are:
 
+- [Brevo](brevo.md)
 - [Email](email.md)
 - [Gmail](gmail.md)
 - [Log](log.md)
 - [Mailgun](mailgun.md)
 - [Mailjet](mailjet.md)
+- [Postmark](postmark.md)
+- [RabbitMQ](rabbitmq.md)
+- [Resend](resend.md)
+- [SES](ses.md)
 - [SendGrid](sendgrid.md)
 - [Slack](slack.md)
 - [Sys](sys.md)

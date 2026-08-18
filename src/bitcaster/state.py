@@ -22,7 +22,7 @@ class State(local):
     def __repr__(self) -> str:
         return f"<State {id(self)}>"
 
-    def add_cookie(
+    def add_cookie(  # noqa: PLR0917
         self,
         key: str,
         value: "JsonType",

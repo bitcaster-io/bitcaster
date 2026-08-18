@@ -24,6 +24,8 @@ section-order = [
     "local-folder"
 ]
 
+[lint.pylint]
+max-positional-args = 7
 
 [lint]
 select = [
@@ -109,6 +111,6 @@ line-ending = "auto"
 
 [lint.per-file-ignores]
 ".semgrep/**/*.py" = ["ALL"]
-"tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT006"]
+"tests/**.py" = ["S101", "PLR0917","PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT006"]
 "src/dbtemplates/test**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT009"]
 "src/bitcaster/version.py" = ["ALL", ]

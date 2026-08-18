@@ -169,7 +169,7 @@ def test_mint_unknown_application_404(client: APIClient, data: "Context") -> Non
     req = APIRequestFactory().post(_token_url(data), data={"origin": ORIGIN}, format="json")
     req._force_auth_user = key.user
     req._force_auth_token = key
-    view.get_queryset = lambda: Application.objects.none()
+    view.get_queryset = Application.objects.none
     res = view.post(Request(req, parsers=[JSONParser()]))
     assert res.status_code == status.HTTP_404_NOT_FOUND
 

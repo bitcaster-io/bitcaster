@@ -2,18 +2,15 @@ from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
+from .base import DispatcherConfig
+from .email import BaseEmailDispatcher
 
 if TYPE_CHECKING:
     from bitcaster.types.dispatcher import TDispatcherConfig_co
-
-    from ..models import Assignment
 
 
 class GMailConfig(DispatcherConfig):
@@ -27,15 +24,14 @@ class GMailConfig(DispatcherConfig):
     )
 
 
-class GMailDispatcher(Dispatcher):
+class GMailDispatcher(BaseEmailDispatcher):
     slug = "gmail"
-    verbose_name = "GMmail"
+    verbose_name = "Gmail"
 
     config_class = GMailConfig
     backend: type[EmailBackend] = EmailBackend
-    protocol: MessageProtocol = MessageProtocol.EMAIL
 
-    @cached_property
+    @property
     def config(self) -> dict[str, Any]:
         cfg: "TDispatcherConfig_co" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
@@ -46,16 +42,3 @@ class GMailDispatcher(Dispatcher):
             "use_tls": True,
             **cfg.cleaned_data,
         }
-
-    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=payload.message,
-            from_email=self.channel.from_email,
-            to=[address],
-            connection=self.get_connection(),
-        )
-        if payload.html_message:
-            email.attach_alternative(payload.html_message, "text/html")
-        return email.send() > 0

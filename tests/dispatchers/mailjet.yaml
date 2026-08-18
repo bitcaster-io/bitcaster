@@ -1,10 +1,9 @@
 responses:
 - response:
-    auto_calculate_content_length: false
-    body: '{"Messages":[{"Status":"success","CustomID":"","To":[{"Email":"test@bitcaster.org","MessageUUID":"f91b2b85-b543-41c4-990e-ecf90a967616","MessageID":288230412159901111,"MessageHref":"https://api.mailjet.com/v3/REST/message/288230412159901111"}],"Cc":[],"Bcc":[]}]}'
+    auto_calculate_content_length: true
+    body: '{"Messages":[{"Status":"success","CustomID":"","To":[{"Email":"recipient@example.com","MessageUUID":"f91b2b85-b543-41c4-990e-ecf90a967616","MessageID":288230412159901111,"MessageHref":"https://api.mailjet.com/v3/REST/message/288230412159901111"}],"Cc":[],"Bcc":[]}]}'
     content_type: application/json; charset=UTF-8
     headers:
-      content-length: '263'
       date: Wed, 18 Mar 2026 14:29:48 GMT
       x-mj-request-guid: 3767c643-3b5d-4919-a50e-5947f5a61d27
     method: POST

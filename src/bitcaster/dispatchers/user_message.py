@@ -57,7 +57,7 @@ class UserMessageConfig(DispatcherConfig):
 
 
 class UserMessageDispatcher(Dispatcher):
-    slug = "system-email"
+    slug = "user-message"
     verbose_name = "User Messages"
     backend = None
     protocol: MessageProtocol = MessageProtocol.INTERNAL

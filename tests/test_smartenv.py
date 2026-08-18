@@ -15,8 +15,8 @@ def env() -> SmartEnv:
     "storage",
     [
         "storage.SampleStorage?bucket=container&option=value&connection_string=Defaul",
-        "storage.SampleStorage?bucket=container&option=value&connection_string=DefaultEndpointsProtocol=http;Account"
-        "Name=devstoreaccount1;AccountKey=ke1==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;",
+        ("storage.SampleStorage?bucket=container&option=value&connection_string=DefaultEndpointsProtocol=http;Account"
+        "Name=devstoreaccount1;AccountKey=ke1==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"),
     ],
 )
 def test_storage_options(storage: str, env: SmartEnv) -> None:

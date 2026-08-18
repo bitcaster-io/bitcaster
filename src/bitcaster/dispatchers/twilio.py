@@ -29,8 +29,9 @@ class TwilioSMS(Dispatcher):
     protocol = MessageProtocol.SMS
 
     def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        number = self.config.pop("number")
-        client = Client(username=self.config["sid"], password=self.config["token"])
+        config = dict(self.config)
+        number = config.pop("number")
+        client = Client(username=config["sid"], password=config["token"])
         client.messages.create(
             body=payload.message,
             from_=number,
