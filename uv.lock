@@ -549,7 +549,7 @@ docs = [
     { name = "pymdown-extensions", specifier = ">=11.0.1" },
 ]
 mypy = [
-    { name = "boto3-stubs", specifier = ">=1.34.105" },
+    { name = "boto3-stubs", specifier = ">=1.43" },
     { name = "djangorestframework-stubs" },
     { name = "mypy", specifier = ">=1.9" },
     { name = "mypy-boto3", specifier = ">=1.34.105" },
