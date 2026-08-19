@@ -9,6 +9,7 @@ This guide covers the creation and configuration of new Dispatchers (SMS, Webhoo
 3. **Protocol:** Assign the correct `MessageProtocol` to define channel capabilities (HTML, TEXT, SUBJECT, etc.).
 4. **Validation:** Handle delivery errors in `_send` by raising `bitcaster.exceptions.DispatcherError`.
 5. **Testing:** Every dispatcher MUST have a corresponding test file in `tests/dispatchers/test_d_<slug>.py`.
+6. **Documentation**:  Every dispatcher MUST be properly documented in its own page and listed in the README.md
 
 ## Implementation Workflow
 

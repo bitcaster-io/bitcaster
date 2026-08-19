@@ -255,11 +255,13 @@ def _wait_for_server(container_id, timeout=120):
                 container_id,
                 "sh",
                 "-c",
-                ('python3 -c "import http.client; '
-                "c = http.client.HTTPConnection('localhost', 8000, timeout=5); "
-                "c.request('GET', '/healthcheck/'); "
-                "r = c.getresponse(); "
-                'print(r.status); r.read()"'),
+                (
+                    'python3 -c "import http.client; '
+                    "c = http.client.HTTPConnection('localhost', 8000, timeout=5); "
+                    "c.request('GET', '/healthcheck/'); "
+                    "r = c.getresponse(); "
+                    'print(r.status); r.read()"'
+                ),
             ],
             capture_output=True,
             text=True,
