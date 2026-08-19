@@ -25,11 +25,15 @@ In a usual IT environment, every application must implement multiple protocols t
 
 | Dispatcher | Channel |
 | --- | --- |
+| [AmazonSESDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/amazon_ses.py) | Email (Amazon SES) |
+| [BrevoDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/brevo.py) | Email (Brevo) |
 | [EmailDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/email.py) | Email (SMTP) |
 | [GMailDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/gmail.py) | Email (Gmail) |
-| [MailgunDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/mailgun.py) | Email (Mailgun) |
-| [MailJetDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/mailjet.py) | Email (Mailjet) |
-| [SendGridDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/sendgrid.py) | Email (SendGrid) |
+| [MailgunDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/mailgun.py) | Email (Mailgun) |
+| [MailJetDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/mailjet.py) | Email (Mailjet) |
+| [PostmarkDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/postmark.py) | Email (Postmark) |
+| [ResendDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/resend.py) | Email (Resend) |
+| [SendGridDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/anymail/sendgrid.py) | Email (SendGrid) |
 | [SystemDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/sys.py) | Email (system) |
 | [TwilioSMS](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/twilio.py) | SMS |
 | [SlackDispatcher](https://github.com/bitcaster-io/bitcaster/blob/develop/src/bitcaster/dispatchers/slack.py) | Slack |
