@@ -1,24 +1,21 @@
 # Trigger Events from a Web Page
 
 Bitcaster can be triggered directly from a web page (browser JavaScript).
-Because browser code is visible to any visitor, static API keys must never be
-embedded in pages. Bitcaster provides two safe mechanisms for browser clients:
+Because browser code is visible to any visitor, API keys must never be embedded
+in pages. Instead, a **web API key** stays on your backend, which derives a
+browser-safe *signing secret* from it. Pages use that secret to sign requests
+with an HMAC-SHA256 signature that the Bitcaster API verifies.
 
-1. **Web API Keys** — hardened, origin-bound, trigger-only keys that *can*
-   live in a page.
-2. **Client Tokens** — very short-lived tokens minted by your backend through
-   the token exchange endpoint; the static key never leaves your server.
-
-Both mechanisms share the same properties:
+The signed requests are:
 
 - scoped to a single application;
 - restricted to triggering events (no reads, no writes, no auto-create);
 - bound to an explicit list of allowed origins: requests without a matching
   `Origin` header are rejected;
-- expiring and individually revocable;
+- validated against a timestamp skew window (see `HMAC_SIGNATURE_MAX_SKEW`);
 - throttled per key and client IP.
 
-## 1. Web API Keys
+## 1. Set up a web API key
 
 Create an API key with:
 
@@ -28,72 +25,79 @@ Create an API key with:
 - **Allowed origins**: the origins of the pages that will use the key
 - **Expires at**: optional but recommended
 
-Then trigger events from the page:
+The master key itself is only used server side. Derive the signing secret that
+can be safely embedded in (or served to) the page:
+
+```python
+from bitcaster.models import ApiKey
+
+key = ApiKey.objects.get(name="my-web-key")
+secret = key.get_web_signing_secret()
+```
+
+The derived secret cannot be used as a bearer token and does not reveal the
+master key: it only allows signing trigger requests.
+
+## 2. Sign requests from the browser
+
+Sign the request with an HMAC-SHA256 over the canonical representation:
+
+```
+METHOD\nPATH\nTIMESTAMP\nSHA256_HEX(BODY)
+```
+
+where:
+
+- `METHOD` is the HTTP method, e.g. `POST`;
+- `PATH` is the request path (no scheme, no host, no query string), e.g.
+  `/api/o/{org}/p/{prj}/a/{app}/e/{event}/trigger/`;
+- `TIMESTAMP` is the Unix timestamp (seconds) used in the `X-Timestamp` header;
+- `SHA256_HEX(BODY)` is the hex-encoded SHA-256 digest of the raw request body.
+
+Send two extra headers:
+
+```
+Authorization: HMAC-SHA256 <key_id>:<signature>
+X-Timestamp: <unix timestamp in seconds>
+```
+
+where `key_id` is the first 16 characters of the master API key and
+`signature` is the hex-encoded HMAC-SHA256 of the canonical string, keyed with
+the derived signing secret. Requests whose timestamp differs from server time
+by more than `HMAC_SIGNATURE_MAX_SKEW` seconds are rejected.
+
+Example (web key; the `Origin` header must match the allowed origins):
 
 ```javascript
-fetch("https://bitcaster.example.com/api/o/{org}/p/{prj}/a/{app}/e/{event}/trigger/", {
-    method: "POST",
-    headers: {
-        "Authorization": "Key <WEB_API_KEY>",
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ context: { "key": "value" } }),
-});
-```
-
-A web key is rejected (403) when the request has no `Origin` header or an
-origin outside the allowlist. This prevents other websites from reusing a key
-found in your page.
-
-## 2. Client Tokens (recommended for production)
-
-The static key stays on your backend. The backend exchanges it for a short-lived
-client token, which is then embedded in the page (or served to it) and used by
-the browser.
-
-**Mint a token** (server side, with a server API key that has `event:trigger`):
-
-```bash
-curl -X POST https://bitcaster.example.com/api/o/{org}/p/{prj}/a/{app}/token/ \
-     -H "Authorization: Key <SERVER_API_KEY>" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "origin": "https://example.com",
-           "event": "order-created"
-         }'
-```
-
-- `origin` (required): the origin of the page that will use the token.
-- `event` (optional): bind the token to a single event.
-
-Response:
-
-```json
-{
-    "token": "...",
-    "expires_at": "2026-08-13T12:15:00Z",
-    "event": "order-created"
+async function trigger(url, body) {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const canonical = [
+        "POST",
+        new URL(url).pathname,
+        timestamp,
+        sha256Hex(JSON.stringify(body)),
+    ].join("\n");
+    const signature = hmacSha256Hex(SIGNING_SECRET, canonical);
+    const res = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `HMAC-SHA256 ${KEY_ID}:${signature}`,
+            "X-Timestamp": String(timestamp),
+            "Origin": window.location.origin,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return res;
 }
 ```
 
-The token lives for `CLIENT_TOKEN_TTL` seconds (default 900) and can only
-trigger events. Use it from the browser like a key:
-
-```javascript
-fetch("https://bitcaster.example.com/api/o/{org}/p/{prj}/a/{app}/e/{event}/trigger/", {
-    method: "POST",
-    headers: { "Authorization": "Key <CLIENT_TOKEN>" },
-    body: JSON.stringify({ context: {} }),
-});
-```
-
-Revocation is immediate: disable the token in the admin, or rotate the parent
-key. Expired tokens are removed by the `cleanup_client_tokens` management
-command and lazily on each new mint.
+A request is rejected (403) when the `Origin` header is missing or not in the
+key's allowed origins, and (401) when the signature or timestamp is invalid.
 
 ## 3. Browser client library
 
-The standalone `@bitcaster/js` package wraps both flows with a single API —
+The standalone `@bitcaster/js` package wraps this flow with a single API —
 see its README for usage and examples.
 
 ## Configuration
@@ -101,5 +105,5 @@ see its README for usage and examples.
 | Setting | Default | Description |
 | --- | --- | --- |
 | `CORS_ALLOWED_ORIGINS` | `[]` | Origins allowed to call the API from a browser |
-| `CLIENT_TOKEN_TTL` | `900` | Lifetime (seconds) of minted client tokens |
+| `HMAC_SIGNATURE_MAX_SKEW` | `300` | Max allowed skew (seconds) between `X-Timestamp` and server time |
 | `TRIGGER_CONTEXT_MAX_SIZE` | `32768` | Max size in bytes of the `context` payload from web credentials |
