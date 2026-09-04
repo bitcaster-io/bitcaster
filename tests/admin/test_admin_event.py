@@ -57,6 +57,23 @@ def test_add_event(app: "DjangoTestApp", application: "Application") -> None:
     assert res.status_code == 302
 
 
+def test_add_event_shows_save_and_continue(app: "DjangoTestApp", application: "Application") -> None:
+    url = reverse("admin:bitcaster_event_add")
+    res = app.get(url)
+    # two-step create: "Save and continue editing" is the only submit button on the add page
+    assert res.pyquery("#submit-row [name=_continue]")
+    assert not res.pyquery("#submit-row [name=_save]")
+    assert not res.pyquery("#submit-row [name=_addanother]")
+    assert not res.pyquery("#submit-row [name=_saveasnew]")
+
+
+def test_change_event_shows_save(app: "DjangoTestApp", event: "Event") -> None:
+    url = reverse("admin:bitcaster_event_change", args=[event.pk])
+    res = app.get(url)
+    assert res.pyquery("#submit-row [name=_save]")
+    assert res.pyquery("#submit-row [name=_continue]")
+
+
 def test_change_event(app: "DjangoTestApp", event: "Event") -> None:
     url = reverse("admin:bitcaster_event_change", args=[event.pk])
     res = app.get(url)
