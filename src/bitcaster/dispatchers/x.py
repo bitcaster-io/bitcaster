@@ -41,11 +41,11 @@ class XDispatcher(Dispatcher):
             resource_owner_key=self.config["access_token"],
             resource_owner_secret=self.config["access_token_secret"],
         )
-        response = session.post("https://api.twitter.com/2/tweets", json={"text": text})
+        response = session.post("https://api.twitter.com/2/tweets", json={"text": text}, timeout=10)
 
         if response.status_code not in (200, 201):
-            logger.error(f"X dispatcher error: {response.status_code} - {response.text}")
-            raise DispatcherError(f"Failed to post to X: {response.text}")
+            logger.error("X dispatcher error: %s", response.status_code)
+            raise DispatcherError(f"Failed to post to X: HTTP {response.status_code}")
 
         return True
 

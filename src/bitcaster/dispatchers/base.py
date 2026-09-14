@@ -139,7 +139,11 @@ class Dispatcher(metaclass=DispatcherMeta):
             klass = import_string(self.backend)
         else:
             klass = self.backend
-        logger.debug(f"Dispacther: {klass} creating connection with config {self.config}")
+        redacted_config = {
+            k: "(redacted)" if any(s in k.lower() for s in ("key", "secret", "token", "password", "credential")) else v
+            for k, v in self.config.items()
+        }
+        logger.debug(f"Dispatcher: {klass} creating connection with config {redacted_config}")
         return klass(fail_silently=False, **self.config)
 
     @property
