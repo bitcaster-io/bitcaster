@@ -1,6 +1,6 @@
 # mypy: disable-error-code="attr-defined"
 
-from pytest_django.fixtures import SettingsWrapper
+from pytest_django.fixtures import Settings as SettingsWrapper
 
 from django.test import RequestFactory
 

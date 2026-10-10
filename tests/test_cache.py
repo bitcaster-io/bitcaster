@@ -3,7 +3,7 @@ from typing import Any, Optional
 import os
 
 from pytest_django import DjangoAssertNumQueries
-from pytest_django.fixtures import SettingsWrapper
+from pytest_django.fixtures import Settings as SettingsWrapper
 
 import pytest
 

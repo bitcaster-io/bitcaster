@@ -210,13 +210,12 @@ def test_send_message_invalid(
 def test_edit_error(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "edit"), args=[message.pk])  # type: ignore[arg-type]
-    res = app.get(url)
-    assert res.status_code == 200
-    res = app.post(
-        url,
-        {"subject": "subject", "content": "content", "html_content": "html_content", "context": "--"},
-    )
-    assert res.status_code == 200
+
+    with mock.patch(
+        "bitcaster.admin.message.MessageTemplateAdmin.get_common_context", side_effect=Exception("Edit failed")
+    ):
+        res = app.get(url)
+    assert res.status_code == 302
 
 
 def test_add(app: "DjangoTestApp", message: "MessageTemplate") -> None:
@@ -276,6 +275,17 @@ def test_clone(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     res = app.post(url, {"name": "New Name", "event": message.notification.event.pk, "channel": new_channel.pk})
     assert res.status_code == 302
     assert MessageTemplate.objects.filter(name="New Name", channel=new_channel).exists()
+
+
+def test_clone_error(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
+    url = reverse(admin_urlname(opts, "clone"), args=[message.pk])  # type: ignore[arg-type]
+
+    with mock.patch(
+        "bitcaster.admin.message.MessageTemplateAdmin.get_common_context", side_effect=Exception("Clone failed")
+    ):
+        res = app.get(url)
+    assert res.status_code == 302
 
 
 @pytest.mark.parametrize("flt", ["expired=", "expired=1", "expired=0"])

@@ -1,16 +1,18 @@
-@import "tailwindcss";
-@utility unfold-input {
-  @apply font-medium min-w-20 rounded-xs shadow-xs  text-sm px-3 py-2 w-full max-w-2xl;
-  @apply border-gray-500 border-1;
-}
-
-@utility unfold-select {
-  @apply font-medium min-w-20 rounded shadow-xs text-sm px-3 py-2 w-full max-w-2xl;
-  @apply border-gray-500 border-1;
-}
 
 #edit-message-body {
-  @apply border-1 ;
+
+  .toolbar {
+    button.button.toggler {
+      margin-right: 2px;
+      border: 1px solid gray;
+      border-radius: 2px;
+
+      &.active {
+        background-color: var(--color-red-400);
+        color: white;
+      }
+    }
+  }
   #edit-message-form {
     table {
       width: 100%;
@@ -20,49 +22,25 @@
         width: 50%;
       }
     }
+    #id_subject{
+      display: inline-flex;
+      padding: 6px;
+    }
 
     input[type=text], textarea {
-      @apply w-full border-b-gray-500;
+      @apply w-full;
+      padding: 2px;
+      border-radius: 2px;
+      border: 1px solid gray;
     }
   }
-
-  .tab {
-    display: none;
-  }
-
-  @apply border-none;
   #preview {
-    border: 1px solid black;
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin-left: 5px;
+    background: white;
     width: 100%;
     height: 400px;
   }
 
-  input, textarea {
-    @apply unfold-input
-  }
-
-  textarea {
-    @apply h-100;
-  }
-
-  .toolbar {
-    button {
-      @apply rounded-none border-transparent;
-      @apply dark:text-white;
-      &.active {
-        @apply bg-red-500;
-      }
-    }
-  }
-
-  table {
-    tr td {
-      @apply align-top px-2;
-    }
-  }
-
-  iframe#preview {
-    @apply dark:text-white dark:bg-gray-300 w-full;
-
-  }
 }

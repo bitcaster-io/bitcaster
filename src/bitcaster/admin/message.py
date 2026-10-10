@@ -149,22 +149,27 @@ class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTem
 
     @button()
     def clone(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, action_title="Clone")
-        cloned: MessageTemplate = context["original"]
-        cloned.name = f"Copy of {cloned.name}"
-        cloned.pk = None
-        if request.method == "POST":
-            form = MessageTemplateCloneForm(request.POST, instance=cloned)
-            if form.is_valid():
-                form.save()
-                self.message_user(request, str(_("Message Template updated successfully ")))
-                return HttpResponseRedirect("..")
-        else:
-            form = MessageTemplateCloneForm(instance=cloned)
-        fs = (("", {"fields": list(MessageTemplateCloneForm.declared_fields.keys())}),)
-        context["admin_form"] = UnfoldAdminForm(form, fs, {}, model_admin=self)
-        context["form"] = form
-        return TemplateResponse(request, "bitcaster/admin/message/clone.html", context)
+        try:
+            context = self.get_common_context(request, pk, action_title="Clone")
+            cloned: MessageTemplate = context["original"]
+            cloned.name = f"Copy of {cloned.name}"
+            cloned.pk = None
+            if request.method == "POST":
+                form = MessageTemplateCloneForm(request.POST, instance=cloned)
+                if form.is_valid():
+                    form.save()
+                    self.message_user(request, str(_("Message Template updated successfully ")))
+                    return HttpResponseRedirect("..")
+            else:
+                form = MessageTemplateCloneForm(instance=cloned)
+            fs = (("", {"fields": list(MessageTemplateCloneForm.declared_fields.keys())}),)
+            context["admin_form"] = UnfoldAdminForm(form, fs, {}, model_admin=self)
+            context["form"] = form
+            return TemplateResponse(request, "bitcaster/admin/message/clone.html", context)
+        except Exception as e:
+            logger.exception("Error cloning message template %s", pk)
+            self.message_user(request, str(_("Error cloning message template: %s")) % str(e), level="error")
+            return HttpResponseRedirect(".")
 
     @view()  # type: ignore[arg-type]
     def render(self, request: HttpRequest, pk: str) -> HttpResponse:
@@ -232,32 +237,37 @@ class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTem
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
     def edit(self, request: HttpRequest, pk: str) -> HttpResponse:
-        context = self.get_common_context(request, pk, action_title="Edit")
-        msg = context["original"]
-        message_context = self.get_dummy_source_context(
-            msg, extra_context={"channel": msg.channel.name, "address": "<sys>"}
-        )
-
-        if request.method == "POST":
-            form = MessageTemplateEditForm(request.POST, instance=msg)
-            if form.is_valid():
-                form.save()
-                self.message_user(request, str(_("Message Template updated successfully ")))
-                return HttpResponseRedirect("..")
-        else:
-            form = MessageTemplateEditForm(
-                initial={
-                    "recipient": str(request.user.email),
-                    "context": {k: "<sys>" for k, __ in message_context.items()},
-                    "subject": msg.subject or "Subject for {{ event }}",
-                    "content": (msg.content or SAMPLE_TEXT_MESSAGE),
-                    "html_content": (msg.html_content or SAMPLE_HTML_MESSAGE),
-                    "markdown_content": (msg.content or SAMPLE_TEXT_MESSAGE),
-                },
-                instance=msg,
+        try:
+            context = self.get_common_context(request, pk, action_title="Edit")
+            msg = context["original"]
+            message_context = self.get_dummy_source_context(
+                msg, extra_context={"channel": msg.channel.name, "address": "<sys>"}
             )
-        context["form"] = form
-        return TemplateResponse(request, "bitcaster/admin/message/edit.html", context)
+
+            if request.method == "POST":
+                form = MessageTemplateEditForm(request.POST, instance=msg)
+                if form.is_valid():
+                    form.save()
+                    self.message_user(request, str(_("Message Template updated successfully ")))
+                    return HttpResponseRedirect("..")
+            else:
+                form = MessageTemplateEditForm(
+                    initial={
+                        "recipient": str(request.user.email),
+                        "context": {k: "<sys>" for k, __ in message_context.items()},
+                        "subject": msg.subject or "Subject for {{ event }}",
+                        "content": (msg.content or SAMPLE_TEXT_MESSAGE),
+                        "html_content": (msg.html_content or SAMPLE_HTML_MESSAGE),
+                        "markdown_content": (msg.content or SAMPLE_TEXT_MESSAGE),
+                    },
+                    instance=msg,
+                )
+            context["form"] = form
+            return TemplateResponse(request, "bitcaster/admin/message/edit.html", context)
+        except Exception as e:
+            logger.exception("Error editing message template %s", pk)
+            self.message_user(request, str(_("Error editing message template: %s")) % str(e), level="error")
+            return HttpResponseRedirect(".")
 
     @button(html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
     def usage(self, request: HttpRequest, pk: str) -> HttpResponse:

@@ -1,12 +1,15 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .mixins import BitcasterBaseModel
 
+if TYPE_CHECKING:
+    from django.utils.functional import _StrPromise
 
-def _status_choices() -> list[tuple[str, str]]:
+
+def _status_choices() -> "list[tuple[str, _StrPromise]]":
     from .occurrence import Occurrence
 
     return Occurrence.Status.choices

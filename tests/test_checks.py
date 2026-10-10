@@ -20,7 +20,7 @@ from bitcaster.checks import (
 )
 
 if TYPE_CHECKING:
-    from pytest_django.fixtures import SettingsWrapper
+    from pytest_django.fixtures import Settings as SettingsWrapper
 
 
 def test_check_agent_validator(settings: "SettingsWrapper") -> None:

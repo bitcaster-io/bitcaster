@@ -42,8 +42,8 @@ class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
     paginate_by = 25
 
     def get_queryset(self) -> QuerySet[UserMessage]:
-        user = cast("User", self.request.user)
-        qs = user.bitcaster_messages.order_by("-created")
+        user: User = cast("User", self.request.user)
+        qs = user.bitcaster_messages.order_by("-created")  # type: ignore[arg-type]
         status = self.request.GET.get("status")
         if status == "unread":
             qs = qs.filter(read__isnull=True)

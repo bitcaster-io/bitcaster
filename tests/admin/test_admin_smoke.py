@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Mapping, Optional
 
 from admin_extra_buttons.handlers import ButtonHandler, ChoiceHandler
-from pytest_django.fixtures import SettingsWrapper
+from pytest_django.fixtures import Settings
 
 import pytest
 from testutils.matchers import RegexList
@@ -133,7 +133,7 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
 
 @pytest.fixture
 def app(
-    django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
+    django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: Settings
 ) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
