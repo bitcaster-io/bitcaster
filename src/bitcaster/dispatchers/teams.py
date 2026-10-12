@@ -5,6 +5,8 @@ import logging
 import requests
 
 from django import forms
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.dispatchers.base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
@@ -15,11 +17,19 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+TEAMS_ALLOWED_HOSTS = {"outlook.office.com", "office.com"}
+
 
 class TeamsConfig(DispatcherConfig):
     webhook_url = forms.URLField(
         label=_("Webhook URL"), help_text=_("The Incoming Webhook URL from Microsoft Teams channel configuration.")
     )
+
+    def clean_webhook_url(self) -> str:
+        url = self.cleaned_data["webhook_url"]
+        if not url_has_allowed_host_and_scheme(url, allowed_hosts=TEAMS_ALLOWED_HOSTS, require_https=True):
+            raise DjangoValidationError("URL must be a valid Microsoft Teams webhook (outlook.office.com)")
+        return url
 
 
 class TeamsDispatcher(Dispatcher):
@@ -32,7 +42,7 @@ class TeamsDispatcher(Dispatcher):
         return requests.Session()
 
     def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        webhook_url = self.channel.config.get("webhook_url")
+        webhook_url = self.config["webhook_url"]
 
         if not webhook_url:
             raise DispatcherError("Webhook URL not configured for this channel")
@@ -63,7 +73,12 @@ class TeamsDispatcher(Dispatcher):
                                 "spacing": "None",
                                 "size": "Small",
                             },
-                            {"type": "TextBlock", "text": text_content, "wrap": True, "spacing": "Medium"},
+                            {
+                                "type": "TextBlock",
+                                "text": text_content,
+                                "wrap": True,
+                                "spacing": "Medium",
+                            },
                         ],
                     },
                 }
@@ -74,8 +89,8 @@ class TeamsDispatcher(Dispatcher):
         response = session.post(webhook_url, json=teams_message, timeout=10)
 
         if response.status_code != 200:
-            logger.error(f"Teams dispatcher error: {response.status_code} - {response.text}")
-            raise DispatcherError(f"Failed to send to Teams: {response.text}")
+            logger.error("Teams dispatcher error: %s", response.status_code)
+            raise DispatcherError(f"Failed to send to Teams: HTTP {response.status_code}")
 
         return True
 

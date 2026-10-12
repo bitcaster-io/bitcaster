@@ -38,8 +38,11 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
 
 
 def _set_template_content(browser: TestBrowser, content: str) -> str:
-    return browser.execute_script(  # type: ignore[no-any-return]
-        """
+    previous_timeout = browser.driver.timeouts.script
+    browser.driver.set_script_timeout(120)
+    try:
+        return browser.execute_script(  # type: ignore[no-any-return]
+            """
         var editor = tinymce.activeEditor;
         var renderUrl = document.querySelector('meta[name="render-url"]').getAttribute('content');
         var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -68,8 +71,10 @@ def _set_template_content(browser: TestBrowser, content: str) -> str:
 
         return iframe.contentDocument.body.innerText;
     """,
-        content,
-    )
+            content,
+        )
+    finally:
+        browser.driver.set_script_timeout(previous_timeout)
 
 
 @pytest.mark.xdist_group(name="message_template")
