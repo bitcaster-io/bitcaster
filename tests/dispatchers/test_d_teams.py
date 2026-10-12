@@ -77,7 +77,17 @@ def test_teams_missing_config() -> None:
 
     with pytest.raises(DispatcherError) as excinfo:
         dispatcher.send("address", payload)
-    assert "Webhook URL not configured" in str(excinfo.value)
+    assert "This field is required" in str(excinfo.value)
+
+
+def test_teams_invalid_webhook_url() -> None:
+    channel = Channel(config={"webhook_url": "https://evil.example.com/webhook/xxx"})
+    dispatcher = TeamsDispatcher(channel)
+    payload = Mock(subject="Test Subject", message="Test Message", html_message=None)
+
+    with pytest.raises(DispatcherError) as excinfo:
+        dispatcher.send("address", payload)
+    assert "URL must be a valid Microsoft Teams webhook" in str(excinfo.value)
 
 
 def test_teams_test_connection(channel: Channel) -> None:

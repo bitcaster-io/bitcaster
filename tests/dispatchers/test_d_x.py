@@ -29,7 +29,7 @@ def test_x_send_success(mail_payload: requests.Response) -> None:
         mock_post.return_value = mock_response
 
         assert XDispatcher(ch).send("ignored", mail_payload)
-        mock_post.assert_called_once_with("https://api.twitter.com/2/tweets", json={"text": "message"})
+        mock_post.assert_called_once_with("https://api.twitter.com/2/tweets", json={"text": "message"}, timeout=10)
 
 
 def test_x_send_failure(mail_payload: requests.Response) -> None:
