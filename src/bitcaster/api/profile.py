@@ -56,7 +56,8 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
         description=_("Retrieve the full history of notifications sent to the authenticated user."),
     )
     def messages(self, request: Request) -> Response:
-        ser = UserMessageSerializer(many=True, instance=request.user.bitcaster_messages.all())
+        user: "User" = cast("User", request.user)
+        ser = UserMessageSerializer(many=True, instance=user.bitcaster_messages.all())  # type: ignore[arg-type]
         return Response(ser.data)
 
     @extend_schema(

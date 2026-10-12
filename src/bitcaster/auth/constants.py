@@ -26,3 +26,5 @@ class Grant(TextChoices):
 
     DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"
     MANAGE_APPLICATION_USERS = "MANAGE_APPLICATION_USERS", "Manage Application Users"
+
+    VIEW_SENTRY_ISSUE = "SENTRY_ISSUE", "View Sentry Issue"

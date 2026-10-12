@@ -88,7 +88,7 @@ class UserMessageDispatcher(Dispatcher):
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         user: "User" = assignment.address.user
         event = payload.event if payload.event.pk else None
-        user.bitcaster_messages.create(
+        user.bitcaster_messages.create(  # type: ignore[arg-type]
             subject=subject,
             message=payload.html_message or payload.message,
             event=event,

@@ -9,7 +9,7 @@ from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 if TYPE_CHECKING:
-    from pytest_django.fixtures import SettingsWrapper
+    from pytest_django.fixtures import Settings
     from webtest.response import TestResponse
 
     from bitcaster.models import Assignment, SocialProvider, User
@@ -25,7 +25,7 @@ def app(django_app_factory: MixinWithInstanceVariables, admin_user: "User") -> D
     return django_app
 
 
-def test_edit(app: DjangoTestApp, assignment: "Assignment", settings: "SettingsWrapper") -> None:
+def test_edit(app: DjangoTestApp, assignment: "Assignment", settings: "Settings") -> None:
     settings.ROOT_TOKEN_HEADER = "abc"
     settings.ROOT_TOKEN = "123"
     url = reverse("admin:bitcaster_assignment_change", args=[assignment.pk])

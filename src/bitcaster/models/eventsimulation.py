@@ -15,13 +15,14 @@ from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from django.utils.functional import _StrPromise
 
     from .occurrence import OccurrenceData
 
 logger = logging.getLogger(__name__)
 
 
-def _status_choices() -> list[tuple[str, str]]:
+def _status_choices() -> "list[tuple[str, _StrPromise]]":
     from .occurrence import Occurrence
 
     return Occurrence.Status.choices

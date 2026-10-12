@@ -179,5 +179,5 @@ class UserView(
     @action(detail=True, methods=["GET"], serializer_class=UserMessageSerializer)
     def list_messages(self, request: Request, **kwargs: Any) -> Response:
         user: User = self.get_object()
-        ser = UserMessageSerializer(many=True, instance=user.bitcaster_messages.all())
+        ser = UserMessageSerializer(many=True, instance=user.bitcaster_messages.all())  # type: ignore[arg-type]
         return Response(ser.data)

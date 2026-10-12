@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
+from pytest_django.fixtures import DjangoAssertNumQueries, Settings
 
 import pytest
 from testutils.factories.user import SuperUserFactory
@@ -29,7 +29,7 @@ def data() -> None:
 
 @pytest.fixture
 def app(
-    django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
+    django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: Settings
 ) -> "DjangoTestApp":
     settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
