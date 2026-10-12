@@ -21,14 +21,14 @@ if TYPE_CHECKING:
 
 @admin.register(SocialProvider)
 class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]):
-    list_display = ("label", "provider", "enabled", "client_id")
+    list_display = ("label", "provider", "enabled", "client_id", "callback_url")
     change_form_template = "admin/social/socialprovider/change_form.html"
     form = SocialProviderForm
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["label", "enabled"]}),
         (
             _("Configuration"),
-            {"classes": ["tab"], "fields": ["provider", "client_id", "secret", "key", "configuration"]},
+            {"classes": ["tab"], "fields": ["provider", "client_id", "secret", "key", "configuration", "callback_url"]},
         ),
     )
 
@@ -48,9 +48,17 @@ class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]
             return False
         return super().has_delete_permission(request, obj)
 
+    def callback_url(self, obj: SocialProvider) -> str:
+        return obj.callback_url
+
+    callback_url.short_description = "SSO Callback URL"
+    callback_url.admin_order_field = "provider"
+
     def get_form(
         self, request: HttpRequest, obj: SocialProvider | None = None, change: bool = False, **kwargs: Any
     ) -> "type[forms.ModelForm[SocialProvider]]":
         form_class = super().get_form(request, obj, change=change, **kwargs)
         form_class.request = request
         return form_class
+
+    readonly_fields = ("callback_url",)

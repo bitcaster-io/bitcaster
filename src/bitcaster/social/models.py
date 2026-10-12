@@ -61,3 +61,12 @@ class SocialProvider(models.Model):
     @property
     def code(self) -> str:
         return self.provider
+
+    @property
+    def callback_url(self) -> str:
+        """Returns the SSO callback URL for this provider."""
+        from django.conf import settings
+
+        domain = getattr(settings, "SESSION_COOKIE_DOMAIN", "bitcaster.io")
+        provider_slug = self.provider  # e.g., "google"
+        return f"https://{domain}/social/3rdparty/{provider_slug}/login/callback/"
