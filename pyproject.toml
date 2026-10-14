@@ -141,7 +141,7 @@ dev = [
 ]
 docs = [
   "cairosvg>=2.9",
-  "markupsafe>=2.1.5",
+  "markupsafe>=3.0.4",
   "mdx-gh-links>=0.4",
   "mkdocs-autolinks-plugin>=0.7.1",
   "mkdocs-awesome-pages-plugin>=2.9.3",
