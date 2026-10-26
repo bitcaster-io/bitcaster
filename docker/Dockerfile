@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm AS base_os
+FROM python:3.15-slim-bookworm AS base_os
 
 RUN set -x \
   && apt-get update && apt-get install -y --no-install-recommends debian-archive-keyring \
